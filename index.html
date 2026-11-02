@@ -260,6 +260,7 @@ body::before {
 }
 .view { display: none; }
 .view.active { display: block; }
+.view.peek { display: block; position: fixed; overflow: hidden; z-index: 50; pointer-events: none; will-change: transform; }
 
 /* --- Stats Tiles --- */
 .stats-row {
@@ -1257,8 +1258,9 @@ function switchView(viewId, dir) {
     );
   }
   window.scrollTo(0, 0);
-  if (viewId === 'viewMap') setTimeout(renderMap, 50);
-  if (viewId === 'viewGraph') setTimeout(renderGraph, 50);
+  const skipRender = window.__peekRendered === viewId; window.__peekRendered = null;
+  if (viewId === 'viewMap' && !skipRender) setTimeout(renderMap, 50);
+  if (viewId === 'viewGraph' && !skipRender) setTimeout(renderGraph, 50);
 }
 
 function currentViewIndex() {
@@ -1301,55 +1303,106 @@ function initSwipeNav() {
   }, { passive: true });
   document.addEventListener('touchcancel', () => { tracking = false; }, { passive: true });
 
-  /* Trackpad: two-finger horizontal swipe (MacBook). The current screen follows the fingers
-     (with a fade); past a short distance it switches to the next/previous menu, otherwise it
-     springs back. Fingers moving left -> next menu, right -> previous (natural scrolling). */
-  let acc = 0, committed = false, idleTimer = null, raf = 0;
-  const vw = () => Math.min(window.innerWidth, 640);
-  const activeView = () => document.querySelector('.view.active');
-  const isEdge = () => { const n = currentViewIndex() + (acc > 0 ? 1 : -1); return n < 0 || n >= VIEW_ORDER.length; };
-  function paintDrag() {
-    raf = 0;
-    const el = activeView(); if (!el) return;
-    const k = isEdge() ? 0.18 : 0.8;                         // rubber-band at the first/last menu
-    el.style.transition = 'none';
-    el.style.transform = 'translateX(' + (-acc * k).toFixed(1) + 'px)';
-    el.style.opacity = String(1 - Math.min(0.55, Math.abs(acc) / vw() * 1.1));
+  /* Trackpad: two-finger horizontal swipe (MacBook), iOS-pager style.
+     The current screen and its neighbour slide together, 1:1 with the fingers (inertia included).
+     On release: past ~30% of the width, or a quick flick -> settle on the neighbour; otherwise spring back.
+     Fingers moving left -> next menu, right -> previous (follows the "natural scrolling" setting). */
+  const pg = { phase: 'idle', dir: 0, nb: null, nbId: null, cur: null, P: 0, x: 0, maxSpeed: 0, samples: [], lastWheel: 0, raf: 0, top: 0, left: 0, width: 0 };
+  const settleMs = 300;
+  function pagerWiden(on) {
+    const mc = document.querySelector('.main-content'); if (!mc) return;
+    if (!on) { ['overflowX','marginLeft','marginRight','paddingLeft','paddingRight'].forEach(p => { mc.style[p] = ''; }); return; }
+    if (mc.style.overflowX === 'clip') return;
+    const r = mc.getBoundingClientRect(), cs = getComputedStyle(mc);
+    const gl = Math.max(0, r.left), gr = Math.max(0, window.innerWidth - r.right);
+    mc.style.marginLeft = (parseFloat(cs.marginLeft) - gl) + 'px';  mc.style.marginRight = (parseFloat(cs.marginRight) - gr) + 'px';
+    mc.style.paddingLeft = (parseFloat(cs.paddingLeft) + gl) + 'px'; mc.style.paddingRight = (parseFloat(cs.paddingRight) + gr) + 'px';
+    mc.style.overflowX = 'clip';
   }
-  function resetStyle(el, animated) {
-    if (!el) return;
-    el.style.transition = animated ? 'transform .3s cubic-bezier(.2,.8,.2,1), opacity .3s ease' : 'none';
-    el.style.transform = ''; el.style.opacity = '';
-    if (animated) setTimeout(() => { el.style.transition = ''; }, 320); else el.style.transition = '';
-  }
-  function commitSwipe() {
-    const dir = acc > 0 ? 1 : -1, next = currentViewIndex() + dir;
-    committed = true;
-    resetStyle(activeView(), false);
-    if (next < 0 || next >= VIEW_ORDER.length) return;
-    switchView(VIEW_ORDER[next], dir);
-  }
-  function endGesture() {
-    if (!committed && acc !== 0) {
-      if (Math.abs(acc) >= 45 && !isEdge()) commitSwipe(); else resetStyle(activeView(), true);
+  function pagerPrepare(dir) {
+    pagerCleanup(false);
+    const cur = document.querySelector('.view.active'); if (!cur) return;
+    const r = cur.getBoundingClientRect();
+    pg.cur = cur; pg.dir = dir;
+    pg.P = Math.min(window.innerWidth, r.width + 48);
+    pg.top = r.top + window.scrollY; pg.left = r.left; pg.width = r.width;
+    const n = currentViewIndex() + dir;
+    pg.nb = null; pg.nbId = null;
+    pagerWiden(true);                                         // clip sideways overflow at the screen edge (not on <html>: that would unstick the header)
+    if (n >= 0 && n < VIEW_ORDER.length) {
+      const nb = document.getElementById(VIEW_ORDER[n]);
+      pg.nb = nb; pg.nbId = VIEW_ORDER[n];
+      nb.classList.add('peek');
+      nb.style.left = pg.left + 'px'; nb.style.width = pg.width + 'px';
+      nb.style.top = Math.max(0, pg.top) + 'px';
+      nb.style.height = Math.max(200, window.innerHeight - pg.top) + 'px';
+      nb.style.transform = 'translateX(' + (dir * pg.P) + 'px)';
+      if (pg.nbId === 'viewMap') { try { renderMap(); window.__peekRendered = 'viewMap'; } catch (_) {} }
+      if (pg.nbId === 'viewGraph') { try { renderGraph(); window.__peekRendered = 'viewGraph'; } catch (_) {} }
     }
-    acc = 0; committed = false;
-    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    pg.x = 0;
+  }
+  function pagerPaint() {
+    pg.raf = 0;
+    if (!pg.cur) return;
+    const x = pg.x;                                           // 0..P in the swipe direction
+    const k = pg.nb ? 1 : 0.18;                               // rubber-band at the first/last menu
+    pg.cur.style.transition = 'none';
+    pg.cur.style.transform = 'translateX(' + (-pg.dir * x * k).toFixed(1) + 'px)';
+    if (pg.nb) { pg.nb.style.transition = 'none'; pg.nb.style.transform = 'translateX(' + (pg.dir * (pg.P - x)).toFixed(1) + 'px)'; }
+  }
+  function pagerCleanup(restoreOverflow) {
+    if (pg.raf) { cancelAnimationFrame(pg.raf); pg.raf = 0; }
+    if (pg.cur) { pg.cur.style.transition = ''; pg.cur.style.transform = ''; }
+    if (pg.nb) { pg.nb.classList.remove('peek'); ['transition','transform','left','width','top','height'].forEach(p => { pg.nb.style[p] = ''; }); }
+    if (restoreOverflow !== false) pagerWiden(false);
+    pg.cur = null; pg.nb = null; pg.nbId = null; pg.x = 0;
+  }
+  function pagerSettle(commit) {
+    pg.phase = 'settling';
+    const ease = 'transform ' + settleMs + 'ms cubic-bezier(.2,.8,.2,1)';
+    if (pg.raf) { cancelAnimationFrame(pg.raf); pg.raf = 0; }
+    const dir = pg.dir, nbId = pg.nbId;
+    if (pg.cur) { pg.cur.style.transition = ease; pg.cur.style.transform = 'translateX(' + (commit && pg.nb ? -dir * pg.P : 0) + 'px)'; }
+    if (pg.nb)  { pg.nb.style.transition = ease;  pg.nb.style.transform  = 'translateX(' + (commit ? 0 : dir * pg.P) + 'px)'; }
+    setTimeout(() => {
+      const target = commit && nbId ? nbId : null;
+      if (target) window.__peekRendered = (target === 'viewMap' || target === 'viewGraph') ? target : null;
+      pagerCleanup(true);
+      if (target) switchView(target, 0);
+      pg.phase = (Date.now() - pg.lastWheel > 150) ? 'idle' : 'locked';   // swallow the remaining inertia
+    }, settleMs + 20);
+  }
+  function pagerRelease() {
+    if (pg.phase !== 'drag') { if (pg.phase === 'locked') pg.phase = 'idle'; return; }
+    const commit = !!pg.nb && (pg.x >= pg.P * 0.3 || (pg.x >= 28 && pg.maxSpeed >= 0.9));
+    pagerSettle(commit);
   }
   document.addEventListener('wheel', (e) => {
     if (e.ctrlKey) return;                                   // pinch-zoom gesture
     const ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
-    const dragging = acc !== 0 || committed;
-    if (ax < 1) return;
-    if (!dragging && ax < ay * 1.6) return;                  // vertical or diagonal: let the page scroll
-    if (blocked(e.target)) return;                           // map, graph, charts, inputs, popups keep their own gestures
+    if (pg.phase === 'idle') {
+      if (ax < 1 || ax < ay * 1.6) return;                   // vertical or diagonal: let the page scroll
+      if (blocked(e.target)) return;                         // map, graph, charts, inputs, popups keep their own gestures
+      pg.phase = 'drag'; pg.maxSpeed = 0; pg.samples = []; pg.signed = 0; pg.cur = null;
+    }
     e.preventDefault();                                      // stop the browser's back/forward swipe
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(endGesture, 140);                 // gesture (and its inertia) has ended
-    if (committed) return;                                   // one menu per gesture, even with inertia
-    acc = Math.max(-vw(), Math.min(vw(), acc + e.deltaX));
-    if (Math.abs(acc) >= 90 && !isEdge()) { commitSwipe(); return; }
-    if (!raf) raf = requestAnimationFrame(paintDrag);
+    const now = performance.now(); pg.lastWheel = Date.now();
+    clearTimeout(pg.idleTimer);
+    pg.idleTimer = setTimeout(pagerRelease, 140);            // gesture (and its inertia) has ended
+    if (pg.phase !== 'drag') return;                         // settling / locked: ignore leftover inertia
+    pg.signed += e.deltaX;
+    const dir = pg.signed > 0 ? 1 : pg.signed < 0 ? -1 : 0;
+    if (!dir) return;
+    if (!pg.cur || dir !== pg.dir) pagerPrepare(dir);        // (re)start when the direction is known or flips
+    if (!pg.cur) return;
+    pg.x = Math.max(0, Math.min(pg.P, Math.abs(pg.signed)));
+    pg.samples.push([now, e.deltaX * dir]);
+    while (pg.samples.length > 1 && now - pg.samples[0][0] > 80) pg.samples.shift();
+    const span = Math.max(16, now - pg.samples[0][0]);
+    pg.maxSpeed = Math.max(pg.maxSpeed, pg.samples.reduce((s, a) => s + a[1], 0) / span);
+    if (pg.nb && pg.x >= pg.P) { pagerSettle(true); return; } // dragged all the way
+    if (!pg.raf) pg.raf = requestAnimationFrame(pagerPaint);
   }, { passive: false });
 }
 
