@@ -51,7 +51,7 @@
   --sev-low: #34c759;
   --sev-info: #5ac8fa;
   --seg-track: rgba(118,118,128,.24);
-  --seg-thumb: #636366;
+  --seg-thumb: #3a5fd0;
   --seg-thumb-text: #fff;
   --nav-bg: rgba(15,21,32,.72);
   --nav-line: rgba(84,84,88,.65);
@@ -79,8 +79,8 @@
     --accent-glow: rgba(0,144,204,.1);
     --accent2: #6344cc;
     --seg-track: rgba(118,118,128,.12);
-    --seg-thumb: #ffffff;
-    --seg-thumb-text: #1a1e2a;
+    --seg-thumb: #3a5fd0;
+    --seg-thumb-text: #ffffff;
     --nav-bg: rgba(255,255,255,.72);
     --nav-line: rgba(60,60,67,.29);
     color-scheme: light;
@@ -100,8 +100,8 @@
   --accent-glow: rgba(0,144,204,.1);
   --accent2: #6344cc;
   --seg-track: rgba(118,118,128,.12);
-  --seg-thumb: #ffffff;
-  --seg-thumb-text: #1a1e2a;
+  --seg-thumb: #3a5fd0;
+  --seg-thumb-text: #ffffff;
   --nav-bg: rgba(255,255,255,.72);
   --nav-line: rgba(60,60,67,.29);
   color-scheme: light;
@@ -148,12 +148,15 @@ body::before {
   align-items: center;
   gap: 8px;
 }
-.app-header .logo-icon {
-  height: 32px;
-  width: auto;
-}
+.app-header .logo-mark { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; display: block; }
+.app-header .logo-text { display: flex; flex-direction: column; line-height: 1.05; min-width: 0; }
+.app-header .logo-name { font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: -.01em; color: var(--text); }
+.app-header .logo-sub { font-family: var(--font-mono); font-size: 7.5px; letter-spacing: .16em; color: var(--text-muted); margin-top: 3px; white-space: nowrap; }
 @media (max-width: 520px) {
-  .app-header .logo-icon { height: 22px; max-width: 42vw; object-fit: contain; }
+  .app-header .logo { gap: 7px; }
+  .app-header .logo-mark { width: 28px; height: 28px; border-radius: 7px; }
+  .app-header .logo-name { font-size: 16px; }
+  .app-header .logo-sub { font-size: 6.5px; letter-spacing: .12em; }
 }
 
 .header-status {
@@ -296,7 +299,7 @@ body::before {
 .view-mode-bar { display:flex; align-items:center; justify-content:space-between; width:100%; margin-bottom:8px; }
 .view-mode-toggle { display:flex; width:132px; flex-shrink:0; background:var(--seg-track); border:none; border-radius:9px; padding:2px; gap:0; }
 .view-mode-toggle .mode-btn { flex:1; text-align:center; font-family:var(--font-display); font-size:12px; font-weight:500; padding:6px 0; border:none; background:transparent; color:var(--text-secondary); cursor:pointer; transition:all .2s; white-space:nowrap; }
-.view-mode-toggle .mode-btn.active { background:var(--seg-thumb); color:var(--seg-thumb-text); font-weight:600; box-shadow:0 3px 8px rgba(0,0,0,.18), 0 1px 1px rgba(0,0,0,.08); }
+.view-mode-toggle .mode-btn.active { background:var(--seg-thumb); color:var(--seg-thumb-text); font-weight:600; box-shadow:0 2px 8px rgba(58,95,208,.45), 0 1px 1px rgba(0,0,0,.12); }
 .view-mode-toggle .mode-btn:hover:not(.active) { color:var(--text); background:transparent; }
 .view-mode-toggle .mode-btn { border-radius:7px; padding:7px 0 !important; }
 .view-mode-date { font-family:var(--font-mono); font-size:11px; color:var(--text-muted); cursor:pointer; }
@@ -892,7 +895,8 @@ select, input[type="time"] {
 <!-- ===== APP HTML ===== -->
 <header class="app-header">
   <div class="logo">
-    <img class="logo-icon" src="logo.png" alt="ThreatPrism">
+    <img class="logo-mark" src="icon-192.png" alt="" width="30" height="30">
+    <div class="logo-text"><span class="logo-name">ThreatPrism</span><span class="logo-sub">SECURITY INTELLIGENCE</span></div>
   </div>
   <div class="header-status">
     <div class="header-date" id="headerDate"></div>
@@ -1234,8 +1238,8 @@ function switchView(viewId, dir) {
   target.classList.add('active');
   if (dir && target.animate) {
     target.animate(
-      [{ transform: 'translateX(' + (dir * 28) + 'px)', opacity: 0 }, { transform: 'translateX(0)', opacity: 1 }],
-      { duration: 180, easing: 'ease-out' }
+      [{ transform: 'translateX(' + (dir * 44) + 'px)', opacity: 0.15 }, { transform: 'translateX(0)', opacity: 1 }],
+      { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)' }
     );
   }
   window.scrollTo(0, 0);
@@ -1283,28 +1287,55 @@ function initSwipeNav() {
   }, { passive: true });
   document.addEventListener('touchcancel', () => { tracking = false; }, { passive: true });
 
-  /* Trackpad: two-finger horizontal swipe (MacBook) moves between menus, like the phone swipe.
-     Same direction as the phone: fingers moving left -> next menu, right -> previous.
-     (Follows the system "natural scrolling" setting.) */
-  let acc = 0, locked = false, idleTimer = null;
+  /* Trackpad: two-finger horizontal swipe (MacBook). The current screen follows the fingers
+     (with a fade); past a short distance it switches to the next/previous menu, otherwise it
+     springs back. Fingers moving left -> next menu, right -> previous (natural scrolling). */
+  let acc = 0, committed = false, idleTimer = null, raf = 0;
+  const vw = () => Math.min(window.innerWidth, 640);
+  const activeView = () => document.querySelector('.view.active');
+  const isEdge = () => { const n = currentViewIndex() + (acc > 0 ? 1 : -1); return n < 0 || n >= VIEW_ORDER.length; };
+  function paintDrag() {
+    raf = 0;
+    const el = activeView(); if (!el) return;
+    const k = isEdge() ? 0.18 : 0.8;                         // rubber-band at the first/last menu
+    el.style.transition = 'none';
+    el.style.transform = 'translateX(' + (-acc * k).toFixed(1) + 'px)';
+    el.style.opacity = String(1 - Math.min(0.55, Math.abs(acc) / vw() * 1.1));
+  }
+  function resetStyle(el, animated) {
+    if (!el) return;
+    el.style.transition = animated ? 'transform .3s cubic-bezier(.2,.8,.2,1), opacity .3s ease' : 'none';
+    el.style.transform = ''; el.style.opacity = '';
+    if (animated) setTimeout(() => { el.style.transition = ''; }, 320); else el.style.transition = '';
+  }
+  function commitSwipe() {
+    const dir = acc > 0 ? 1 : -1, next = currentViewIndex() + dir;
+    committed = true;
+    resetStyle(activeView(), false);
+    if (next < 0 || next >= VIEW_ORDER.length) return;
+    switchView(VIEW_ORDER[next], dir);
+  }
+  function endGesture() {
+    if (!committed && acc !== 0) {
+      if (Math.abs(acc) >= 45 && !isEdge()) commitSwipe(); else resetStyle(activeView(), true);
+    }
+    acc = 0; committed = false;
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+  }
   document.addEventListener('wheel', (e) => {
     if (e.ctrlKey) return;                                   // pinch-zoom gesture
     const ax = Math.abs(e.deltaX), ay = Math.abs(e.deltaY);
-    if (ax < 1 || ax < ay * 1.6) return;                     // vertical or diagonal: let the page scroll
+    const dragging = acc !== 0 || committed;
+    if (ax < 1) return;
+    if (!dragging && ax < ay * 1.6) return;                  // vertical or diagonal: let the page scroll
     if (blocked(e.target)) return;                           // map, graph, charts, inputs, popups keep their own gestures
     e.preventDefault();                                      // stop the browser's back/forward swipe
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(() => { acc = 0; locked = false; }, 180); // gesture (and its inertia) has ended
-    if (locked) return;
-    acc += e.deltaX;
-    if (Math.abs(acc) < 70) return;
-    const i = currentViewIndex();
-    const dir = acc > 0 ? 1 : -1;
-    acc = 0;
-    locked = true;                                           // one menu per gesture, even with inertia
-    const next = i + dir;
-    if (next < 0 || next >= VIEW_ORDER.length) return;
-    switchView(VIEW_ORDER[next], dir);
+    idleTimer = setTimeout(endGesture, 140);                 // gesture (and its inertia) has ended
+    if (committed) return;                                   // one menu per gesture, even with inertia
+    acc = Math.max(-vw(), Math.min(vw(), acc + e.deltaX));
+    if (Math.abs(acc) >= 90 && !isEdge()) { commitSwipe(); return; }
+    if (!raf) raf = requestAnimationFrame(paintDrag);
   }, { passive: false });
 }
 
