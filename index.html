@@ -510,6 +510,12 @@ body::before {
 .region-detail-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; }
 .region-detail-meta { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: .04em; }
 .region-detail-close { margin-left: auto; border: none; background: var(--seg-track); color: var(--text-secondary); font-size: 12px; padding: 5px 12px; border-radius: 999px; cursor: pointer; font-family: var(--font-display); }
+.region-mini { position: relative; width: 100%; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); margin-bottom: 10px; background: var(--card); }
+.region-mini canvas { display: block; }
+.rg-chips { display: flex; gap: 6px; overflow-x: auto; padding: 0 0 10px; margin-bottom: 2px; scrollbar-width: none; }
+.rg-chips::-webkit-scrollbar { display: none; }
+.rg-chip { flex: 0 0 auto; border: none; background: var(--seg-track); color: var(--text-secondary); font-size: 12px; padding: 6px 12px; border-radius: 999px; cursor: pointer; font-family: var(--font-display); white-space: nowrap; }
+.rg-chip.active { background: var(--seg-thumb); color: var(--seg-thumb-text); font-weight: 600; }
 .region-detail-empty { padding: 22px 16px; text-align: center; color: var(--text-secondary); font-size: 13px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); }
 .region-detail .feed-card { margin-bottom: 10px; }
 .region-stat { gap: 8px; }
@@ -1628,6 +1634,62 @@ function renderTrendChart() {
 /* ====== WORLD MAP ====== */
 let mapProjection, mapScale = 1, mapTranslate = [0,0];
 
+const REDUCE_MOTION = (typeof matchMedia === 'function') && matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* rough geographic boxes [west, south, east, north] used to light up the selected region on the map */
+const REGION_BOX = {
+  'North America': [-168, 15, -52, 72],
+  'South America': [-82, -56, -34, 12],
+  'Europe': [-25, 35, 45, 71],
+  'Africa': [-18, -35, 52, 37],
+  'Middle East': [34, 12, 63, 42],
+  'Asia Pacific': [63, -10, 150, 55],
+  'Oceania': [110, -48, 180, -10],
+};
+function drawRegionZone(ctx, proj, box, accent, t) {
+  const [w0, s0, e0, n0] = box, pts = [], N = 24;
+  for (let k = 0; k <= N; k++) pts.push([w0 + (e0 - w0) * k / N, n0]);
+  for (let k = 0; k <= N; k++) pts.push([e0, n0 + (s0 - n0) * k / N]);
+  for (let k = 0; k <= N; k++) pts.push([e0 + (w0 - e0) * k / N, s0]);
+  for (let k = 0; k <= N; k++) pts.push([w0, s0 + (n0 - s0) * k / N]);
+  const ph = REDUCE_MOTION ? 0.5 : (Math.sin(t / 380) + 1) / 2;
+  ctx.save();
+  ctx.beginPath();
+  pts.forEach((p, i) => { const [x, y] = proj(p); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+  ctx.closePath();
+  ctx.globalAlpha = 0.10 + 0.14 * ph; ctx.fillStyle = accent; ctx.fill();
+  ctx.globalAlpha = 0.45 + 0.45 * ph; ctx.strokeStyle = accent; ctx.lineWidth = 1.6; ctx.setLineDash([5, 4]); ctx.lineJoin = 'round'; ctx.stroke();
+  ctx.restore();
+}
+
+let mapCtxInfo = null, miniInfo = null, pulseRaf = 0, pulseLast = 0;
+function redrawMaps() {
+  if (mapCtxInfo && mapProjection) drawMap(mapCtxInfo.ctx, mapCtxInfo.w, mapCtxInfo.h);
+  if (miniInfo && document.body.contains(miniInfo.canvas)) drawMap(miniInfo.ctx, miniInfo.w, miniInfo.h, miniInfo.proj, true);
+}
+function pulseLoop(ts) {
+  pulseRaf = 0;
+  const v = document.getElementById('viewMap');
+  if (!selectedRegion || !v || !v.classList.contains('active') || document.hidden) return;
+  if (ts - pulseLast >= 33) { pulseLast = ts; redrawMaps(); }
+  pulseRaf = requestAnimationFrame(pulseLoop);
+}
+function ensurePulse() { if (selectedRegion && !REDUCE_MOTION && !pulseRaf) pulseRaf = requestAnimationFrame(pulseLoop); }
+function setupMiniMap() {
+  const wrap = document.getElementById('regionMiniWrap');
+  if (!wrap) { miniInfo = null; return; }
+  const w = Math.round(wrap.getBoundingClientRect().width);
+  if (w < 60) { miniInfo = null; return; }
+  const hh = Math.round(w * 0.52), dpr = window.devicePixelRatio || 1;
+  wrap.style.height = hh + 'px';
+  const canvas = wrap.querySelector('canvas');
+  canvas.width = w * dpr; canvas.height = hh * dpr;
+  canvas.style.width = w + 'px'; canvas.style.height = hh + 'px';
+  const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
+  const proj = d3.geoNaturalEarth1().scale(w / 5.5).translate([w / 2, hh / 2]);
+  miniInfo = { canvas, ctx, w, h: hh, proj };
+  drawMap(ctx, w, hh, proj, true);
+}
+
 function renderMap() {
   const container = document.getElementById('mapContainer');
   const canvas = document.getElementById('mapCanvas');
@@ -1643,12 +1705,15 @@ function renderMap() {
     .scale(w / 5.5)
     .translate([w/2, h/2]);
 
+  mapCtxInfo = { ctx, w, h };
   drawMap(ctx, w, h);
   setupMapInteraction(container, canvas, ctx, w, h);
+  ensurePulse();
   renderRegionStats();
 }
 
-function drawMap(ctx, w, h) {
+function drawMap(ctx, w, h, proj, mini) {
+  proj = proj || mapProjection;
   const style = getComputedStyle(document.documentElement);
   const bgColor = style.getPropertyValue('--card').trim();
   const borderColor = style.getPropertyValue('--border').trim();
@@ -1660,7 +1725,7 @@ function drawMap(ctx, w, h) {
 
   // Graticule
   const graticule = d3.geoGraticule().step([30,30]);
-  const path = d3.geoPath(mapProjection).context(ctx);
+  const path = d3.geoPath(proj).context(ctx);
   ctx.beginPath();
   path(graticule());
   ctx.strokeStyle = borderColor;
@@ -1674,7 +1739,7 @@ function drawMap(ctx, w, h) {
   CONTINENTS.forEach(coords => {
     ctx.beginPath();
     coords.forEach((c,i) => {
-      const [x,y] = mapProjection(c);
+      const [x,y] = proj(c);
       if (i===0) ctx.moveTo(x,y);
       else ctx.lineTo(x,y);
     });
@@ -1683,14 +1748,26 @@ function drawMap(ctx, w, h) {
     ctx.stroke();
   });
 
+  const accent = style.getPropertyValue('--accent').trim() || '#00c8ff';
+  const textMain = style.getPropertyValue('--text').trim() || '#e4e8f0';
+  const t = REDUCE_MOTION ? 0 : performance.now();
+  const sel = selectedRegion, selC = selectedCountry;
+  const ms = mini ? 0.78 : 1;
+
+  if (sel && REGION_BOX[sel]) drawRegionZone(ctx, proj, REGION_BOX[sel], accent, t);
+
   // Region labels
-  ctx.font = '10px Outfit';
-  ctx.fillStyle = textColor;
-  ctx.textAlign = 'center';
-  Object.values(REGIONS).forEach(r => {
-    const [x,y] = mapProjection([r.lng, r.lat]);
+  Object.entries(REGIONS).forEach(([key, r]) => {
+    const on = sel === key;
+    if (mini && sel && !on) return;
+    const [x,y] = proj([r.lng, r.lat]);
+    ctx.font = (on ? 'bold ' : '') + (mini ? 9 : 10) + 'px Outfit, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    ctx.globalAlpha = sel && !on ? 0.5 : 1;
+    ctx.fillStyle = on ? accent : textColor;
     ctx.fillText(r.label, x, y);
   });
+  ctx.globalAlpha = 1;
 
   // Incident dots
   const grouped = {};
@@ -1704,35 +1781,64 @@ function drawMap(ctx, w, h) {
     }
   });
 
+  const pulse = REDUCE_MOTION ? 0.5 : ((t % 1400) / 1400);
   Object.values(grouped).forEach(g => {
-    const [x,y] = mapProjection([g.lng, g.lat]);
-    const r = Math.min(3 + g.items.length * 1.5, 14);
+    const [x,y] = proj([g.lng, g.lat]);
+    const r = Math.min(3 + g.items.length * 1.5, 14) * ms;
     const color = SEV_COLORS[g.maxSev] || SEV_COLORS.info;
+    const inSel = !!sel && g.items.some(i => regionKeyOf(i) === sel);
+    const inCountry = !!selC && g.items.some(i => (i.country || i.countryName) === selC);
+    const lit = inSel && (!selC || inCountry);
+    const dim = sel ? (!inSel ? 0.2 : (selC && !inCountry ? 0.45 : 1)) : 1;
 
-    // Glow
-    ctx.beginPath();
-    ctx.arc(x,y, r*2, 0, Math.PI*2);
-    ctx.fillStyle = color + '20';
-    ctx.fill();
-
-    // Dot
-    ctx.beginPath();
-    ctx.arc(x,y, r, 0, Math.PI*2);
-    ctx.fillStyle = color + 'cc';
-    ctx.fill();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    // Count
+    if (lit) {
+      const pr = r * (1.4 + pulse * (inCountry ? 2.6 : 1.9));
+      ctx.beginPath(); ctx.arc(x, y, pr, 0, Math.PI*2);
+      ctx.strokeStyle = accent; ctx.lineWidth = inCountry ? 2 : 1.5;
+      ctx.globalAlpha = (1 - pulse) * 0.9; ctx.stroke();
+    }
+    ctx.globalAlpha = dim;
+    ctx.beginPath(); ctx.arc(x,y, r*2, 0, Math.PI*2); ctx.fillStyle = color + '20'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x,y, r, 0, Math.PI*2); ctx.fillStyle = color + 'cc'; ctx.fill();
+    ctx.strokeStyle = lit ? '#fff' : color; ctx.lineWidth = lit ? 1.5 : 1; ctx.stroke();
     if (g.items.length > 1) {
-      ctx.font = 'bold 9px JetBrains Mono';
-      ctx.fillStyle = '#fff';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
+      ctx.font = 'bold ' + (mini ? 8 : 9) + 'px JetBrains Mono, monospace';
+      ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(g.items.length, x, y);
     }
+    ctx.globalAlpha = 1;
   });
+
+  // Country labels for the selected region
+  if (sel) {
+    const byC = {};
+    getFilteredIncidents().filter(i => regionKeyOf(i) === sel && i.lat && i.lng).forEach(i => {
+      const k = i.country || i.countryName; if (!k) return;
+      const c = byC[k] || (byC[k] = { name: i.countryName || i.country, code: k, n: 0, lat: 0, lng: 0 });
+      c.n++; c.lat += i.lat; c.lng += i.lng;
+    });
+    const placed = [];
+    ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+    Object.values(byC).sort((a, b) => ((b.code === selC) - (a.code === selC)) || b.n - a.n).forEach(c => {
+      const isSel = c.code === selC;
+      if (selC && !isSel) return;
+      const [x, y] = proj([c.lng / c.n, c.lat / c.n]);
+      const label = c.name + ' ' + c.n;
+      ctx.font = (isSel ? 'bold ' : '') + (mini ? 9 : 10) + 'px Outfit, sans-serif';
+      const tw = ctx.measureText(label).width, th = mini ? 11 : 13;
+      let lx = x + 9 * ms + 2, ly = y - 11 * ms;
+      if (lx + tw > w - 4) lx = x - 9 * ms - 2 - tw;
+      if (ly < th) ly = y + 12 * ms;
+      const box = { x: lx - 3, y: ly - th / 2, w: tw + 6, h: th };
+      if (!isSel && placed.some(p => box.x < p.x + p.w && box.x + box.w > p.x && box.y < p.y + p.h && box.y + box.h > p.y)) return;
+      placed.push(box);
+      ctx.lineJoin = 'round'; ctx.lineWidth = 3; ctx.strokeStyle = bgColor; ctx.globalAlpha = 0.9;
+      ctx.strokeText(label, lx, ly);
+      ctx.globalAlpha = 1; ctx.fillStyle = isSel ? accent : textMain;
+      ctx.fillText(label, lx, ly);
+    });
+    ctx.textAlign = 'center';
+  }
 }
 
 function setupMapInteraction(container, canvas, ctx, w, h) {
@@ -1810,22 +1916,36 @@ function renderRegionStats() {
 let selectedRegion = null;
 const SEV_RANK = { critical:0, high:1, medium:2, low:3, info:4 };
 function regionKeyOf(inc) { return inc.region === 'Asia' ? 'Asia Pacific' : inc.region; }
+let selectedCountry = null;
 window.selectRegion = function(key) {
   const opening = selectedRegion !== key;
   selectedRegion = opening ? key : null;
+  selectedCountry = null;
   renderRegionStats();
+  redrawMaps(); ensurePulse();
   if (opening) {
     const p = document.getElementById('regionDetail');
     if (p && p.scrollIntoView) setTimeout(() => p.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
   }
 };
+window.selectCountry = function(idx) {
+  const code = idx === '' ? null : (window.__rgCountries || [])[+idx];
+  selectedCountry = (code && selectedCountry !== code) ? code : null;
+  renderRegionStats();
+  redrawMaps(); ensurePulse();
+};
 function renderRegionDetail(levelOf, regionSev) {
   const el = document.getElementById('regionDetail');
   if (!el) return;
-  if (!selectedRegion || !REGIONS[selectedRegion]) { el.hidden = true; el.innerHTML = ''; return; }
-  const items = getFilteredIncidents()
-    .filter(i => regionKeyOf(i) === selectedRegion)
-    .sort((a, b) => (SEV_RANK[a.severity] ?? 9) - (SEV_RANK[b.severity] ?? 9) || (b.date || '').localeCompare(a.date || '') || (b.id || '').localeCompare(a.id || ''));
+  if (!selectedRegion || !REGIONS[selectedRegion]) { el.hidden = true; el.innerHTML = ''; miniInfo = null; selectedCountry = null; return; }
+  const sorter = (a, b) => (SEV_RANK[a.severity] ?? 9) - (SEV_RANK[b.severity] ?? 9) || (b.date || '').localeCompare(a.date || '') || (b.id || '').localeCompare(a.id || '');
+  const regionItems = getFilteredIncidents().filter(i => regionKeyOf(i) === selectedRegion).sort(sorter);
+  const cmap = {};
+  regionItems.forEach(i => { const k = i.country || i.countryName; if (!k) return; (cmap[k] = cmap[k] || { code: k, name: i.countryName || i.country, n: 0 }).n++; });
+  const countries = Object.values(cmap).sort((a, b) => b.n - a.n || String(a.name).localeCompare(String(b.name), 'ko'));
+  window.__rgCountries = countries.map(c => c.code);
+  if (selectedCountry && !cmap[selectedCountry]) selectedCountry = null;
+  const items = selectedCountry ? regionItems.filter(i => (i.country || i.countryName) === selectedCountry) : regionItems;
   const [lvl, color] = levelOf(regionSev[selectedRegion]);
   const scope = viewMode === 'today' ? 'Today' : '누적';
   el.hidden = false;
@@ -1835,8 +1955,15 @@ function renderRegionDetail(levelOf, regionSev) {
       `<span class="region-detail-meta" style="color:${color}">${lvl} · ${items.length}건 · ${scope}</span>` +
       `<button class="region-detail-close" onclick="selectRegion('${selectedRegion}')">닫기</button>` +
     `</div>` +
+    `<div class="region-mini" id="regionMiniWrap"><canvas></canvas></div>` +
+    (countries.length ? `<div class="rg-chips">` +
+      `<button class="rg-chip${selectedCountry ? '' : ' active'}" onclick="selectCountry('')">전체 ${regionItems.length}</button>` +
+      countries.map((c, n) => `<button class="rg-chip${selectedCountry === c.code ? ' active' : ''}" onclick="selectCountry('${n}')">${esc(String(c.name))} ${c.n}</button>`).join('') +
+    `</div>` : '') +
     (items.length ? items.map(feedCardHTML).join('')
                   : `<div class="region-detail-empty">${scope} 기준으로 이 지역과 관련된 기사가 없습니다.${viewMode === 'today' ? '<br>누적으로 바꾸면 이전 기사를 볼 수 있습니다.' : ''}</div>`);
+  setupMiniMap();
+  ensurePulse();
 }
 
 /* ====== FORCE GRAPH (Obsidian-style) ====== */
