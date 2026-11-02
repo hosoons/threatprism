@@ -1955,14 +1955,12 @@ function renderRegionDetail(levelOf, regionSev) {
       `<span class="region-detail-meta" style="color:${color}">${lvl} · ${items.length}건 · ${scope}</span>` +
       `<button class="region-detail-close" onclick="selectRegion('${selectedRegion}')">닫기</button>` +
     `</div>` +
-    `<div class="region-mini" id="regionMiniWrap"><canvas></canvas></div>` +
     (countries.length ? `<div class="rg-chips">` +
       `<button class="rg-chip${selectedCountry ? '' : ' active'}" onclick="selectCountry('')">전체 ${regionItems.length}</button>` +
       countries.map((c, n) => `<button class="rg-chip${selectedCountry === c.code ? ' active' : ''}" onclick="selectCountry('${n}')">${esc(String(c.name))} ${c.n}</button>`).join('') +
     `</div>` : '') +
     (items.length ? items.map(feedCardHTML).join('')
                   : `<div class="region-detail-empty">${scope} 기준으로 이 지역과 관련된 기사가 없습니다.${viewMode === 'today' ? '<br>누적으로 바꾸면 이전 기사를 볼 수 있습니다.' : ''}</div>`);
-  setupMiniMap();
   ensurePulse();
 }
 
