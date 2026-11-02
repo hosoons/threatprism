@@ -312,6 +312,16 @@ body::before {
 .date-range-picker .dr-reset { font-family:var(--font-display); font-size:11px; padding:3px 8px; background:transparent; color:var(--text-muted); border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; }
 
 /* --- Category Cards --- */
+.brief-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 18px; }
+.brief-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.brief-title { font-family: var(--font-display); font-weight: 600; font-size: 14px; }
+.brief-date { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+.brief-line { font-size: 13px; line-height: 1.5; color: var(--text-secondary); margin: 3px 0; }
+.brief-line b { color: var(--text); font-weight: 600; }
+.brief-item { display: flex; gap: 8px; align-items: baseline; font-size: 13px; line-height: 1.45; margin: 4px 0; cursor: pointer; }
+.brief-item .bi-dot { flex: 0 0 8px; height: 8px; border-radius: 50%; transform: translateY(-1px); }
+.brief-item .bi-t { color: var(--text); flex: 1; min-width: 0; }
+.brief-item .bi-c { color: var(--text-muted); font-size: 11px; white-space: nowrap; }
 .section-title {
   font-family: var(--font-display);
   font-size: 14px;
@@ -928,6 +938,7 @@ select, input[type="time"] {
 <main class="main-content">
   <!-- Dashboard -->
   <section id="viewDashboard" class="view active">
+    <div class="brief-box" id="briefBox" hidden></div>
     <div class="section-title" style="margin-bottom:8px">📊 Overview</div>
     <div class="view-mode-bar" id="dashModeBar">
       <span class="view-mode-date" id="dashModeDate" onclick="toggleDateRangePicker()">Today</span>
@@ -1216,6 +1227,7 @@ function loadSampleData() {
 
 function renderAll() {
   updateDateLabels();
+  renderBrief();
   renderStatsTiles();
   renderCategoryGrid();
   renderAlertList();
@@ -1509,7 +1521,7 @@ function refreshCurrentView() {
   const activeView = document.querySelector('.view.active');
   const id = activeView ? activeView.id : '';
   if (id === 'viewDashboard') {
-    renderStatsTiles(); renderCategoryGrid(); renderAlertList(); renderTrendChart();
+    renderBrief(); renderStatsTiles(); renderCategoryGrid(); renderAlertList(); renderTrendChart();
   } else if (id === 'viewMap') {
     renderMap(); renderRegionStats();
   }
@@ -1529,6 +1541,33 @@ window.setViewMode = function(mode) {
   updateDateLabels();
   refreshCurrentView();
 };
+
+function renderBrief() {
+  const el = document.getElementById('briefBox');
+  if (!el) return;
+  const key = getTodayKey();
+  const items = allIncidents.filter(i => collectedKey(i) === key);
+  if (!items.length) { el.hidden = true; return; }
+  const cnt = s => items.filter(i => i.severity === s).length;
+  const crit = cnt('critical'), high = cnt('high');
+  const top = items.filter(i => i.severity === 'critical' || i.severity === 'high')
+    .sort((a, b) => (SEV_RANK[a.severity] - SEV_RANK[b.severity]) || (b.date || '').localeCompare(a.date || '') || (a.id || '').localeCompare(b.id || ''))
+    .slice(0, 3);
+  const tally = (fn) => { const m = {}; items.forEach(i => { const k = fn(i); if (k) m[k] = (m[k] || 0) + 1; }); return Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 3); };
+  const cats = tally(i => i.category).map(([k, n]) => `${CATEGORIES[k]?.name || k} ${n}`).join(' · ');
+  const ctry = tally(i => i.countryName || i.country).map(([k, n]) => `${esc(k)} ${n}`).join(' · ');
+  const [y, m, d] = key.split('-').map(Number);
+  const dow = DAYS_KR[new Date(y, m - 1, d).getDay()];
+  const fresh = key === getToday() ? '' : ' (최신)';
+  el.hidden = false;
+  el.innerHTML =
+    `<div class="brief-head"><span class="brief-title">📰 오늘의 브리핑</span><span class="brief-date">${m}월 ${d}일 (${dow})${fresh}</span></div>` +
+    `<div class="brief-line">총 <b>${items.length}건</b> 수집 · <span style="color:${SEV_COLORS.critical}">Critical <b>${crit}</b></span> · <span style="color:${SEV_COLORS.high}">High <b>${high}</b></span></div>` +
+    (top.length ? top.map(a => `<div class="brief-item" onclick="showDetail('${a.id}')"><i class="bi-dot" style="background:${SEV_COLORS[a.severity]}"></i><span class="bi-t">${esc(a.title)}</span><span class="bi-c">${esc(a.countryName || '')}</span></div>`).join('')
+                : `<div class="brief-line">오늘은 Critical·High 등급 사안이 없습니다.</div>`) +
+    `<div class="brief-line">주요 분야 · <b>${cats}</b></div>` +
+    `<div class="brief-line">주요 국가 · <b>${ctry}</b></div>`;
+}
 
 function renderStatsTiles() {
   const el = document.getElementById('statsTiles');
