@@ -498,6 +498,19 @@ body::before {
   font-weight: 500;
 }
 .region-head { margin: 20px 0 10px; }
+.region-stat { cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: border-color .2s, background .2s, transform .12s; }
+.region-stat:active { transform: scale(.985); }
+.region-stat:hover { background: var(--card-hover); }
+.region-stat.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; background: var(--card-hover); }
+.region-stat .r-caret { width: 8px; height: 8px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(45deg) translateY(-2px); margin-left: 2px; transition: transform .2s; flex-shrink: 0; align-self: center; }
+.region-stat.selected .r-caret { transform: rotate(-135deg) translate(-1px,-1px); border-color: var(--accent); }
+.region-detail { margin-top: 14px; scroll-margin-top: 84px; }
+.region-detail-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.region-detail-title { font-family: var(--font-display); font-weight: 600; font-size: 15px; }
+.region-detail-meta { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: .04em; }
+.region-detail-close { margin-left: auto; border: none; background: var(--seg-track); color: var(--text-secondary); font-size: 12px; padding: 5px 12px; border-radius: 999px; cursor: pointer; font-family: var(--font-display); }
+.region-detail-empty { padding: 22px 16px; text-align: center; color: var(--text-secondary); font-size: 13px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); }
+.region-detail .feed-card { margin-bottom: 10px; }
 .region-stat { gap: 8px; }
 .region-stat .r-name { min-width: 0; }
 .region-stat .r-right {
@@ -955,6 +968,7 @@ select, input[type="time"] {
       </div>
     </div>
     <div class="map-region-stats" id="regionStats"></div>
+    <div class="region-detail" id="regionDetail" hidden></div>
   </section>
 
   <!-- Graph -->
@@ -1731,10 +1745,45 @@ function renderRegionStats() {
                       : ['LOW', SEV_COLORS.low];
   el.innerHTML = Object.entries(REGIONS).map(([key, r]) => {
     const [label, color] = levelOf(regionSev[key]);
-    return `<div class="region-stat"><span class="r-name">${r.label}</span>` +
+    const sel = selectedRegion === key;
+    return `<div class="region-stat${sel ? ' selected' : ''}" role="button" tabindex="0" aria-expanded="${sel}" data-region="${key}" onclick="selectRegion('${key}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRegion('${key}')}">` +
+      `<span class="r-name">${r.label}</span>` +
       `<span class="r-right"><span class="r-level" style="color:${color}">${label}</span>` +
-      `<span class="r-count" style="color:${color}">${regionCounts[key]||0}</span></span></div>`;
+      `<span class="r-count" style="color:${color}">${regionCounts[key]||0}</span><i class="r-caret"></i></span></div>`;
   }).join('');
+  renderRegionDetail(levelOf, regionSev);
+}
+
+let selectedRegion = null;
+const SEV_RANK = { critical:0, high:1, medium:2, low:3, info:4 };
+function regionKeyOf(inc) { return inc.region === 'Asia' ? 'Asia Pacific' : inc.region; }
+window.selectRegion = function(key) {
+  const opening = selectedRegion !== key;
+  selectedRegion = opening ? key : null;
+  renderRegionStats();
+  if (opening) {
+    const p = document.getElementById('regionDetail');
+    if (p && p.scrollIntoView) setTimeout(() => p.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
+  }
+};
+function renderRegionDetail(levelOf, regionSev) {
+  const el = document.getElementById('regionDetail');
+  if (!el) return;
+  if (!selectedRegion || !REGIONS[selectedRegion]) { el.hidden = true; el.innerHTML = ''; return; }
+  const items = getFilteredIncidents()
+    .filter(i => regionKeyOf(i) === selectedRegion)
+    .sort((a, b) => (SEV_RANK[a.severity] ?? 9) - (SEV_RANK[b.severity] ?? 9) || (b.date || '').localeCompare(a.date || '') || (b.id || '').localeCompare(a.id || ''));
+  const [lvl, color] = levelOf(regionSev[selectedRegion]);
+  const scope = viewMode === 'today' ? 'Today' : '누적';
+  el.hidden = false;
+  el.innerHTML =
+    `<div class="region-detail-head">` +
+      `<span class="region-detail-title">${REGIONS[selectedRegion].label} 관련 기사</span>` +
+      `<span class="region-detail-meta" style="color:${color}">${lvl} · ${items.length}건 · ${scope}</span>` +
+      `<button class="region-detail-close" onclick="selectRegion('${selectedRegion}')">닫기</button>` +
+    `</div>` +
+    (items.length ? items.map(feedCardHTML).join('')
+                  : `<div class="region-detail-empty">${scope} 기준으로 이 지역과 관련된 기사가 없습니다.${viewMode === 'today' ? '<br>누적으로 바꾸면 이전 기사를 볼 수 있습니다.' : ''}</div>`);
 }
 
 /* ====== FORCE GRAPH (Obsidian-style) ====== */
@@ -1949,20 +1998,8 @@ function renderFeedFilters() {
   });
 }
 
-function renderFeed() {
-  const el = document.getElementById('feedList');
-  let items = allIncidents;
-  if (feedFilter !== 'ALL') items = items.filter(i=>i.category===feedFilter);
-
-  if (!items.length) {
-    el.innerHTML = `<div class="feed-empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5-2 4-2 4 2 4 2M9 9h.01M15 9h.01"/></svg>
-      <div>해당 카테고리에 데이터가 없습니다.</div>
-    </div>`;
-    return;
-  }
-
-  el.innerHTML = items.map(inc => `
+function feedCardHTML(inc) {
+  return `
     <div class="feed-card" data-cat="${inc.category}" onclick="showDetail('${inc.id}')">
       <div class="feed-card-header">
         <span class="feed-card-cat">${CATEGORIES[inc.category]?.name||inc.category}</span>
@@ -1978,8 +2015,23 @@ function renderFeed() {
           ${(inc.tags||[]).slice(0,3).map(t=>`<span class="feed-tag">${esc(t)}</span>`).join('')}
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+}
+
+function renderFeed() {
+  const el = document.getElementById('feedList');
+  let items = allIncidents;
+  if (feedFilter !== 'ALL') items = items.filter(i=>i.category===feedFilter);
+
+  if (!items.length) {
+    el.innerHTML = `<div class="feed-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5-2 4-2 4 2 4 2M9 9h.01M15 9h.01"/></svg>
+      <div>해당 카테고리에 데이터가 없습니다.</div>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = items.map(feedCardHTML).join('');
 }
 
 /* ====== SETTINGS ====== */
