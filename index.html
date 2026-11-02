@@ -1213,9 +1213,10 @@ async function init() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     allIncidents = await res.json();
     renderAll();
+    loadBrief();
   } catch(e) {
     console.warn('Data load failed:', e);
-    if (window.__CACHED_INCIDENTS && window.__CACHED_INCIDENTS.length) { allIncidents = window.__CACHED_INCIDENTS; renderAll(); }
+    if (window.__CACHED_INCIDENTS && window.__CACHED_INCIDENTS.length) { allIncidents = window.__CACHED_INCIDENTS; renderAll(); loadBrief(); }
     else { loadSampleData(); }
   }
 }
@@ -1227,7 +1228,6 @@ function loadSampleData() {
 
 function renderAll() {
   updateDateLabels();
-  renderBrief();
   renderStatsTiles();
   renderCategoryGrid();
   renderAlertList();
@@ -1521,7 +1521,7 @@ function refreshCurrentView() {
   const activeView = document.querySelector('.view.active');
   const id = activeView ? activeView.id : '';
   if (id === 'viewDashboard') {
-    renderBrief(); renderStatsTiles(); renderCategoryGrid(); renderAlertList(); renderTrendChart();
+    renderStatsTiles(); renderCategoryGrid(); renderAlertList(); renderTrendChart();
   } else if (id === 'viewMap') {
     renderMap(); renderRegionStats();
   }
@@ -1542,31 +1542,26 @@ window.setViewMode = function(mode) {
   refreshCurrentView();
 };
 
+let briefData = null;
+async function loadBrief() {
+  try {
+    const r = await fetch('data/briefing.json?v=' + Date.now(), { cache: 'no-store' });
+    if (r.ok) briefData = await r.json();
+  } catch (e) { briefData = null; }
+  renderBrief();
+}
 function renderBrief() {
   const el = document.getElementById('briefBox');
   if (!el) return;
-  const key = getTodayKey();
-  const items = allIncidents.filter(i => collectedKey(i) === key);
-  if (!items.length) { el.hidden = true; return; }
-  const cnt = s => items.filter(i => i.severity === s).length;
-  const crit = cnt('critical'), high = cnt('high');
-  const top = items.filter(i => i.severity === 'critical' || i.severity === 'high')
-    .sort((a, b) => (SEV_RANK[a.severity] - SEV_RANK[b.severity]) || (b.date || '').localeCompare(a.date || '') || (a.id || '').localeCompare(b.id || ''))
-    .slice(0, 3);
-  const tally = (fn) => { const m = {}; items.forEach(i => { const k = fn(i); if (k) m[k] = (m[k] || 0) + 1; }); return Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 3); };
-  const cats = tally(i => i.category).map(([k, n]) => `${CATEGORIES[k]?.name || k} ${n}`).join(' · ');
-  const ctry = tally(i => i.countryName || i.country).map(([k, n]) => `${esc(k)} ${n}`).join(' · ');
-  const [y, m, d] = key.split('-').map(Number);
+  const b = briefData;
+  if (!b || !Array.isArray(b.lines) || !b.lines.length || !b.date) { el.hidden = true; return; }
+  const [y, m, d] = String(b.date).split('-').map(Number);
   const dow = DAYS_KR[new Date(y, m - 1, d).getDay()];
-  const fresh = key === getToday() ? '' : ' (최신)';
+  const fresh = b.date === getToday() ? '' : ' (최신)';
   el.hidden = false;
   el.innerHTML =
     `<div class="brief-head"><span class="brief-title">📰 오늘의 브리핑</span><span class="brief-date">${m}월 ${d}일 (${dow})${fresh}</span></div>` +
-    `<div class="brief-line">총 <b>${items.length}건</b> 수집 · <span style="color:${SEV_COLORS.critical}">Critical <b>${crit}</b></span> · <span style="color:${SEV_COLORS.high}">High <b>${high}</b></span></div>` +
-    (top.length ? top.map(a => `<div class="brief-item" onclick="showDetail('${a.id}')"><i class="bi-dot" style="background:${SEV_COLORS[a.severity]}"></i><span class="bi-t">${esc(a.title)}</span><span class="bi-c">${esc(a.countryName || '')}</span></div>`).join('')
-                : `<div class="brief-line">오늘은 Critical·High 등급 사안이 없습니다.</div>`) +
-    `<div class="brief-line">주요 분야 · <b>${cats}</b></div>` +
-    `<div class="brief-line">주요 국가 · <b>${ctry}</b></div>`;
+    b.lines.slice(0, 8).map(t => `<div class="brief-line">${esc(String(t))}</div>`).join('');
 }
 
 function renderStatsTiles() {
