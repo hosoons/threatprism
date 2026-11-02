@@ -1027,7 +1027,7 @@ select, input[type="time"] {
         <div class="day-selector" id="daySelector"></div>
       </div>
     </div>
-    <div class="settings-section" style="display:none">
+    <div class="settings-section">
       <h3>🔔 알림 설정</h3>
       <div class="setting-row">
         <div><div class="setting-label">푸시 알림</div><div class="setting-desc">Claude 앱 알림 (계정 필요)</div></div>
@@ -2336,7 +2336,7 @@ async function subscribeEmail() {
       let subs = JSON.parse(localStorage.getItem('tp_email_subs') || '[]');
       if (!subs.includes(email)) { subs.push(email); localStorage.setItem('tp_email_subs', JSON.stringify(subs)); }
     } catch(e) {}
-    showEmailStatus('구독 등록 완료: ' + email + ' (로그인 시 서버에 동기화됩니다)', 'var(--sev-low)');
+    showEmailStatus('구독 등록 완료: ' + email + ' (이 기기에 저장됨)', 'var(--sev-low)');
     input.value = '';
     loadSubscribers();
     return;
