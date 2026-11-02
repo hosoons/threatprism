@@ -1906,7 +1906,7 @@ function renderRegionStats() {
     const [label, color] = levelOf(regionSev[key]);
     const sel = selectedRegion === key;
     return `<div class="region-stat${sel ? ' selected' : ''}" role="button" tabindex="0" aria-expanded="${sel}" data-region="${key}" onclick="selectRegion('${key}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRegion('${key}')}">` +
-      `<span class="r-name">${r.label}</span>` +
+      `<span class="r-name">${r.label.replace('·', '·<br>')}</span>` +
       `<span class="r-right"><span class="r-level" style="color:${color}">${label}</span>` +
       `<span class="r-count" style="color:${color}">${regionCounts[key]||0}</span><i class="r-caret"></i></span></div>`;
   }).join('');
