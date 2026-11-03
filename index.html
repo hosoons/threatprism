@@ -1031,11 +1031,11 @@ select, input[type="time"] {
       <h3>🔔 알림 설정</h3>
       <div class="setting-row">
         <div><div class="setting-label">Push 알림</div><div class="setting-desc">Claude 앱 푸시 알림 (계정 필요)</div></div>
-        <div class="toggle on" id="togglePush" data-key="push"></div>
+        <div class="toggle" id="togglePush" data-key="push"></div>
       </div>
       <div class="setting-row">
         <div><div class="setting-label">email 알림</div><div class="setting-desc">매일 브리핑 요약을 이메일로 수신</div></div>
-        <div class="toggle on" id="toggleEmail" data-key="email"></div>
+        <div class="toggle" id="toggleEmail" data-key="email"></div>
       </div>
       <div class="setting-row">
         <div><div class="setting-label">Slack 알림</div><div class="setting-desc">매일 브리핑 링크를 Slack으로 수신 (Slack 연결 필요)</div></div>
@@ -1212,7 +1212,7 @@ async function init() {
   renderFeedFilters();
 
   // Static-site data loading (no Artifact runtime)
-  try { Object.assign(settings, JSON.parse(localStorage.getItem('tp_settings') || '{}')); applySettings(); } catch(e) {}
+  try { const sv = JSON.parse(localStorage.getItem('tp_settings') || '{}'); if (!sv.v2) { sv.push=false; sv.email=false; sv.slack=false; sv.v2=true; } Object.assign(settings, sv); if (!hasEmailSub()) settings.email=false; applySettings(); } catch(e) {}
   try {
     const res = await fetch('data/incidents.json?v=' + Date.now(), {cache:'no-store'});
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -2283,14 +2283,27 @@ function renderSettings() {
   // Toggles
   document.querySelectorAll('.toggle').forEach(t => {
     t.onclick = () => {
-      t.classList.toggle('on');
-      settings[t.dataset.key] = t.classList.contains('on');
-      saveSettings();
-      if (t.dataset.key === 'slack' && settings.slack) {
-        // Slack 앱/웹 열기: 각자 본인 계정으로 알림 채널에 참여
-        try { window.open('https://passkeyskt.slack.com/app_redirect?channel=C0CE60BCY2F', '_blank', 'noopener'); } catch (e) {}
-        alert('Slack이 열립니다. 로그인 후 #threatprism-briefing 채널에 참여하면 매일 브리핑을 받을 수 있습니다.\n(Passkey@SKT 워크스페이스 계정으로 로그인해야 합니다.)');
+      const key = t.dataset.key;
+      const turningOn = !t.classList.contains('on');
+      if (turningOn) {
+        // 설정/연결을 마쳐야만 활성화 표시
+        if (key === 'email' && !hasEmailSub()) {
+          showEmailStatus('먼저 아래에 이메일 주소를 입력하고 구독하세요.', 'var(--sev-high)');
+          const inp = document.getElementById('emailInput'); if (inp) inp.focus();
+          return;
+        }
+        if (key === 'slack') {
+          try { window.open('https://passkeyskt.slack.com/app_redirect?channel=C0CE60BCY2F', '_blank', 'noopener'); } catch (e) {}
+          if (!confirm('Slack이 열립니다. Passkey@SKT 계정으로 로그인해 #threatprism-briefing 채널에 참여한 뒤, 확인을 눌러 연동을 완료하세요.\n채널에 참여했습니까?')) return;
+        }
+        if (key === 'push') {
+          if (!confirm('Claude 앱(모바일)에서 이 작업의 푸시 알림을 켜두었습니까?\n(확인을 누르면 활성화됩니다)')) return;
+        }
       }
+      if (key.startsWith('cat-')) { t.classList.toggle('on'); return; }
+      t.classList.toggle('on', turningOn);
+      settings[key] = turningOn;
+      saveSettings();
     };
   });
 
@@ -2340,6 +2353,9 @@ function applySettings() {
   });
 }
 
+function hasEmailSub() { try { return JSON.parse(localStorage.getItem('tp_email_subs') || '[]').length > 0; } catch(e) { return false; } }
+function setEmailToggle(on) { settings.email = on; const t = document.querySelector('.toggle[data-key="email"]'); if (t) t.classList.toggle('on', on); saveSettings(); }
+
 async function saveSettings() {
   try { localStorage.setItem('tp_settings', JSON.stringify(settings)); } catch(e) {}
 }
@@ -2359,6 +2375,7 @@ async function subscribeEmail() {
       let subs = JSON.parse(localStorage.getItem('tp_email_subs') || '[]');
       if (!subs.includes(email)) { subs.push(email); localStorage.setItem('tp_email_subs', JSON.stringify(subs)); }
     } catch(e) {}
+    setEmailToggle(true);
     showEmailStatus('구독 등록 완료: ' + email + ' (이 기기에 저장됨)', 'var(--sev-low)');
     input.value = '';
     loadSubscribers();
@@ -2367,6 +2384,7 @@ async function subscribeEmail() {
   try {
     const docId = email.replace(/[.@]/g, '_');
     await db.doc('subscribers/' + docId).set({ email: email, subscribedAt: new Date().toISOString(), active: true });
+    setEmailToggle(true);
     showEmailStatus('구독 등록 완료: ' + email, 'var(--sev-low)');
     input.value = '';
     loadSubscribers();
@@ -2511,6 +2529,8 @@ function esc(s) { const d=document.createElement('div'); d.textContent=s; return
 /* ====== BOOTSTRAP ====== */
 init();
 
+window.subscribeEmail = subscribeEmail;
+window.unsubscribeEmail = unsubscribeEmail;
 })();
 </script>
 
