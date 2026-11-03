@@ -2293,8 +2293,8 @@ function renderSettings() {
           return;
         }
         if (key === 'slack') {
-          try { window.open('https://passkeyskt.slack.com/app_redirect?channel=C0CE60BCY2F', '_blank', 'noopener'); } catch (e) {}
-          if (!confirm('Slack이 열립니다. Passkey@SKT 계정으로 로그인해 #threatprism-briefing 채널에 참여한 뒤, 확인을 눌러 연동을 완료하세요.\n채널에 참여했습니까?')) return;
+          try { window.open('https://join.slack.com/t/threatprism/shared_invite/zt-4fcypzy5u-M0uSVTh5_CyYfpMhM2IHOw', '_blank', 'noopener'); } catch (e) {}
+          if (!confirm('ThreatPrism Slack 초대 페이지가 열립니다. 본인 이메일로 가입(또는 로그인)해 워크스페이스에 참여한 뒤, 확인을 눌러 연동을 완료하세요.\n참여를 마쳤습니까?')) return;
         }
         if (key === 'push') {
           if (!confirm('Claude 앱(모바일)에서 이 작업의 푸시 알림을 켜두었습니까?\n(확인을 누르면 활성화됩니다)')) return;
