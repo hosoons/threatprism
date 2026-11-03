@@ -1046,6 +1046,7 @@ select, input[type="time"] {
           <input type="email" id="emailInput" placeholder="이메일 주소 입력" style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-family:var(--font-body);outline:none">
           <button id="emailSubscribeBtn" onclick="subscribeEmail()" style="padding:10px 16px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--font-body)">구독</button>
         </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:6px">입력한 이메일은 데일리 브리핑 발송에만 사용되며, 아래 "수신 거부"로 언제든 해지할 수 있습니다.</div>
         <div id="emailStatus" style="font-size:12px;color:var(--text-muted);margin-top:6px;display:none"></div>
         <div id="subscriberList" style="margin-top:8px"></div>
       </div>
@@ -2361,36 +2362,47 @@ async function saveSettings() {
 }
 
 /* ====== EMAIL SUBSCRIPTION ====== */
+// 서버 구독 목록: Google Form(응답 시트)으로 전송. 아래 3개 값을 채우면 활성화
+const SUBSCRIBE_FORM = { action: '', email: '', type: '' }; // action: .../formResponse, email/type: 'entry.숫자'
+function subscribeServerReady() { return !!(SUBSCRIBE_FORM.action && SUBSCRIBE_FORM.email && SUBSCRIBE_FORM.type); }
+async function postSubscription(email, type) {
+  const body = new URLSearchParams();
+  body.append(SUBSCRIBE_FORM.email, email);
+  body.append(SUBSCRIBE_FORM.type, type);
+  await fetch(SUBSCRIBE_FORM.action, { method: 'POST', mode: 'no-cors', body: body });
+}
+function readLocalSubs() { try { return JSON.parse(localStorage.getItem('tp_email_subs') || '[]'); } catch(e) { return []; } }
+function writeLocalSubs(list) { try { localStorage.setItem('tp_email_subs', JSON.stringify(list)); } catch(e) {} }
+
 async function subscribeEmail() {
   const input = document.getElementById('emailInput');
-  const status = document.getElementById('emailStatus');
   const email = input.value.trim().toLowerCase();
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     showEmailStatus('유효한 이메일 주소를 입력해주세요.', 'var(--sev-high)');
     return;
   }
-  if (!db) {
-    // No DB — save to localStorage as fallback
-    try {
-      let subs = JSON.parse(localStorage.getItem('tp_email_subs') || '[]');
-      if (!subs.includes(email)) { subs.push(email); localStorage.setItem('tp_email_subs', JSON.stringify(subs)); }
-    } catch(e) {}
-    setEmailToggle(true);
-    showEmailStatus('구독 등록 완료: ' + email + ' (이 기기에 저장됨)', 'var(--sev-low)');
-    input.value = '';
-    loadSubscribers();
-    return;
-  }
+  const btn = document.getElementById('emailSubscribeBtn');
+  if (btn) btn.disabled = true;
   try {
-    const docId = email.replace(/[.@]/g, '_');
-    await db.doc('subscribers/' + docId).set({ email: email, subscribedAt: new Date().toISOString(), active: true });
-    setEmailToggle(true);
-    showEmailStatus('구독 등록 완료: ' + email, 'var(--sev-low)');
+    if (subscribeServerReady()) {
+      await postSubscription(email, '구독');
+      const subs = readLocalSubs();
+      if (!subs.includes(email)) { subs.push(email); writeLocalSubs(subs); }
+      setEmailToggle(true);
+      showEmailStatus('구독 요청 접수: ' + email + ' · 다음 평일 09:00 브리핑부터 발송됩니다.', 'var(--sev-low)');
+    } else {
+      const subs = readLocalSubs();
+      if (!subs.includes(email)) { subs.push(email); writeLocalSubs(subs); }
+      setEmailToggle(true);
+      showEmailStatus('서버 연결 전이라 이 기기에만 저장됨: ' + email + ' (메일 발송 불가)', 'var(--sev-medium, #d97706)');
+    }
     input.value = '';
     loadSubscribers();
   } catch(e) {
     console.warn('Subscribe failed:', e);
-    showEmailStatus('구독 등록 실패. 다시 시도해주세요.', 'var(--sev-high)');
+    showEmailStatus('구독 등록 실패. 잠시 후 다시 시도해주세요.', 'var(--sev-high)');
+  } finally {
+    if (btn) btn.disabled = false;
   }
 }
 
@@ -2403,45 +2415,26 @@ function showEmailStatus(msg, color) {
 }
 
 async function unsubscribeEmail(email) {
-  if (!db) return;
   try {
-    const docId = email.replace(/[.@]/g, '_');
-    await db.doc('subscribers/' + docId).delete();
-    showEmailStatus(email + ' 구독이 해제되었습니다.', 'var(--text-muted)');
+    if (subscribeServerReady()) await postSubscription(email, '해지');
+    const subs = readLocalSubs().filter(e => e !== email);
+    writeLocalSubs(subs);
+    if (!subs.length) setEmailToggle(false);
+    showEmailStatus(email + ' 수신 거부가 접수되었습니다.', 'var(--text-muted)');
     loadSubscribers();
   } catch(e) {
     console.warn('Unsubscribe failed:', e);
+    showEmailStatus('해제 요청 실패. 다시 시도해주세요.', 'var(--sev-high)');
   }
 }
 
 async function loadSubscribers() {
   const listEl = document.getElementById('subscriberList');
   if (!listEl) return;
-  if (!db) {
-    // Show localStorage subs
-    try {
-      const subs = JSON.parse(localStorage.getItem('tp_email_subs') || '[]');
-      if (subs.length) {
-        listEl.innerHTML = '<div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">등록된 이메일</div>' +
-          subs.map(e => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;font-family:var(--font-mono);color:var(--text-muted)">${esc(e)}</span></div>`).join('');
-      } else { listEl.innerHTML = ''; }
-    } catch(e) { listEl.innerHTML = ''; }
-    return;
-  }
-  try {
-    const snap = await db.collection('subscribers').query();
-    const subs = snap.docs.filter(d => d.exists && d.data().active !== false);
-    if (subs.length) {
-      listEl.innerHTML = '<div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">등록된 이메일 (' + subs.length + ')</div>' +
-        subs.map(d => {
-          const e = d.data().email;
-          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;font-family:var(--font-mono);color:var(--text-muted)">${esc(e)}</span><button onclick="unsubscribeEmail('${esc(e)}')" style="padding:2px 8px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--sev-high);font-size:11px;cursor:pointer">해제</button></div>`;
-        }).join('');
-    } else { listEl.innerHTML = ''; }
-  } catch(e) {
-    console.warn('Load subscribers failed:', e);
-    listEl.innerHTML = '';
-  }
+  const subs = readLocalSubs();
+  if (!subs.length) { listEl.innerHTML = ''; return; }
+  listEl.innerHTML = '<div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">이 기기에서 등록한 이메일</div>' +
+    subs.map(e => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;font-family:var(--font-mono);color:var(--text-muted)">${esc(e)}</span><button onclick="unsubscribeEmail('${esc(e)}')" style="padding:2px 8px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--sev-high);font-size:11px;cursor:pointer">수신 거부</button></div>`).join('');
 }
 
 function updateSettingsInfo() {
