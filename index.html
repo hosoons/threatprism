@@ -1217,6 +1217,18 @@ async function init() {
     const res = await fetch('data/incidents.json?v=' + Date.now(), {cache:'no-store'});
     if (!res.ok) throw new Error('HTTP ' + res.status);
     allIncidents = await res.json();
+    // Daily files (written by the scheduled task): data/daily/manifest.json = ["2026-11-04", ...]
+    try {
+      const mr = await fetch('data/daily/manifest.json?v=' + Date.now(), {cache:'no-store'});
+      if (mr.ok) {
+        const days = await mr.json();
+        const have = new Set(allIncidents.map(i => i.id));
+        const parts = await Promise.all((days || []).map(d =>
+          fetch('data/daily/' + d + '.json?v=' + Date.now(), {cache:'no-store'}).then(r => r.ok ? r.json() : []).catch(() => [])));
+        parts.flat().forEach(i => { if (i && i.id && !have.has(i.id)) { have.add(i.id); allIncidents.push(i); } });
+        allIncidents.sort((a, b) => (a.id < b.id ? 1 : -1));
+      }
+    } catch(e2) { console.warn('Daily data skipped:', e2); }
     renderAll();
     loadBrief();
   } catch(e) {
