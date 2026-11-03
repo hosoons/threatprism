@@ -1030,12 +1030,16 @@ select, input[type="time"] {
     <div class="settings-section">
       <h3>🔔 알림 설정</h3>
       <div class="setting-row">
-        <div><div class="setting-label">푸시 알림</div><div class="setting-desc">Claude 앱 알림 (계정 필요)</div></div>
+        <div><div class="setting-label">Push 알림</div><div class="setting-desc">Claude 앱 푸시 알림 (계정 필요)</div></div>
         <div class="toggle on" id="togglePush" data-key="push"></div>
       </div>
       <div class="setting-row">
-        <div><div class="setting-label">이메일 알림</div><div class="setting-desc">매일 브리핑 요약을 이메일로 수신</div></div>
+        <div><div class="setting-label">email 알림</div><div class="setting-desc">매일 브리핑 요약을 이메일로 수신</div></div>
         <div class="toggle on" id="toggleEmail" data-key="email"></div>
+      </div>
+      <div class="setting-row">
+        <div><div class="setting-label">Slack 알림</div><div class="setting-desc">매일 브리핑 링크를 Slack으로 수신 (Slack 연결 필요)</div></div>
+        <div class="toggle" id="toggleSlack" data-key="slack"></div>
       </div>
       <div class="email-subscribe-box" id="emailSubscribeBox">
         <div style="display:flex;gap:8px;align-items:center">
@@ -1145,6 +1149,7 @@ let settings = {
   days: [1,2,3,4,5],
   push: true,
   email: true,
+  slack: false,
   categories: Object.keys(CATEGORIES),
   severity: 'medium'
 };
@@ -2312,6 +2317,7 @@ function renderSettings() {
 function applySettings() {
   document.getElementById('settingTime').value = settings.time;
   document.getElementById('settingSeverity').value = settings.severity;
+  ['push','email','slack'].forEach(k => { const t = document.querySelector('.toggle[data-key="'+k+'"]'); if (t) t.classList.toggle('on', !!settings[k]); });
   document.querySelectorAll('#daySelector .day-btn').forEach(btn => {
     btn.classList.toggle('active', settings.days.includes(parseInt(btn.dataset.day)));
   });
