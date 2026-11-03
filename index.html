@@ -2363,7 +2363,7 @@ async function saveSettings() {
 
 /* ====== EMAIL SUBSCRIPTION ====== */
 // 서버 구독 목록: Google Form(응답 시트)으로 전송. 아래 3개 값을 채우면 활성화
-const SUBSCRIBE_FORM = { action: '', email: '', type: '' }; // action: .../formResponse, email/type: 'entry.숫자'
+const SUBSCRIBE_FORM = { action: 'https://docs.google.com/forms/d/e/1FAIpQLScRumF40AKYr57XAWPfWEMF4-u0JzItUOQAPPxv60bkp4A6sg/formResponse', email: 'entry.281616782', type: 'entry.300352819' }; // action: .../formResponse, email/type: 'entry.숫자'
 function subscribeServerReady() { return !!(SUBSCRIBE_FORM.action && SUBSCRIBE_FORM.email && SUBSCRIBE_FORM.type); }
 async function postSubscription(email, type) {
   const body = new URLSearchParams();
