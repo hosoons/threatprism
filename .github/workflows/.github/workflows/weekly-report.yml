@@ -1,0 +1,34 @@
+name: Weekly Report
+
+on:
+  schedule:
+    - cron: '0 1 * * 1'   # UTC 01:00 = KST 10:00
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'YYYY-MM-DD (비우면 오늘 KST)'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fonts and browser
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y fonts-noto-cjk
+          pip install playwright pycountry
+          playwright install --with-deps chromium
+      - name: Build, commit and post to Slack
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_WEEKLY }}
+          REPORT_DATE: ${{ github.event.inputs.date }}
+        run: bash tools/report_job.sh weekly
