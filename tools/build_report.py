@@ -60,7 +60,7 @@ tr { page-break-inside:avoid; }
 .card .sm { font-size:9pt; }
 .muted { color:#6b7280; font-size:8pt; }
 a { color:#1d4ed8; text-decoration:none; word-break:break-all; }
-.two { display:flex; gap:12px; } .two > div { flex:1; }
+.two { display:flex; gap:12px; page-break-inside:avoid; break-inside:avoid; } .two > div { flex:1; }
 .foot { margin-top:14px; font-size:7.5pt; color:#9ca3af; border-top:1px solid #e5e7eb; padding-top:5px; }
 .day { background:#f3f4f6; font-weight:700; }
 """
@@ -116,17 +116,24 @@ def world_map(items):
                   f'<text x="{x:.0f}" y="{y+4:.0f}" font-size="12" font-weight="700" fill="#fff" text-anchor="middle" font-family="Noto Sans CJK KR">{n}</text>')
     leg = "".join(f'<span style="display:inline-block;margin-right:10px"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:{SEV_COLOR[s]};vertical-align:middle"></span> {SEV_KO[s]}</span>' for s in SEV[:4])
     nctry = len(cnt)
-    TXT = {"critical": "#b42318", "high": "#b45309", "medium": "#854d0e", "low": "#166534", "info": "#1d4ed8"}
-    names = {i.get("country"): i.get("countryName") or i.get("country") for i in items if i.get("country")}
-    order = sorted(cnt, key=lambda c: (-SEVRANK.get(top[c], 0), -cnt[c], names[c]))
-    chips = "".join(
-        f'<span style="display:inline-block;margin:2px 8px 2px 0;white-space:nowrap;font-weight:700;color:{TXT[top[c]]}">'
-        f'<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:{SEV_COLOR[top[c]]};vertical-align:middle"></span> {e(names[c])} {cnt[c]}</span>'
-        for c in order)
     return (f'<h2>발생 지역 지도</h2><div style="border:1px solid #e5e7eb;border-radius:8px;padding:6px;background:#f4f8ff">'
             f'<svg viewBox="0 0 {W} {H}" width="100%" xmlns="http://www.w3.org/2000/svg">{paths}{marks}</svg>'
-            f'<div class="muted" style="padding:2px 6px">{leg} · 원 크기·숫자 = 국가별 건수, 색 = 해당 국가의 최고 심각도(국가명·건수도 동일 색) · 발생 {nctry}개국</div>'
-            f'<div style="padding:4px 6px 2px;font-size:8.6pt;border-top:1px solid #e5e7eb;margin-top:3px">{chips}</div></div>')
+            f'<div class="muted" style="padding:2px 6px">{leg} · 원 크기·숫자 = 국가별 건수, 색 = 해당 국가의 최고 심각도 · 발생 {nctry}개국</div></div>')
+
+TXTCOL = {"critical": "#b42318", "high": "#b45309", "medium": "#854d0e", "low": "#166534", "info": "#1d4ed8"}
+
+def country_table(items):
+    top, cnt, names = {}, collections.Counter(), {}
+    for i in items:
+        c = i.get("country")
+        if not c: continue
+        cnt[c] += 1; names[c] = i.get("countryName") or c
+        if c not in top or SEVRANK.get(i.get("severity"), 0) > SEVRANK.get(top[c], 0): top[c] = i.get("severity")
+    rows = ""
+    for c, n in sorted(cnt.items(), key=lambda x: (-x[1], names[x[0]]))[:10]:
+        col = TXTCOL.get(top[c], "#111827")
+        rows += f'<tr><td style="color:{col};font-weight:700">{e(names[c])}</td><td class="num" style="color:{col};font-weight:700">{n}</td></tr>'
+    return f'<table><tr><th>국가 Top 10</th><th class="num">건수</th></tr>{rows}</table><div class="muted" style="margin-top:2px">색 = 해당 국가의 최고 심각도</div>'
 
 def sev_table(items):
     c = collections.Counter(i.get("severity") for i in items)
@@ -194,7 +201,7 @@ def daily(root, date, gen):
     summ = "".join(f"<p>{e(l)}</p>" for l in lines) or "<p>당일 요약문 없음</p>"
     ch = sorted([i for i in items if i.get("severity") in ("critical", "high")], key=lambda x: (sev_key(x), x.get("id", "")))
     body = (f'<h2>Executive Summary</h2><div class="box">{summ}</div>{kpis(items)}'
-            f'{world_map(items)}<h2>분포 현황</h2><div class="two"><div>{sev_table(items)}</div><div>{cat_table(items)}</div><div>{region_table(items)}</div></div>'
+            f'{world_map(items)}<h2>분포 현황</h2><div class="two"><div>{sev_table(items)}</div><div>{cat_table(items)}</div></div><div class="two" style="margin-top:10px"><div>{region_table(items)}</div><div>{country_table(items)}</div></div>'
             f'<h2>핵심 항목 (Critical · High)</h2>{cards(ch)}'
             f'<h2>전체 항목</h2>{feed_table(items)}'
             f'<h2>참조 출처</h2>{sources_table(items)}')
@@ -237,11 +244,9 @@ def weekly(root, end, gen):
         c = collections.Counter(i.get("region") for i in items if i.get("category") == k)
         xr += f'<tr><td>{k} {CAT_KO[k]}</td>' + "".join(f'<td class="num">{c.get(r,0)}</td>' for r in REGIONS) + f'<td class="num"><b>{cs.get(k,0)}</b></td></tr>'
     cross = f'<table><tr><th>카테고리</th>{hdr}<th class="num">합계</th></tr>{xr}</table>'
-    ctry = "".join(f'<tr><td>{e(n)}</td><td class="num">{v}</td></tr>' for n, v in cc.most_common(10))
-    ctab = f'<table><tr><th>국가 Top 10</th><th class="num">건수</th></tr>{ctry}</table>'
     body = (f'<h2>Executive Summary</h2><div class="box">{box}</div>{kpis(items, [("수집일수", len(dates), "#6b7280")])}'
             f'<h2>일자별 추이</h2>{daytab}'
-            f'{world_map(items)}<h2>분포 현황</h2><div class="two"><div>{sev_table(items)}</div><div>{ctab}</div></div>'
+            f'{world_map(items)}<h2>분포 현황</h2><div class="two"><div>{sev_table(items)}</div><div>{country_table(items)}</div></div>'
             f'<h2>카테고리 × 지역</h2>{cross}'
             f'<h2>핵심 항목 (Critical · High) {len(ch)}건</h2>{cards(ch)}'
             f'<h2>국내(KR) 동향 {len(kr)}건</h2>{feed_table(kr) if kr else "<p class=muted>해당 항목 없음</p>"}'
