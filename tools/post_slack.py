@@ -1,13 +1,23 @@
 #!/usr/bin/env python3
-"""Post a report summary to Slack via incoming webhook. env: SLACK_WEBHOOK, REPORT_JSON(path), REPORT_URL"""
-import json, os, sys, urllib.request
+"""Post a report summary to Slack via incoming webhook. env: SLACK_WEBHOOK, REPORT_JSON(path), optional REPORT_URL"""
+import json, os, sys, time, urllib.request
 
 def main():
     hook = os.environ.get("SLACK_WEBHOOK", "")
     if not hook:
         print("SLACK_WEBHOOK is empty (secret not set)"); sys.exit(1)
     r = json.load(open(os.environ["REPORT_JSON"], encoding="utf-8"))
-    url = os.environ["REPORT_URL"]
+    url = os.environ.get("REPORT_URL", "")
+    if r.get("ok") and not url:
+        pages = "https://hosoons.github.io/threatprism/" + r["path"]
+        url = "https://github.com/hosoons/threatprism/blob/main/" + r["path"]  # fallback
+        for _ in range(30):  # wait up to ~5 min for GitHub Pages
+            try:
+                if urllib.request.urlopen(pages, timeout=15).status == 200:
+                    url = pages; break
+            except Exception:
+                pass
+            time.sleep(10)
     if not r.get("ok"):
         text = f":information_source: ThreatPrism {os.environ.get('REPORT_KIND','')} 보고서: 수집 데이터가 없어 생성하지 못했습니다."
     else:
