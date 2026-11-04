@@ -1,8 +1,9 @@
 name: Daily Report
 
 on:
-  schedule:
-    - cron: '0 1 * * 1-5'   # UTC 01:00 = KST 10:00
+  push:
+    branches: [main]
+    paths: ['data/briefing.json']
   workflow_dispatch:
     inputs:
       date:
@@ -11,6 +12,10 @@ on:
 
 permissions:
   contents: write
+
+concurrency:
+  group: report
+  cancel-in-progress: false
 
 jobs:
   report:
@@ -29,6 +34,7 @@ jobs:
           playwright install --with-deps chromium
       - name: Build, commit and post to Slack
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_DAILY }}
+          SLACK_WEBHOOK_DAILY: ${{ secrets.SLACK_WEBHOOK_DAILY }}
+          SLACK_WEBHOOK_WEEKLY: ${{ secrets.SLACK_WEBHOOK_WEEKLY }}
           REPORT_DATE: ${{ github.event.inputs.date }}
         run: bash tools/report_job.sh daily
