@@ -1,8 +1,6 @@
 name: Weekly Report
 
 on:
-  schedule:
-    - cron: '0 1 * * 1'   # UTC 01:00 = KST 10:00
   workflow_dispatch:
     inputs:
       date:
@@ -11,6 +9,10 @@ on:
 
 permissions:
   contents: write
+
+concurrency:
+  group: report
+  cancel-in-progress: false
 
 jobs:
   report:
@@ -29,6 +31,6 @@ jobs:
           playwright install --with-deps chromium
       - name: Build, commit and post to Slack
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_WEEKLY }}
+          SLACK_WEBHOOK_WEEKLY: ${{ secrets.SLACK_WEBHOOK_WEEKLY }}
           REPORT_DATE: ${{ github.event.inputs.date }}
         run: bash tools/report_job.sh weekly
