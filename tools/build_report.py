@@ -116,9 +116,17 @@ def world_map(items):
                   f'<text x="{x:.0f}" y="{y+4:.0f}" font-size="12" font-weight="700" fill="#fff" text-anchor="middle" font-family="Noto Sans CJK KR">{n}</text>')
     leg = "".join(f'<span style="display:inline-block;margin-right:10px"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:{SEV_COLOR[s]};vertical-align:middle"></span> {SEV_KO[s]}</span>' for s in SEV[:4])
     nctry = len(cnt)
+    TXT = {"critical": "#b42318", "high": "#b45309", "medium": "#854d0e", "low": "#166534", "info": "#1d4ed8"}
+    names = {i.get("country"): i.get("countryName") or i.get("country") for i in items if i.get("country")}
+    order = sorted(cnt, key=lambda c: (-SEVRANK.get(top[c], 0), -cnt[c], names[c]))
+    chips = "".join(
+        f'<span style="display:inline-block;margin:2px 8px 2px 0;white-space:nowrap;font-weight:700;color:{TXT[top[c]]}">'
+        f'<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:{SEV_COLOR[top[c]]};vertical-align:middle"></span> {e(names[c])} {cnt[c]}</span>'
+        for c in order)
     return (f'<h2>발생 지역 지도</h2><div style="border:1px solid #e5e7eb;border-radius:8px;padding:6px;background:#f4f8ff">'
             f'<svg viewBox="0 0 {W} {H}" width="100%" xmlns="http://www.w3.org/2000/svg">{paths}{marks}</svg>'
-            f'<div class="muted" style="padding:2px 6px">{leg} · 원 크기·숫자 = 국가별 건수, 색 = 해당 국가 최고 심각도 · 발생 {nctry}개국</div></div>')
+            f'<div class="muted" style="padding:2px 6px">{leg} · 원 크기·숫자 = 국가별 건수, 색 = 해당 국가의 최고 심각도(국가명·건수도 동일 색) · 발생 {nctry}개국</div>'
+            f'<div style="padding:4px 6px 2px;font-size:8.6pt;border-top:1px solid #e5e7eb;margin-top:3px">{chips}</div></div>')
 
 def sev_table(items):
     c = collections.Counter(i.get("severity") for i in items)
