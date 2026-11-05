@@ -21,6 +21,7 @@ Items below 60 or failing a gate are not shown; they are listed under `held` in 
 
 Verification
 - Open every article; `sourceUrl` must be a page you actually opened in this run. Never guess URLs.
+- Open only URLs taken from your own WebSearch results (exact copy). Typed or edited URLs trigger an approval prompt that nobody answers in a scheduled run.
 - Put every confirming URL you opened in `crossCheckUrls` (vendor advisory, NVD/KEV page, government original, second outlet).
 - List the CVE IDs in `cves`.
 - Every fact in title/summary must be in the source.
