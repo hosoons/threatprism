@@ -18,8 +18,10 @@ Common contract for every ThreatPrism collector agent
 - HOW TO OPEN PAGES (no approval prompts): find every article with WebSearch first, then open ONLY URLs that appeared in
   your own WebSearch results, copied exactly. Never type a URL yourself (not from memory, not from ops/sources.yaml, not a
   site's home or list page, not an edited version of a result URL): the fetch tool asks a human to approve such URLs, and
-  in an unattended run nobody answers, so the fetch fails. Use the source list only to build queries, e.g.
-  "site:boannews.com 2026년 11월 5일 해킹" or "site:bleepingcomputer.com ransomware November 2026".
+  in an unattended run nobody answers, so the fetch fails. Use the source list only to build queries with the
+  outlet or agency NAME as a keyword, e.g. "보안뉴스 해킹 2026년 11월 5일", "KISA 보안공지 11월",
+  "BleepingComputer ransomware November 2026". Do not use the allowed_domains/blocked_domains options or "site:"
+  operators (the proxy may reject them).
   Put today's date or month in queries; if standard search returns stale results, repeat it with mode "extended".
   If a result page cannot be opened, skip it and take another result; never ask for permission and never stop.
 - Search in English and Korean as relevant; check T1 sources first, then T2 (ops/sources.yaml). Open every article you keep.
