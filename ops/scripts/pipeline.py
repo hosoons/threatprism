@@ -132,9 +132,12 @@ def cmd_select(a):
     # selection: all critical/high, then floors, then by score up to 18 (max 20)
     chosen = [c for c in pool if c["severity"] in ("critical", "high")][:20]
     rest = [c for c in pool if c not in chosen]
+    ymd = a.date.replace("-", "")
+    existing_today = load(os.path.join(a.repo, "data/daily", f"{a.date}.json"), []) or []
 
     def take(pred, need):
-        have = sum(1 for c in chosen if pred(c))
+        # floors count items already published today plus the ones chosen now
+        have = sum(1 for c in chosen if pred(c)) + sum(1 for c in existing_today if pred({**c, "tags": c.get("tags", []), "scoreFactors": c.get("scoreFactors") or {"target": 0}}))
         for c in list(rest):
             if have >= need or len(chosen) >= 20:
                 break
@@ -150,7 +153,7 @@ def cmd_select(a):
     for k in CATS:
         take(lambda c, k=k: c["category"] == k, 1)
     for c in list(rest):
-        if len(chosen) >= 18:
+        if len(chosen) + len(existing_today) >= 18 and len(chosen) >= 1:
             break
         chosen.append(c); rest.remove(c)
     # merge with an existing file for today, continue the id sequence
