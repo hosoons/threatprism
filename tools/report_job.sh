@@ -51,11 +51,12 @@ done
 # ready marker: the Claude briefing task waits for this file before it sends push/email
 mkdir -p reports/ready
 READY="$READY" MODES="$MODES" MODE="$MODE" D="$D" python3 - <<'PY'
-import json, os
+import json, os, datetime
 pages = "https://hosoons.github.io/threatprism/"
 blob = "https://github.com/hosoons/threatprism/blob/main/"
 ready = os.environ["READY"] == "true"
-out = {"date": os.environ["D"], "ready": ready}
+out = {"date": os.environ["D"], "ready": ready,
+       "generatedAt": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
 for m in os.environ["MODES"].split():
     r = json.load(open(f"report-{m}.json", encoding="utf-8"))
     if r.get("ok"):
