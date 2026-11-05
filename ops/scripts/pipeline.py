@@ -78,6 +78,136 @@ def threat_index(items):
     return idx, lab
 
 
+# ---------- source filter: whitelist (ops/sources.yaml) -> blacklist heuristics -> cross-check / KEV ----------
+TWO_LEVEL = {"co.kr", "or.kr", "go.kr", "ac.kr", "re.kr", "ne.kr", "co.uk", "gov.uk", "org.uk", "ac.uk", "com.au", "gov.au",
+             "co.jp", "or.jp", "go.jp", "ne.jp", "com.sg", "gov.sg", "co.in", "gov.in", "com.br", "gov.br", "co.za", "com.cn", "gov.cn"}
+RISKY_TLD = {"zip", "mov", "xyz", "top", "click", "buzz", "loan", "work", "gq", "tk", "ml", "cf", "ga"}
+TIER_BASE = {"T1": 70, "T2": 60, "T3": 20}
+TRUST_MIN = 60
+
+
+def load_sources(repo):
+    path = os.path.join(repo, "ops/sources.yaml")
+    out = {"T1": set(), "T2": set(), "BLOCK": set(), "unverified": set()}
+    try:
+        cur = None
+        for raw in open(path, encoding="utf-8"):
+            line = raw.split("#", 1)[0].rstrip()
+            if not line.strip():
+                continue
+            if not line.startswith(" ") and line.endswith(":"):
+                cur = line[:-1].strip()
+                continue
+            if cur in out and line.strip().startswith("- "):
+                d = line.strip()[2:].strip().lower()
+                out[cur].add(d)
+                if "naver: unverified" in raw:
+                    out["unverified"].add(d)
+    except OSError:
+        pass
+    return out
+
+
+def host_of(url):
+    m = re.match(r"^(https?)://([^/:?#]+)", (url or "").strip().lower())
+    return (m.group(1), m.group(2)) if m else ("", "")
+
+
+def reg_domain(host):
+    parts = host.split(".")
+    if len(parts) >= 3 and ".".join(parts[-2:]) in TWO_LEVEL:
+        return ".".join(parts[-3:])
+    return ".".join(parts[-2:])
+
+
+def in_list(host, domains):
+    return any(host == d or host.endswith("." + d) for d in domains)
+
+
+def tier_of(url, src):
+    _, host = host_of(url)
+    if in_list(host, src["T1"]):
+        return "T1"
+    if in_list(host, src["T2"]):
+        return "T2"
+    return "T3"
+
+
+def lev(a, b):
+    if abs(len(a) - len(b)) > 2:
+        return 3
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        cur = [i]
+        for j, cb in enumerate(b, 1):
+            cur.append(min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != cb)))
+        prev = cur
+    return prev[-1]
+
+
+def blacklist_hit(url, src):
+    scheme, host = host_of(url)
+    if scheme != "https":
+        return "not https"
+    if re.fullmatch(r"[0-9.]+", host) or ":" in host:
+        return "ip host"
+    if "xn--" in host:
+        return "punycode host"
+    if host.rsplit(".", 1)[-1] in RISKY_TLD:
+        return "risky tld"
+    if in_list(host, src["BLOCK"]):
+        return "blocked domain"
+    rd = reg_domain(host)
+    if not in_list(host, src["T1"] | src["T2"]):
+        for d in src["T1"] | src["T2"]:
+            if len(rd) >= 6 and 0 < lev(rd, d) <= 2:
+                return f"look-alike of {d}"
+    return ""
+
+
+def load_kev(path):
+    d = load(path, {}) or {}
+    return {v.get("cveID", "").upper() for v in d.get("vulnerabilities", [])}
+
+
+CVE_RE = re.compile(r"CVE-\d{4}-\d{4,7}", re.I)
+
+
+def source_check(c, src, kev):
+    """Returns (ok, info). info has tier, trust, kevMatch, reason."""
+    urls = [c.get("sourceUrl")] + list(c.get("sources") or []) + [c.get("crossCheckUrl")] + list(c.get("crossCheckUrls") or [])
+    urls = [u for i, u in enumerate(urls) if u and u not in urls[:i]]
+    for u in urls:
+        hit = blacklist_hit(u, src)
+        if hit:
+            return False, {"reason": f"blacklist: {hit} ({u[:60]})"}
+    tiers = {}
+    for u in urls:
+        rd = reg_domain(host_of(u)[1])
+        t = tier_of(u, src)
+        if rd not in tiers or t < tiers[rd]:
+            tiers[rd] = t
+    ts = list(tiers.values())
+    best = min(ts) if ts else "T3"
+    indep = sum(1 for t in ts if t in ("T1", "T2"))
+    cves = {x.upper() for x in CVE_RE.findall(" ".join([c.get("title", ""), c.get("summary", "")] + list(c.get("cves") or [])))}
+    kev_match = bool(cves & kev)
+    trust = TIER_BASE[best] + 15 * min(max(indep - 1, 0), 2) + (20 if kev_match else 0)
+    cat = c.get("category")
+    reason = ""
+    if cat == "INC" and not ("T1" in ts or indep >= 2):
+        reason = "INC needs a T1 source or two independent T2 sources"
+    elif cat == "VUL" and not (kev_match or "T1" in ts):
+        reason = "VUL needs a CISA KEV match or a T1 vendor/CERT source"
+    elif cat == "REG" and "T1" not in ts:
+        reason = "REG needs the government/regulator original (T1)"
+    elif trust < TRUST_MIN:
+        reason = f"trust {trust} < {TRUST_MIN}"
+    pending = any(reg_domain(host_of(u)[1]) in src["unverified"] for u in urls)
+    info = {"tier": best, "trust": trust, "kevMatch": kev_match, "independentSources": indep, "reason": reason, "naverUnverified": pending}
+    return (not reason), info
+
+
 def recent(repo, date, days=7):
     man = load(os.path.join(repo, "data/daily/manifest.json"), []) or []
     d0 = dt.date.fromisoformat(date)
@@ -103,7 +233,9 @@ REQ = ["title", "category", "country", "countryName", "region", "source", "sourc
 
 def cmd_select(a):
     run = a.run
-    cands, bad = [], []
+    cands, bad, held = [], [], []
+    src = load_sources(a.repo)
+    kev = load_kev(a.kev) if a.kev else set()
     for p in sorted(glob.glob(os.path.join(run, "cand-*.json"))):
         arr = load(p, [])
         if not isinstance(arr, list):
@@ -116,6 +248,17 @@ def cmd_select(a):
                 continue
             c["region"] = c["region"] if c["region"] in REGIONS else "Asia"
             c["tags"] = [str(t).strip().lower().replace(" ", "-") for t in c.get("tags", [])][:5]
+            ok, info = source_check(c, src, kev)
+            if not ok:
+                held.append({"title": str(c.get("title"))[:60], "url": c.get("sourceUrl"), **info})
+                continue
+            if info["kevMatch"]:
+                c.setdefault("scoreFactors", {})["exploit"] = 25
+            c["trust"], c["sourceTier"] = info["trust"], info["tier"]
+            if info["kevMatch"]:
+                c["kev"] = True
+            if info["naverUnverified"]:
+                c["sourcePending"] = True
             cands.append(grade(c))
     # dedupe against recent days and within the batch
     seen = recent(a.repo, a.date)
@@ -162,7 +305,8 @@ def cmd_select(a):
     existing = load(os.path.join(a.repo, "data/daily", f"{a.date}.json"), []) or []
     start = max([int(i["id"][-3:]) for i in existing if str(i.get("id", "")).startswith(prefix)] or [0])
     keep = ["title", "category", "severity", "country", "countryName", "region", "lat", "lng", "source", "sourceUrl", "date",
-            "summary", "tags", "score", "scoreFactors", "nonThreat", "telcoBreach", "followUpOf", "crossCheckUrl"]
+            "summary", "tags", "score", "scoreFactors", "nonThreat", "telcoBreach", "followUpOf", "crossCheckUrl",
+            "sources", "trust", "sourceTier", "kev", "sourcePending"]
     final = []
     for n, c in enumerate(sorted(chosen, key=lambda x: (SEV_RANK[x["severity"]], -x["score"])), start + 1):
         o = {"id": f"{prefix}{n:03d}"}
@@ -175,14 +319,14 @@ def cmd_select(a):
     dump(man, os.path.join(run, "manifest.json"), compact=True)
     idx, lab = threat_index(allitems)
     stats = {
-        "date": a.date, "candidates": len(cands), "rejected": bad, "afterDedupe": len(pool), "added": len(final), "total": len(allitems),
+        "date": a.date, "candidates": len(cands), "rejected": bad, "held": held, "kevEntries": len(kev), "afterDedupe": len(pool), "added": len(final), "total": len(allitems),
         "byCategory": {k: sum(1 for i in allitems if i["category"] == k) for k in CATS},
         "byRegion": {r: sum(1 for i in allitems if i["region"] == r) for r in REGIONS},
         "floors": floors, "threatIndex": idx, "threatLevel": lab,
         "severity": {s: sum(1 for i in allitems if i["severity"] == s) for s in SEV_RANK},
     }
     dump(stats, os.path.join(run, "stats.json"))
-    print(json.dumps({k: stats[k] for k in ("candidates", "afterDedupe", "added", "total", "threatIndex", "threatLevel", "floors")}, ensure_ascii=False))
+    print(json.dumps({**{k: stats[k] for k in ("candidates", "afterDedupe", "added", "total", "threatIndex", "threatLevel", "floors", "kevEntries")}, "held": len(held)}, ensure_ascii=False))
 
 
 def newest_weekly(repo):
@@ -257,6 +401,7 @@ def main():
     ap.add_argument("--daily-url", default="")
     ap.add_argument("--weekly-url", default="")
     ap.add_argument("--test", action="store_true")
+    ap.add_argument("--kev", default="", help="path to CISA known_exploited_vulnerabilities.json (cisagov/kev-data)")
     a = ap.parse_args()
     if a.cmd == "seen":
         a.out = a.out or a.run

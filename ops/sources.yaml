@@ -1,0 +1,126 @@
+# ThreatPrism source whitelist (3-stage filter: whitelist -> blacklist -> cross-check)
+# Tiers: T1 primary source (adopt alone) · T2 vetted press (adopt) · anything not listed = T3 (discovery only;
+# adopted only when a T1/T2 source confirms it). Match is on the registrable domain or any subdomain of it.
+# KR press: the doc standard is Naver news partnership (콘텐츠/검색 제휴). Entries marked "naver: unverified"
+# are provisionally T2 and must be confirmed by the quarterly review (ops/runs/source-review-*.md).
+version: 2026-11-05
+
+T1:
+  # government / CERT / regulators
+  - cisa.gov
+  - nist.gov
+  - cve.org
+  - kisa.or.kr
+  - boho.or.kr
+  - krcert.or.kr
+  - msit.go.kr
+  - pipc.go.kr
+  - korea.kr
+  - fsec.or.kr
+  - fsc.go.kr
+  - fss.or.kr
+  - nis.go.kr
+  - ncsc.gov.uk
+  - enisa.europa.eu
+  - europa.eu
+  - fcc.gov
+  - ofcom.org.uk
+  - jpcert.or.jp
+  - soumu.go.jp
+  - cert-in.org.in
+  - csa.gov.sg
+  - imda.gov.sg
+  - cyber.gov.au
+  - etsi.org
+  - 3gpp.org
+  - gsma.com
+  # vendor PSIRT / security bulletins
+  - cisco.com
+  - fortiguard.com
+  - fortinet.com
+  - ivanti.com
+  - paloaltonetworks.com
+  - ericsson.com
+  - nokia.com
+  - samsungmobile.com
+  - samsung.com
+  - microsoft.com
+  - android.com
+  - apple.com
+  - googleblog.com
+  - barracuda.com
+  - sonicwall.com
+  - juniper.net
+  - zyxel.com
+  - siemens.com
+  # carriers (official press rooms)
+  - sktelecom.com
+  - kt.com
+  - lguplus.com
+  - verizon.com
+  - att.com
+  - t-mobile.com
+  - vodafone.com
+  - telekom.com
+  - group.ntt
+  - singtel.com
+  - chinamobileltd.com
+
+T2:
+  # international press and security trade media (NewsGuard-style criteria: bylines, corrections, ownership disclosed)
+  - reuters.com
+  - bloomberg.com
+  - apnews.com
+  - bbc.com
+  - bbc.co.uk
+  - ft.com
+  - wsj.com
+  - nytimes.com
+  - theregister.com
+  - bleepingcomputer.com
+  - securityweek.com
+  - thehackernews.com
+  - darkreading.com
+  - helpnetsecurity.com
+  - therecord.media
+  - lightreading.com
+  - telecompaper.com
+  - mobileworldlive.com
+  - arstechnica.com
+  - wired.com
+  # vendor threat research
+  - cloud.google.com
+  - crowdstrike.com
+  - checkpoint.com
+  - securelist.com
+  - welivesecurity.com
+  - talosintelligence.com
+  - sekoia.io
+  - rapid7.com
+  - vulncheck.com
+  # Korean press (naver: unverified until the quarterly review confirms Naver news partnership)
+  - yna.co.kr            # naver: unverified
+  - etnews.com           # naver: unverified
+  - zdnet.co.kr          # naver: unverified
+  - hankyung.com         # naver: unverified
+  - mk.co.kr             # naver: unverified
+  - chosun.com           # naver: unverified
+  - joongang.co.kr       # naver: unverified
+  - donga.com            # naver: unverified
+  - hani.co.kr           # naver: unverified
+  - hankookilbo.com      # naver: unverified
+  - newsis.com           # naver: unverified
+  - news1.kr             # naver: unverified
+  - edaily.co.kr         # naver: unverified
+  - dt.co.kr             # naver: unverified
+  - inews24.com          # naver: unverified
+  - ddaily.co.kr         # naver: unverified
+  - boannews.com         # naver: unverified
+  - dailysecu.com        # naver: unverified
+  - itdaily.kr           # naver: unverified
+
+# Blacklist heuristics applied by ops/scripts/pipeline.py (any hit discards the item):
+#   not https · raw IP host · punycode (xn--) host · risky TLD (.zip .mov .xyz .top .click .buzz .loan .work .gq .tk .ml .cf .ga)
+#   look-alike of a whitelisted domain (edit distance 1-2) · domain in BLOCK below
+BLOCK:
+  - example-blocked.invalid

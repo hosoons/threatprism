@@ -6,7 +6,8 @@
   1  3 collector agents in parallel (sonnet, isolated context)
        collector-kr · collector-threat-global · collector-telecom-industry
        -> /tmp/run/cand-*.json  (web research + scoreFactors only)
-  2  pipeline.py select       score -> severity, dedupe, floors, ids  (no tokens)
+  2  pipeline.py select       source filter (sources.yaml tiers, blacklist, KEV, trust>=60, category gates)
+                              -> score -> severity, dedupe, floors, ids  (no tokens)
   3  summary-writer agent     -> brief.json (+ weekly-brief.json on Mondays)
   4  push data to GitHub (one commit)  -> GitHub Actions builds PDFs, Pages, #daily-report
   5  wait for reports/ready/daily-{date}.json (git pull loop, no tokens)
@@ -16,6 +17,7 @@
 
 | file | role |
 |---|---|
+| `ops/sources.yaml` | T1/T2 domain whitelist, BLOCK list (quarterly review) |
 | `ops/rules/collection.md` | source tiers, verification, selection floors, candidate schema |
 | `ops/rules/scoring.md` | 5-factor score, severity grades, threat index |
 | `ops/rules/summary.md` | consulting-style daily/weekly executive summary |
