@@ -1,0 +1,63 @@
+{
+ "date": "2026-11-05",
+ "mode": "TEST",
+ "started": "2026-11-05T08:26:49Z",
+ "finished": "2026-11-05T08:31:21Z",
+ "clone": "git",
+ "subAgents": true,
+ "collectors": [
+  "collector-kr: done 7 candidates (below 7-9 target on threat mix: 5 INC/VUL, 1 REG, 1 TEL)",
+  "collector-threat-global: done 7 candidates (below 8-10 target; Middle East/Africa/South America floor not met)",
+  "collector-telecom-industry: done 6 candidates",
+  "collector-kr (extra round): done 4 candidates (2 REG, 2 INC Douzone follow-ups) -> all removed by dedupe"
+ ],
+ "stats": {"date": "2026-11-05", "candidates": 24, "rejected": [], "afterDedupe": 14, "added": 14, "total": 28,
+  "byCategory": {"INC": 6, "VUL": 10, "REG": 3, "MKT": 3, "TCH": 2, "TEL": 4},
+  "byRegion": {"Asia": 11, "Europe": 5, "North America": 9, "South America": 0, "Africa": 0, "Middle East": 0, "Oceania": 3},
+  "floors": {"korea>=4": 1, "telecom>=3": 3, "non-anglo>=3": 4},
+  "threatIndex": 83, "threatLevel": "SEVERE",
+  "severity": {"critical": 5, "high": 5, "medium": 5, "low": 10, "info": 3}},
+ "brief": {"date": "2026-11-05", "lines": [
+  "핵심: 국내 업무 SW·백업 공급망 경유 침해 확산, 더존비즈온 유출 의심 기관 27곳 및 다우오피스 제로데이로 빗썸·한양증권 피해",
+  "위협: 중국 연계 Vapor Panda, AI 에이전트 프레임워크 ARTEX로 통신사 포함 14개국 공격, 9개 조직에 백도어 설치 확인",
+  "취약점: 워드프레스 CVE-2026-119977 KEV 등재 후 대량 공격 관측, 지클 GS1900 패치 우회 제로데이로 996대 설정 유출",
+  "국내·산업: KT, 온디바이스 AI 기반 보이스피싱 대응 '안심365' 출시, KAIST 평가에서 가짜 기지국 탐지 7종 모두 사각지대 확인",
+  "시사점: 통신사 표적 AI 공격과 공급망 침해 동시 진행, 위탁·협력사 데이터 보관 실태 및 네트워크 장비 노출 점검 필요",
+  "권고: 다우오피스 3.6.8.5 이하 패치, 지클 Patch 3 적용, 안드로이드 패치 수준 2026-11-01 이상 확보 및 위탁사 보관 데이터 파기 확인 추진"
+ ]},
+ "items": [
+  ["inc-2026-1105-028", "info", 19, "MKT", "AU", "굿맨·디지털리얼티, 호주 NextDC 지분 최대 9.9% 추진", "Telecompaper"],
+  ["inc-2026-1105-027", "low", 24, "TCH", "JP", "NEC, 기밀정보 마스킹하는 AI 게이트웨이 'cotomi Gateway' 출시", "Telecompaper"],
+  ["inc-2026-1105-026", "low", 26, "MKT", "US", "스페이스X, 에코스타 부스트 자산 활용 스타링크 모바일 협상", "Telecompaper"],
+  ["inc-2026-1105-025", "low", 26, "REG", "AU", "위성 전파 간섭, 전파천문·GPS 정확도 위협 연구", "Telecompaper"],
+  ["inc-2026-1105-024", "low", 26, "TEL", "AU", "텔스트라 음성사서함 오류로 부재중 알림 폭주", "Telecompaper"],
+  ["inc-2026-1105-023", "low", 31, "TEL", "PH", "필리핀 3대 통신사, GSMA와 디지털 스캠 공동 대응", "Telecompaper"],
+  ["inc-2026-1105-022", "medium", 41, "VUL", "US", "소닉월 EoL GMS 취약점 2건 패치 미제공(CVSS 9.1)", "The Hacker News"],
+  ["inc-2026-1105-021", "medium", 46, "VUL", "US", "레일즈 Active Storage 치명 취약점, 조작된 업로드로 서버 파일 쓰기(CVSS 9.8)", "The Hacker News"],
+  ["inc-2026-1105-020", "high", 55, "VUL", "GB", "데비안·우분투 APT 중간자 취약점, 검증된 패키지 바꿔치기 후 루트 실행", "The Hacker News"],
+  ["inc-2026-1105-019", "high", 65, "VUL", "US", "CISA, 애플 PAC 우회 취약점 KEV 추가…APT29 모바일 공격에 악용", "The Hacker News"],
+  ["inc-2026-1105-018", "high", 66, "VUL", "TW", "지클 GS1900 스위치 패치 우회 제로데이, 루트 명령 실행 가능", "The Hacker News"],
+  ["inc-2026-1105-017", "critical", 75, "VUL", "US", "워드프레스 코어 업그레이드 경쟁조건 취약점 KEV 등재, 대량 공격 시도", "The Hacker News"],
+  ["inc-2026-1105-016", "critical", 76, "INC", "FR", "유럽 혈액은행 냉동설비 해킹, 슈퍼마켓 냉장제어기 공격과 연계", "Help Net Security"],
+  ["inc-2026-1105-015", "critical", 84, "INC", "KR", "더존비즈온 사태 피해 27곳으로 확대, 서울시 육아센터 추가", "보안뉴스"],
+  ["inc-2026-1105-014", "low", 33, "TEL", "KR", "SKT, 부산불꽃축제 120만 인파 대비 AI 통신망 관리 적용", "지디넷코리아"],
+  ["inc-2026-1105-013", "low", 33, "TEL", "KR", "KT, AI 스팸·피싱 대응 고객보호 브랜드 '안심365' 출시", "보안뉴스"],
+  ["inc-2026-1105-012", "low", 33, "TCH", "KR", "KAIST, 가짜 기지국 탐지 시스템 사각지대 찾는 '데빌레이' 개발", "보안뉴스"],
+  ["inc-2026-1105-011", "low", 21, "MKT", "US", "스페이스X, 퀄컴과 지상 5G 네트워크 대규모 구축 추진", "Light Reading"],
+  ["inc-2026-1105-010", "low", 23, "REG", "KR", "GA업계, 개정법 따라 보안책임자(CISO·CPO) 선임 의무 대응", "전자신문"],
+  ["inc-2026-1105-009", "info", 11, "REG", "US", "NIST, 직원 없는 소규모 사업자용 사이버보안 가이드 발간", "Help Net Security"],
+  ["inc-2026-1105-008", "critical", 88, "VUL", "CN", "중국 연계 'Vapor Panda', AI 에이전트로 통신사 포함 14개국 공격", "Help Net Security"],
+  ["inc-2026-1105-007", "medium", 41, "VUL", "US", "바라쿠다 ESG 인증우회·명령주입 취약점 연계 시 루트 권한 탈취", "The Hacker News"],
+  ["inc-2026-1105-006", "high", 55, "VUL", "US", "구글 11월 안드로이드 보안패치, 사용자 개입 없는 RCE 위험 취약점 수정", "The Hacker News"],
+  ["inc-2026-1105-005", "medium", 51, "VUL", "CN", "중국 연계 해커, 소고우 입력기 DNS 가로채 DarkVigil 백도어 유포", "The Hacker News"],
+  ["inc-2026-1105-004", "info", 11, "INC", "RU", "러 경찰, 'VasyGrek' 해커 3명 체포·인프라 해체", "The Hacker News"],
+  ["inc-2026-1105-003", "medium", 51, "INC", "UA", "러 연계 'Gorbag', 우크라 법원·지자체에 자가삭제 악성코드 공격", "Help Net Security"],
+  ["inc-2026-1105-002", "high", 56, "INC", "UA", "APT29 연계, 웹 분석 스크립트 하이재킹으로 iOS·안드로이드 익스플로잇 유포", "The Hacker News"],
+  ["inc-2026-1105-001", "critical", 78, "INC", "KR", "빗썸·한양증권 침해, '다우오피스' 접근통제 제로데이가 원인", "보안뉴스"]
+ ],
+ "notes": [
+  "data/daily/2026-11-05.json already held 14 items (001-014) in the repo; this run added 14 new (015-028), total 28.",
+  "Korea floor reported 1 (<4) for the new batch only; the merged day has 6 KR items. One extra KR round ran; its 4 candidates were all deduped, floor still 1 in stats.",
+  "Nothing published to data/; no email or Slack."
+ ]
+}
