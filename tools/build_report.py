@@ -209,6 +209,129 @@ def daily(root, date, gen):
 
 def date_obj(s): return dt.date.fromisoformat(s)
 
+
+# ---------- weekly correlation section ----------
+GENERIC_TAGS = {"korea", "south korea", "kr", "usa", "us", "united states", "china", "japan", "europe", "eu", "uk",
+                "india", "global", "asia", "world", "news", "security", "cybersecurity"}
+
+def norm_tags(i):
+    return sorted({str(t).strip().lower() for t in (i.get("tags") or []) if str(t).strip()})
+
+def bubble_matrix(items):
+    """Category x region bubbles: size = count, colour = highest severity in the cell."""
+    regs = [r for r in REGIONS if any(i.get("region") == r for i in items)] or REGIONS[:4]
+    cell = collections.defaultdict(list)
+    for i in items:
+        cell[(i.get("category"), i.get("region"))].append(i)
+    mx = max([len(v) for v in cell.values()] or [1])
+    cw, rh, lw, th = 74, 38, 120, 26
+    W = lw + cw * len(regs) + 52
+    H = th + rh * len(CAT) + 8
+    out = [f'<svg width="100%" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" style="font-family:sans-serif">']
+    for ci, r in enumerate(regs):
+        x = lw + cw * ci + cw / 2
+        out.append(f'<text x="{x}" y="16" font-size="10" text-anchor="middle" fill="#374151">{e(REGION_KO.get(r, r))}</text>')
+    out.append(f'<text x="{lw + cw * len(regs) + 26}" y="16" font-size="10" text-anchor="middle" fill="#374151" font-weight="700">합계</text>')
+    for ri, k in enumerate(CAT):
+        y = th + rh * ri + rh / 2
+        if ri % 2 == 0:
+            out.append(f'<rect x="0" y="{th + rh * ri}" width="{W}" height="{rh}" fill="#f8fafc"/>')
+        out.append(f'<text x="4" y="{y + 4}" font-size="10" fill="#111827">{k} {e(CAT_KO[k])}</text>')
+        tot = 0
+        for ci, r in enumerate(regs):
+            v = cell.get((k, r), [])
+            tot += len(v)
+            if not v:
+                continue
+            top = max(v, key=lambda i: SEVRANK.get(i.get("severity"), 0)).get("severity")
+            rad = 4 + 13 * (len(v) / mx) ** 0.5
+            x = lw + cw * ci + cw / 2
+            out.append(f'<circle cx="{x}" cy="{y}" r="{rad:.1f}" fill="{SEV_COLOR.get(top, "#6b7280")}" fill-opacity="0.78"/>')
+            out.append(f'<text x="{x}" y="{y + 3.5}" font-size="9.5" text-anchor="middle" fill="#ffffff" font-weight="700">{len(v)}</text>')
+        out.append(f'<text x="{lw + cw * len(regs) + 26}" y="{y + 4}" font-size="10" text-anchor="middle" fill="#111827" font-weight="700">{tot}</text>')
+    out.append('</svg>')
+    legend = " ".join(f'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{SEV_COLOR[s]};margin:0 3px 0 8px"></span>{SEV_KO[s]}' for s in SEV)
+    return "".join(out) + f'<div class="muted" style="margin-top:2px">원 크기 = 건수, 색 = 해당 칸의 최고 심각도 · {legend}</div>'
+
+def tag_heatmap(items, n=10):
+    """Lower-triangle co-occurrence of the top tags (number of items carrying both tags)."""
+    cnt = collections.Counter(t for i in items for t in norm_tags(i))
+    top = [t for t, _ in cnt.most_common(n)]
+    if len(top) < 2:
+        return '<p class="muted">태그 데이터가 부족합니다.</p>'
+    co = collections.Counter()
+    for i in items:
+        ts = [t for t in norm_tags(i) if t in top]
+        for a in range(len(ts)):
+            for b in range(a + 1, len(ts)):
+                co[(ts[a], ts[b])] += 1
+                co[(ts[b], ts[a])] += 1
+    mx = max([v for v in co.values()] or [1])
+    head = "".join(f'<th style="text-align:center;font-size:7.5pt;padding:3px 2px;writing-mode:vertical-rl;transform:rotate(180deg);height:70px">{e(t)}</th>' for t in top)
+    rows = ""
+    for a_i, a in enumerate(top):
+        cells = ""
+        for b_i, b in enumerate(top):
+            if b_i > a_i:
+                cells += '<td style="border:none"></td>'
+            elif a == b:
+                cells += f'<td style="text-align:center;background:#e5e7eb;color:#374151;font-size:8pt">{cnt[a]}</td>'
+            else:
+                v = co.get((a, b), 0)
+                alpha = 0 if not v else 0.18 + 0.82 * v / mx
+                col = "#ffffff" if alpha > 0.55 else "#1f2937"
+                cells += f'<td style="text-align:center;background:rgba(47,111,228,{alpha:.2f});color:{col};font-size:8pt">{v or ""}</td>'
+        rows += f'<tr><td style="white-space:nowrap;font-size:8pt">{e(a)} <span class="muted">({cnt[a]})</span></td>{cells}</tr>'
+    return (f'<table style="table-layout:fixed"><tr><th style="width:150px">태그 (건수)</th>{head}</tr>{rows}</table>'
+            '<div class="muted" style="margin-top:2px">칸 숫자 = 같은 항목에 두 태그가 함께 붙은 횟수 (진할수록 많음), 대각선 = 태그 건수</div>')
+
+def tag_flows(items, k=3):
+    """Top connected flows: tags shared by several items (prefer spread over days/countries), de-duplicated."""
+    by = collections.defaultdict(list)
+    for i in items:
+        for t in norm_tags(i):
+            if t not in GENERIC_TAGS:
+                by[t].append(i)
+    def day(i):
+        x = (i.get("id") or "").split("-")
+        return f"{x[1]}-{x[2][:2]}-{x[2][2:]}" if len(x) >= 3 and len(x[2]) == 4 else i.get("date", "")
+    cand = []
+    for t, arr in by.items():
+        if len(arr) < 2:
+            continue
+        days = {day(i) for i in arr}; ctry = {i.get("countryName") or i.get("country") for i in arr}
+        score = len(arr) * 2 + len(days) + len(ctry) + sum(SEVRANK.get(i.get("severity"), 0) for i in arr) / 4
+        cand.append((score, t, arr, days, ctry))
+    cand.sort(key=lambda c: -c[0])
+    picked = []
+    for c in cand:
+        ids = {i.get("id") for i in c[2]}
+        if any(len(ids & {i.get("id") for i in p[2]}) / len(ids) > 0.6 for p in picked):
+            continue
+        picked.append(c)
+        if len(picked) == k:
+            break
+    if not picked:
+        return '<p class="muted">이번 주에는 2건 이상 공통 태그로 묶인 흐름이 없습니다.</p>'
+    rows = ""
+    for n, (_, t, arr, days, ctry) in enumerate(picked, 1):
+        arr = sorted(arr, key=lambda i: (sev_key(i), i.get("id", "")))
+        cats = collections.Counter(i.get("category") for i in arr)
+        span = f"{min(days)} ~ {max(days)}" if len(days) > 1 else min(days)
+        items_html = "".join(f'<div>· {pill(i.get("severity"))} {e(i.get("title", ""))} <span class="muted">({e(i.get("countryName") or i.get("country") or "")})</span></div>' for i in arr[:4])
+        more = f'<div class="muted">외 {len(arr) - 4}건</div>' if len(arr) > 4 else ""
+        rows += (f'<tr><td style="width:22px"><b>{n}</b></td><td style="width:150px"><b>#{e(t)}</b><div class="muted">{len(arr)}건 · {e(span)}</div>'
+                 f'<div class="muted">{" · ".join(f"{c} {v}" for c, v in cats.most_common())}</div>'
+                 f'<div class="muted">{e(", ".join(sorted(x for x in ctry if x))[:60])}</div></td><td>{items_html}{more}</td></tr>')
+    return (f'<table><tr><th>#</th><th>공통 태그 · 규모</th><th>묶인 항목</th></tr>{rows}</table>'
+            '<div class="muted" style="margin-top:2px">같은 태그를 공유하는 항목 묶음. 건수·지속 일수·국가 수·심각도로 순위를 매기고 많이 겹치는 묶음은 하나만 표시</div>')
+
+def correlation_section(items):
+    return (f'<h2>한 주의 연관관계</h2>'
+            f'<div style="page-break-inside:avoid"><div style="font-weight:700;margin:4px 0">① 카테고리 × 지역: 어떤 위협이 어디에 몰렸나</div>{bubble_matrix(items)}</div>'
+            f'<div style="page-break-inside:avoid;margin-top:10px"><div style="font-weight:700;margin:4px 0">② 태그 동시출현: 무엇과 함께 움직였나</div>{tag_heatmap(items)}</div>'
+            f'<div style="margin-top:10px"><div style="font-weight:700;margin:4px 0">③ 이번 주 연결된 흐름 Top 3</div>{tag_flows(items)}</div>')
+
 def weekly(root, end, gen):
     end_d = date_obj(end); start_d = end_d - dt.timedelta(days=6)
     man = load(os.path.join(root, "data/daily/manifest.json"), [])
@@ -247,7 +370,7 @@ def weekly(root, end, gen):
     body = (f'<h2>Executive Summary</h2><div class="box">{box}</div>{kpis(items, [("수집일수", len(dates), "#6b7280")])}'
             f'<h2>일자별 추이</h2>{daytab}'
             f'{world_map(items)}<h2>분포 현황</h2><div class="two"><div>{sev_table(items)}</div><div>{country_table(items)}</div></div>'
-            f'<h2>카테고리 × 지역</h2>{cross}'
+            f'{correlation_section(items)}'
             f'<h2>핵심 항목 (Critical · High) {len(ch)}건</h2>{cards(ch)}'
             f'<h2>국내(KR) 동향 {len(kr)}건</h2>{feed_table(kr) if kr else "<p class=muted>해당 항목 없음</p>"}'
             f'<h2>전체 항목 (일자별)</h2>' + "".join(f'<div class="day" style="padding:3px 6px;margin-top:6px">{d} ({WD[date_obj(d).weekday()]}) · {len(per[d])}건</div>{feed_table(per[d])}' for d in reversed(dates)) +

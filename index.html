@@ -590,6 +590,27 @@ body::before {
   text-align: center;
 }
 
+.graph-controls { display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
+.graph-controls .gc-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.graph-controls .gc-seg { width:auto; flex-shrink:0; }
+.graph-controls .gc-seg .mode-btn { flex:0 0 auto; padding:7px 10px !important; }
+.graph-controls .gc-range { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.graph-controls .gc-range[hidden] { display:none; }
+.graph-controls .gc-range input[type="date"] { font-family:var(--font-mono); font-size:11px; background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:var(--radius-sm); padding:3px 6px; }
+.graph-controls .gc-range .dr-apply { font-family:var(--font-display); font-size:11px; padding:4px 10px; background:var(--accent); color:#fff; border:none; border-radius:var(--radius-sm); cursor:pointer; }
+.graph-controls .gc-level { font-size:12px; color:var(--text-secondary); }
+.graph-controls .gc-level input[type="range"] { flex:1; min-width:110px; max-width:220px; accent-color:var(--accent); }
+.graph-controls .gc-level-val { font-family:var(--font-mono); color:var(--text); min-width:12px; }
+.graph-controls .gc-level-hint { font-size:11px; color:var(--text-muted); }
+.graph-summary { font-size:12px; color:var(--text-secondary); background:var(--card); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px 10px; line-height:1.5; }
+.graph-tag-detail { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:10px 12px; margin-top:10px; font-size:12px; }
+.graph-tag-detail[hidden] { display:none; }
+.graph-tag-detail .gtd-head { font-weight:600; color:var(--text); margin-bottom:6px; }
+.graph-tag-detail ul { margin:0; padding-left:16px; }
+.graph-tag-detail li { margin:3px 0; }
+.graph-tag-detail a { color:var(--accent); text-decoration:none; }
+.graph-tag-detail .gtd-meta { color:var(--text-muted); font-size:11px; }
+
 /* --- Feed View --- */
 .feed-filters {
   display: flex;
@@ -992,11 +1013,38 @@ select, input[type="time"] {
   <!-- Graph -->
   <section id="viewGraph" class="view">
     <div class="section-title">위협 연관 그래프</div>
+    <div class="graph-controls">
+      <div class="gc-row">
+        <div class="view-mode-toggle gc-seg" id="graphPeriod">
+          <button class="mode-btn" data-p="today" onclick="setGraphPeriod('today')">오늘</button>
+          <button class="mode-btn" data-p="7d" onclick="setGraphPeriod('7d')">7일</button>
+          <button class="mode-btn" data-p="30d" onclick="setGraphPeriod('30d')">30일</button>
+          <button class="mode-btn" data-p="all" onclick="setGraphPeriod('all')">전체</button>
+          <button class="mode-btn" data-p="custom" onclick="setGraphPeriod('custom')">기간</button>
+        </div>
+        <div class="view-mode-toggle gc-seg" id="graphMode">
+          <button class="mode-btn" data-m="incident" onclick="setGraphMode('incident')">사건</button>
+          <button class="mode-btn" data-m="tag" onclick="setGraphMode('tag')">태그</button>
+        </div>
+      </div>
+      <div class="gc-range" id="graphRange" hidden>
+        <input type="date" id="graphFrom"> <span>~</span> <input type="date" id="graphTo">
+        <button class="dr-apply" onclick="applyGraphRange()">적용</button>
+      </div>
+      <div class="gc-row gc-level">
+        <label for="graphLevel">연결 강도</label>
+        <input type="range" id="graphLevel" min="1" max="5" step="1" value="1" oninput="setGraphLevel(this.value)">
+        <span class="gc-level-val" id="graphLevelVal">1</span>
+        <span class="gc-level-hint" id="graphLevelHint"></span>
+      </div>
+      <div class="graph-summary" id="graphSummary"></div>
+    </div>
     <div class="graph-container" id="graphContainer">
       <svg id="graphSvg"></svg>
     </div>
+    <div class="graph-tag-detail" id="graphTagDetail" hidden></div>
     <div class="graph-legend" id="graphLegend"></div>
-    <div class="graph-info">노드를 드래그하거나 탭하여 상세 정보를 확인하세요. 연결선은 태그·카테고리·지역 유사도를 나타냅니다.</div>
+    <div class="graph-info">기간은 수집일 기준입니다. 사건 보기: 점 = 개별 사건, 선 = 공통 태그·카테고리·국가 유사도. 태그 보기: 점 = 태그(크기 = 건수), 선 = 같은 사건에 함께 나온 횟수. 점을 탭하면 상세 정보를 볼 수 있습니다.</div>
   </section>
 
   <!-- Feed -->
@@ -2017,69 +2065,197 @@ function renderRegionDetail(levelOf, regionSev) {
 }
 
 /* ====== FORCE GRAPH (Obsidian-style) ====== */
+/* Graph controls state: period (collection date), mode (incident|tag), strength level 1-5 */
+const graphState = { period: '7d', from: null, to: null, mode: 'incident', level: 1 };
+(function loadGraphState() {
+  try { const s = JSON.parse(localStorage.getItem('tpGraphState') || 'null'); if (s) Object.assign(graphState, s); } catch (_) {}
+})();
+function saveGraphState() { try { localStorage.setItem('tpGraphState', JSON.stringify(graphState)); } catch (_) {} }
+
+function shiftDate(key, days) {
+  const d = new Date(key + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + days); return d.toISOString().slice(0, 10);
+}
+function graphPeriodRange() {
+  const latest = getTodayKey();
+  switch (graphState.period) {
+    case 'today': return { from: latest, to: latest };
+    case '7d': return { from: shiftDate(latest, -6), to: latest };
+    case '30d': return { from: shiftDate(latest, -29), to: latest };
+    case 'custom': return { from: graphState.from || shiftDate(latest, -6), to: graphState.to || latest };
+    default: return { from: null, to: null };
+  }
+}
+function graphIncidents() {
+  const r = graphPeriodRange();
+  return allIncidents.filter(i => {
+    const k = collectedKey(i);
+    if (r.from && k < r.from) return false;
+    if (r.to && k > r.to) return false;
+    return true;
+  });
+}
+function setGraphPeriod(p) {
+  graphState.period = p;
+  const box = document.getElementById('graphRange');
+  if (p === 'custom') {
+    const r = graphPeriodRange();
+    document.getElementById('graphFrom').value = r.from;
+    document.getElementById('graphTo').value = r.to;
+    box.hidden = false;
+  } else { box.hidden = true; }
+  saveGraphState(); syncGraphControls(); renderGraph();
+}
+function applyGraphRange() {
+  const f = document.getElementById('graphFrom').value, t = document.getElementById('graphTo').value;
+  graphState.from = f || null; graphState.to = t || null;
+  if (graphState.from && graphState.to && graphState.from > graphState.to) { const x = graphState.from; graphState.from = graphState.to; graphState.to = x; }
+  saveGraphState(); renderGraph();
+}
+function setGraphMode(m) { graphState.mode = m; saveGraphState(); syncGraphControls(); renderGraph(); }
+window.setGraphPeriod = setGraphPeriod;
+window.applyGraphRange = applyGraphRange;
+window.setGraphMode = setGraphMode;
+window.setGraphLevel = (v) => setGraphLevel(v);
+function setGraphLevel(v) {
+  graphState.level = Math.max(1, Math.min(5, parseInt(v, 10) || 1));
+  document.getElementById('graphLevelVal').textContent = graphState.level;
+  saveGraphState(); renderGraph();
+}
+function syncGraphControls() {
+  document.querySelectorAll('#graphPeriod .mode-btn').forEach(b => b.classList.toggle('active', b.dataset.p === graphState.period));
+  document.querySelectorAll('#graphMode .mode-btn').forEach(b => b.classList.toggle('active', b.dataset.m === graphState.mode));
+  const lv = document.getElementById('graphLevel'); if (lv) lv.value = graphState.level;
+  const lvv = document.getElementById('graphLevelVal'); if (lvv) lvv.textContent = graphState.level;
+  const box = document.getElementById('graphRange'); if (box) box.hidden = graphState.period !== 'custom';
+  const hint = document.getElementById('graphLevelHint');
+  if (hint) hint.textContent = graphState.mode === 'tag' ? '함께 나온 횟수 ' + graphState.level + '회 이상' : '유사도 ' + (graphState.level + 1) + '점 이상';
+}
+function graphEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function graphPeriodLabel() {
+  const r = graphPeriodRange();
+  if (!r.from) return '전체 기간';
+  return r.from === r.to ? r.from : r.from + ' ~ ' + r.to;
+}
+
+/* Incident graph: nodes = incidents, link score = shared tags x2 + same category 1 + same country&category 1 */
+function buildIncidentGraph(items) {
+  const MAX = 150;
+  const used = items.slice(0, MAX);
+  const nodes = used.map(inc => ({
+    id: inc.id, kind: 'incident', label: inc.title || '', category: inc.category, severity: inc.severity,
+    tags: (inc.tags || []).map(t => String(t).toLowerCase()), country: inc.country || '', linkCount: 0
+  }));
+  const minScore = graphState.level + 1;
+  const links = [];
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j];
+      const shared = a.tags.filter(t => b.tags.includes(t)).length;
+      const sameCat = a.category === b.category;
+      let score = shared * 2;
+      if (sameCat) score += 1;
+      if (sameCat && a.country && a.country === b.country) score += 1;
+      if (score >= minScore) links.push({ source: a.id, target: b.id, value: Math.min(score, 6) });
+    }
+  }
+  const byId = new Map(nodes.map(n => [n.id, n]));
+  links.forEach(l => { byId.get(l.source).linkCount++; byId.get(l.target).linkCount++; });
+  const maxL = Math.max(1, ...nodes.map(n => n.linkCount));
+  nodes.forEach(n => {
+    const base = n.severity === 'critical' ? 7 : n.severity === 'high' ? 6 : 5;
+    n.r = base + (n.linkCount / maxL) * 8;
+    n.color = CATEGORIES[n.category]?.color || '#888';
+  });
+  const tagCount = new Map();
+  used.forEach(i => (i.tags || []).forEach(t => { const k = String(t).toLowerCase(); tagCount.set(k, (tagCount.get(k) || 0) + 1); }));
+  const topTag = [...tagCount.entries()].sort((a, b) => b[1] - a[1])[0];
+  const hub = nodes.slice().sort((a, b) => b.linkCount - a.linkCount)[0];
+  let summary = `${graphPeriodLabel()} · ${items.length}건` + (items.length > MAX ? ` (최근 ${MAX}건 표시)` : '') + ` · 연결 ${links.length}개`;
+  if (hub && hub.linkCount) summary += ` · 최다 연결: ${graphEsc(hub.label.length > 22 ? hub.label.slice(0, 22) + '…' : hub.label)}`;
+  if (topTag) summary += ` · 최다 태그: #${graphEsc(topTag[0])}`;
+  return { nodes, links, summary };
+}
+
+/* Tag graph: nodes = top tags, link value = number of incidents where both tags appear */
+function buildTagGraph(items) {
+  const MAXT = 40;
+  const count = new Map(), catCount = new Map(), incOf = new Map();
+  items.forEach(inc => {
+    const tags = [...new Set((inc.tags || []).map(t => String(t).toLowerCase()))];
+    tags.forEach(t => {
+      count.set(t, (count.get(t) || 0) + 1);
+      if (!catCount.has(t)) catCount.set(t, {});
+      const c = catCount.get(t); c[inc.category] = (c[inc.category] || 0) + 1;
+      if (!incOf.has(t)) incOf.set(t, []);
+      incOf.get(t).push(inc);
+    });
+  });
+  const top = [...count.entries()].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).slice(0, MAXT).map(e => e[0]);
+  const topSet = new Set(top);
+  const pair = new Map();
+  items.forEach(inc => {
+    const tags = [...new Set((inc.tags || []).map(t => String(t).toLowerCase()))].filter(t => topSet.has(t)).sort();
+    for (let i = 0; i < tags.length; i++) for (let j = i + 1; j < tags.length; j++) {
+      const k = tags[i] + '\u0001' + tags[j]; pair.set(k, (pair.get(k) || 0) + 1);
+    }
+  });
+  const minCo = graphState.level;
+  const links = [];
+  pair.forEach((v, k) => { if (v >= minCo) { const [a, b] = k.split('\u0001'); links.push({ source: 'tag:' + a, target: 'tag:' + b, value: Math.min(1 + v, 6), co: v }); } });
+  const maxC = Math.max(1, ...top.map(t => count.get(t)));
+  const nodes = top.map(t => {
+    const cats = catCount.get(t) || {};
+    const dom = Object.entries(cats).sort((a, b) => b[1] - a[1])[0];
+    return {
+      id: 'tag:' + t, kind: 'tag', tag: t, label: '#' + t, category: dom ? dom[0] : '', count: count.get(t),
+      incidents: incOf.get(t) || [], linkCount: 0,
+      r: 5 + (count.get(t) / maxC) * 13, color: (dom && CATEGORIES[dom[0]]?.color) || '#888'
+    };
+  });
+  const byId = new Map(nodes.map(n => [n.id, n]));
+  links.forEach(l => { byId.get(l.source).linkCount++; byId.get(l.target).linkCount++; });
+  const best = links.slice().sort((a, b) => b.co - a.co)[0];
+  // hide tags without any co-occurrence (they only pile up on the edges) unless nothing is connected
+  const shown = links.length ? nodes.filter(n => n.linkCount > 0) : nodes;
+  let summary = `${graphPeriodLabel()} · ${items.length}건 · 연결된 태그 ${shown.length}개 (상위 ${Math.min(MAXT, count.size)}개 중)` + ` · 연결 ${links.length}개`;
+  if (best) summary += ` · 최다 동시출현: ${graphEsc(best.source.slice(4))} + ${graphEsc(best.target.slice(4))} (${best.co}회)`;
+  return { nodes: shown, links, summary };
+}
+
+function showTagIncidents(n) {
+  const el = document.getElementById('graphTagDetail');
+  if (!el) return;
+  const list = n.incidents.slice(0, 12).map(i =>
+    `<li><a href="javascript:void(0)" onclick="showDetail('${graphEsc(i.id)}')">${graphEsc(i.title)}</a> <span class="gtd-meta">${graphEsc(i.category)} · ${graphEsc(i.countryName || i.country || '')}</span></li>`).join('');
+  el.innerHTML = `<div class="gtd-head">#${graphEsc(n.tag)} · ${n.count}건</div><ul>${list}</ul>`;
+  el.hidden = false;
+}
+
 function renderGraph() {
   const container = document.getElementById('graphContainer');
   const svg = d3.select('#graphSvg');
   svg.selectAll('*').remove();
+  syncGraphControls();
+  const detail = document.getElementById('graphTagDetail'); if (detail) { detail.hidden = true; detail.innerHTML = ''; }
   const rect = container.getBoundingClientRect();
   const w = rect.width, h = rect.height;
   svg.attr('viewBox', `0 0 ${w} ${h}`);
+  const summaryEl = document.getElementById('graphSummary');
 
-  if (!allIncidents.length) return;
-
-  // Build nodes from incidents
-  const nodes = allIncidents.slice(0, 120).map(inc => ({
-    id: inc.id,
-    title: inc.title,
-    category: inc.category,
-    severity: inc.severity,
-    tags: inc.tags || [],
-    country: inc.country || '',
-    date: inc.date || '',
-    linkCount: 0 // will be computed after links
-  }));
-
-  // Build edges: shared tags, same category+country, same category+date proximity
-  const links = [];
-  const nodeMap = new Map(nodes.map(n => [n.id, n]));
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const a = nodes[i], b = nodes[j];
-      const sharedTags = (a.tags).filter(t => b.tags.includes(t)).length;
-      const sameCategory = a.category === b.category;
-      const sameCountry = a.country && a.country === b.country;
-      // Connection score
-      let score = sharedTags * 2;
-      if (sameCategory) score += 1;
-      if (sameCountry && sameCategory) score += 1;
-      if (score >= 2) {
-        links.push({ source: a.id, target: b.id, value: Math.min(score, 6) });
-      }
-    }
+  if (!allIncidents.length) { if (summaryEl) summaryEl.textContent = '데이터 없음'; return; }
+  const items = graphIncidents();
+  if (!items.length) {
+    if (summaryEl) summaryEl.textContent = `${graphPeriodLabel()} · 해당 기간 데이터 없음`;
+    return;
   }
-
-  // Count connections per node for sizing
-  links.forEach(l => {
-    const s = nodeMap.get(typeof l.source === 'string' ? l.source : l.source.id);
-    const t = nodeMap.get(typeof l.target === 'string' ? l.target : l.target.id);
-    if (s) s.linkCount++;
-    if (t) t.linkCount++;
-  });
-
-  // Node radius: based on connections (Obsidian style: hub nodes bigger)
-  const maxLinks = Math.max(1, ...nodes.map(n => n.linkCount));
-  nodes.forEach(n => {
-    const base = n.severity === 'critical' ? 7 : n.severity === 'high' ? 6 : 5;
-    const connBonus = (n.linkCount / maxLinks) * 8;
-    n.r = base + connBonus;
-  });
+  const { nodes, links, summary } = graphState.mode === 'tag' ? buildTagGraph(items) : buildIncidentGraph(items);
+  if (summaryEl) summaryEl.innerHTML = summary;
 
   const style = getComputedStyle(document.documentElement);
   const lineColor = style.getPropertyValue('--border-light').trim() || '#293956';
   const textColor = style.getPropertyValue('--text-secondary').trim() || '#7d8ba0';
-  const bgColor = style.getPropertyValue('--bg').trim() || '#080c14';
+  const hiText = style.getPropertyValue('--text').trim() || '#fff';
 
-  // SVG defs for glow effect
   const defs = svg.append('defs');
   Object.entries(CATEGORIES).forEach(([code, cat]) => {
     const filter = defs.append('filter').attr('id', `glow-${code}`).attr('x', '-50%').attr('y', '-50%').attr('width', '200%').attr('height', '200%');
@@ -2091,28 +2267,30 @@ function renderGraph() {
     merge.append('feMergeNode').attr('in', 'SourceGraphic');
   });
 
-  // Force simulation — wider spread like Obsidian
+  const isTag = graphState.mode === 'tag';
+  // scale spacing to node count so large periods do not pile up on the edges
+  const dens = Math.min(1, Math.sqrt(40 / Math.max(1, nodes.length)));
+  const LABEL_TOP = isTag ? 18 : 14;
+  const ranked = nodes.slice().sort((a, b) => (isTag ? b.count - a.count : b.linkCount - a.linkCount));
+  const labelled = new Set((nodes.length <= 30 ? nodes : ranked.slice(0, LABEL_TOP)).map(n => n.id));
+  nodes.forEach(n => { n.showLabel = labelled.has(n.id); });
   const simulation = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id(d => d.id).distance(d => 100 - d.value * 5).strength(d => 0.15 + d.value * 0.05))
-    .force('charge', d3.forceManyBody().strength(-120).distanceMax(300))
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => ((isTag ? 90 : 100) - d.value * 5) * (0.6 + 0.4 * dens)).strength(d => 0.15 + d.value * 0.05))
+    .force('charge', d3.forceManyBody().strength((isTag ? -160 : -120) * dens).distanceMax(300))
     .force('center', d3.forceCenter(w / 2, h / 2))
-    .force('collision', d3.forceCollide().radius(d => d.r + 12))
-    .force('x', d3.forceX(w / 2).strength(0.03))
-    .force('y', d3.forceY(h / 2).strength(0.03));
+    .force('collision', d3.forceCollide().radius(d => d.r + 2 + 10 * dens))
+    .force('x', d3.forceX(w / 2).strength(0.03 + 0.05 * (1 - dens)))
+    .force('y', d3.forceY(h / 2).strength(0.03 + 0.05 * (1 - dens)));
 
-  // Zoom behavior
   const g = svg.append('g');
   const zoom = d3.zoom().scaleExtent([0.3, 4]).on('zoom', (e) => g.attr('transform', e.transform));
   svg.call(zoom);
 
-  // Draw links
-  const linkG = g.append('g');
-  const link = linkG.selectAll('line').data(links).join('line')
+  const link = g.append('g').selectAll('line').data(links).join('line')
     .attr('stroke', lineColor)
-    .attr('stroke-width', d => 0.3 + d.value * 0.15)
+    .attr('stroke-width', d => 0.3 + d.value * (isTag ? 0.35 : 0.15))
     .attr('stroke-opacity', 0.35);
 
-  // Draw nodes
   const nodeG = g.append('g');
   const node = nodeG.selectAll('g').data(nodes).join('g')
     .attr('cursor', 'pointer')
@@ -2122,79 +2300,51 @@ function renderGraph() {
       .on('end', (e, d) => { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; })
     );
 
-  // Node circles with category color
   node.append('circle')
     .attr('r', d => d.r)
-    .attr('fill', d => CATEGORIES[d.category]?.color || '#888')
+    .attr('fill', d => d.color)
     .attr('fill-opacity', 0.75)
-    .attr('stroke', d => CATEGORIES[d.category]?.color || '#888')
+    .attr('stroke', d => d.color)
     .attr('stroke-width', 1.5)
     .attr('stroke-opacity', 0.9);
 
-  // ALL nodes get labels (Obsidian style)
+  const shortLabel = d => { const m = isTag ? 24 : (d.r > 10 ? 20 : 14); return d.label.length > m ? d.label.slice(0, m) + '…' : d.label; };
+  const labelSize = d => isTag ? (d.r > 12 ? 11 : 9) : (d.r > 10 ? 10 : d.r > 7 ? 9 : 8);
   const label = nodeG.selectAll('text.node-label').data(nodes).join('text')
     .classed('node-label', true)
-    .text(d => {
-      const maxLen = d.r > 10 ? 20 : 14;
-      return d.title.length > maxLen ? d.title.slice(0, maxLen) + '…' : d.title;
-    })
-    .attr('font-size', d => d.r > 10 ? 10 : d.r > 7 ? 9 : 8)
+    .text(shortLabel)
+    .attr('font-size', labelSize)
     .attr('font-family', 'Outfit, sans-serif')
     .attr('fill', textColor)
-    .attr('fill-opacity', 0.85)
-    .attr('text-anchor', 'middle')
-    .attr('dy', d => -d.r - 5);
+    .attr('fill-opacity', d => d.showLabel ? 0.85 : 0)
+    .attr('text-anchor', 'middle');
 
-  // Hover interactions: highlight connected, dim rest (like Obsidian)
-  const linkedNodes = new Set();
-  const adjacencyMap = new Map();
-  nodes.forEach(n => adjacencyMap.set(n.id, new Set()));
-  links.forEach(l => {
-    const sid = typeof l.source === 'string' ? l.source : l.source.id;
-    const tid = typeof l.target === 'string' ? l.target : l.target.id;
-    adjacencyMap.get(sid)?.add(tid);
-    adjacencyMap.get(tid)?.add(sid);
-  });
+  const adjacency = new Map(nodes.map(n => [n.id, new Set()]));
+  const lid = (x) => typeof x === 'string' ? x : x.id;
+  links.forEach(l => { adjacency.get(lid(l.source))?.add(lid(l.target)); adjacency.get(lid(l.target))?.add(lid(l.source)); });
 
   node.on('mouseenter', (e, d) => {
-    const neighbors = adjacencyMap.get(d.id) || new Set();
-    // Dim everything
-    link.attr('stroke-opacity', l => {
-      const sid = typeof l.source === 'string' ? l.source : l.source.id;
-      const tid = typeof l.target === 'string' ? l.target : l.target.id;
-      return (sid === d.id || tid === d.id) ? 0.8 : 0.06;
-    }).attr('stroke', l => {
-      const sid = typeof l.source === 'string' ? l.source : l.source.id;
-      const tid = typeof l.target === 'string' ? l.target : l.target.id;
-      return (sid === d.id || tid === d.id) ? CATEGORIES[d.category]?.color || lineColor : lineColor;
-    }).attr('stroke-width', l => {
-      const sid = typeof l.source === 'string' ? l.source : l.source.id;
-      const tid = typeof l.target === 'string' ? l.target : l.target.id;
-      return (sid === d.id || tid === d.id) ? 1.5 : 0.3;
-    });
+    const nb = adjacency.get(d.id) || new Set();
+    const touches = l => lid(l.source) === d.id || lid(l.target) === d.id;
+    link.attr('stroke-opacity', l => touches(l) ? 0.8 : 0.06)
+      .attr('stroke', l => touches(l) ? d.color : lineColor)
+      .attr('stroke-width', l => touches(l) ? 1.5 + (isTag ? l.value * 0.2 : 0) : 0.3);
     node.select('circle')
-      .attr('fill-opacity', n => (n.id === d.id || neighbors.has(n.id)) ? 1 : 0.15)
-      .attr('stroke-opacity', n => (n.id === d.id || neighbors.has(n.id)) ? 1 : 0.15);
-    // Glow on hovered node
-    node.filter(n => n.id === d.id).select('circle').attr('filter', `url(#glow-${d.category})`);
-    label.attr('fill-opacity', n => (n.id === d.id || neighbors.has(n.id)) ? 1 : 0.1);
-    // Show full title as tooltip-style label for hovered node
-    label.filter(n => n.id === d.id).text(d.title).attr('font-size', 11).attr('fill', '#fff');
+      .attr('fill-opacity', n => (n.id === d.id || nb.has(n.id)) ? 1 : 0.15)
+      .attr('stroke-opacity', n => (n.id === d.id || nb.has(n.id)) ? 1 : 0.15);
+    if (d.category) node.filter(n => n.id === d.id).select('circle').attr('filter', `url(#glow-${d.category})`);
+    label.attr('fill-opacity', n => (n.id === d.id || nb.has(n.id)) ? 1 : 0.1);
+    label.filter(n => n.id === d.id).text(d.kind === 'tag' ? `${d.label} (${d.count}건)` : d.label).attr('font-size', 11).attr('fill', hiText);
   })
   .on('mouseleave', () => {
-    link.attr('stroke-opacity', 0.35).attr('stroke', lineColor).attr('stroke-width', d => 0.3 + d.value * 0.15);
+    link.attr('stroke-opacity', 0.35).attr('stroke', lineColor).attr('stroke-width', d => 0.3 + d.value * (isTag ? 0.35 : 0.15));
     node.select('circle').attr('fill-opacity', 0.75).attr('stroke-opacity', 0.9).attr('filter', null);
-    label.attr('fill-opacity', 0.85).attr('fill', textColor)
-      .text(d => { const m = d.r > 10 ? 20 : 14; return d.title.length > m ? d.title.slice(0, m) + '…' : d.title; })
-      .attr('font-size', d => d.r > 10 ? 10 : d.r > 7 ? 9 : 8);
+    label.attr('fill-opacity', d => d.showLabel ? 0.85 : 0).attr('fill', textColor).text(shortLabel).attr('font-size', labelSize);
   })
-  .on('click', (e, d) => showDetail(d.id));
+  .on('click', (e, d) => { if (d.kind === 'tag') showTagIncidents(d); else showDetail(d.id); });
 
-  // Tick
   simulation.on('tick', () => {
-    link
-      .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    link.attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y);
     node.attr('transform', d => {
       d.x = Math.max(d.r, Math.min(w - d.r, d.x));
       d.y = Math.max(d.r, Math.min(h - d.r, d.y));
