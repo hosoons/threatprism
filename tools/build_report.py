@@ -153,12 +153,21 @@ def region_table(items):
     rows = "".join(f'<tr><td>{REGION_KO.get(k,k)}</td><td class="num">{v}</td></tr>' for k, v in sorted(c.items(), key=lambda x: -x[1]))
     return f'<table><tr><th>지역</th><th class="num">건수</th></tr>{rows}</table>'
 
+FACTOR_KO = [("target", "대상"), ("exploit", "악용"), ("technical", "기술"), ("scale", "규모"), ("domestic", "국내")]
+
+def score_txt(i):
+    if not isinstance(i.get("score"), (int, float)):
+        return ""
+    f = i.get("scoreFactors") or {}
+    parts = " · ".join(f"{n} {f.get(k, 0)}" for k, n in FACTOR_KO)
+    return f' · <b>점수 {i["score"]}</b> ({parts})'
+
 def cards(items):
     out = ""
     for i in items:
         col = SEV_COLOR.get(i.get("severity"), "#999")
         out += (f'<div class="card" style="border-left-color:{col}"><div class="ct">{pill(i.get("severity"))} {e(i.get("title",""))}</div>'
-                f'<div class="m">{e(CAT_KO.get(i.get("category",""), i.get("category","")))} · {e(i.get("countryName",""))} · {e(i.get("source",""))} · {e(i.get("date",""))}</div>'
+                f'<div class="m">{e(CAT_KO.get(i.get("category",""), i.get("category","")))} · {e(i.get("countryName",""))} · {e(i.get("source",""))} · {e(i.get("date",""))}{score_txt(i)}</div>'
                 f'<div class="sm">{e(i.get("summary",""))}</div></div>')
     return out or '<p class="muted">해당 항목 없음</p>'
 
@@ -192,6 +201,29 @@ def kpis(items, extra=None):
     if extra: tiles += extra
     return '<div class="kpis">' + "".join(f'<div class="kpi"><b style="color:{col}">{v}</b><span>{k}</span></div>' for k, v, col in tiles) + '</div>'
 
+SEV_SCORE_FALLBACK = {"critical": 80, "high": 62, "medium": 45, "low": 27, "info": 12}
+
+def item_score(i):
+    return i["score"] if isinstance(i.get("score"), (int, float)) else SEV_SCORE_FALLBACK.get(i.get("severity"), 12)
+
+def threat_index(items):
+    """0.7 x mean(top 5 item scores) + 0.3 x max score (same rule as the app badge)."""
+    sc = sorted((item_score(i) for i in items), reverse=True)
+    if not sc:
+        return 0, "LOW", SEV_COLOR["low"]
+    top = sc[:5]
+    idx = round(0.7 * sum(top) / len(top) + 0.3 * sc[0])
+    telco = any(i.get("telcoBreach") is True and i.get("country") == "KR" for i in items)
+    if telco or idx >= 80: return idx, "SEVERE", SEV_COLOR["critical"]
+    if idx >= 65: return idx, "HIGH", SEV_COLOR["high"]
+    if idx >= 50: return idx, "ELEVATED", SEV_COLOR["medium"]
+    if idx >= 35: return idx, "GUARDED", SEV_COLOR["info"]
+    return idx, "LOW", SEV_COLOR["low"]
+
+def threat_tile(items):
+    idx, lab, col = threat_index(items)
+    return (f"위협지수 · {lab}", idx, col)
+
 def brief_html(lines):
     """Consulting-style summary lines 'Label: text' -> bold label + text."""
     out = ""
@@ -223,7 +255,7 @@ def daily(root, date, gen):
     wd = WD[date_obj(date).weekday()]
     summ = brief_html(lines) or "<p>당일 요약문 없음</p>"
     ch = sorted([i for i in items if i.get("severity") in ("critical", "high")], key=lambda x: (sev_key(x), x.get("id", "")))
-    body = (f'<h2>Executive Summary</h2><div class="box">{summ}</div>{kpis(items)}'
+    body = (f'<h2>Executive Summary</h2><div class="box">{summ}</div>{kpis(items, [threat_tile(items)])}'
             f'{world_map(items)}<h2>분포 현황</h2><div class="two"><div>{sev_table(items)}</div><div>{cat_table(items)}</div></div><div class="two" style="margin-top:10px"><div>{region_table(items)}</div><div>{country_table(items)}</div></div>'
             f'<h2>핵심 항목 (Critical · High)</h2>{cards(ch)}'
             f'<h2>전체 항목</h2>{feed_table(items)}'
@@ -362,7 +394,7 @@ def weekly(root, end, gen):
         c = collections.Counter(i.get("region") for i in items if i.get("category") == k)
         xr += f'<tr><td>{CAT_KO[k]}</td>' + "".join(f'<td class="num">{c.get(r,0)}</td>' for r in REGIONS) + f'<td class="num"><b>{cs.get(k,0)}</b></td></tr>'
     cross = f'<table><tr><th>카테고리</th>{hdr}<th class="num">합계</th></tr>{xr}</table>'
-    body = (f'<h2>Executive Summary</h2><div class="box">{box}</div>{kpis(items, [("수집일수", len(dates), "#6b7280")])}'
+    body = (f'<h2>Executive Summary</h2><div class="box">{box}</div>{kpis(items, [threat_tile(items), ("수집일수", len(dates), "#6b7280")])}'
             f'<h2>일자별 추이</h2>{daytab}'
             f'{world_map(items)}<h2>분포 현황</h2><div class="two"><div>{sev_table(items)}</div><div>{country_table(items)}</div></div>'
             f'{correlation_section(items)}'

@@ -210,6 +210,22 @@ body::before {
 .threat-label.medium .threat-level-text { color: var(--sev-medium); }
 .threat-label.low { background: rgba(52,199,89,.1); color: var(--sev-low); }
 .threat-label.low .threat-level-text { color: var(--sev-low); }
+.threat-label.guarded { background: rgba(90,200,250,.12); color: var(--sev-info); }
+.threat-label.guarded .threat-level-text { color: var(--sev-info); }
+.header-status .threat-label { cursor: pointer; }
+.threat-level-text .ti-num { font-family: var(--font-mono); font-weight: 600; margin-left: 4px; }
+.threat-level-text .ti-trend { font-size: 11px; margin-left: 2px; opacity: .85; }
+.threat-panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin: 0 0 12px; font-size: 12px; }
+.threat-panel[hidden] { display: none; }
+.threat-panel .tp-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.threat-panel .tp-title { font-weight: 600; font-size: 13px; color: var(--text); }
+.threat-panel .tp-formula { color: var(--text-muted); font-size: 11px; margin-bottom: 8px; line-height: 1.5; }
+.threat-panel .tp-item { padding: 6px 0; border-top: 1px solid var(--border); cursor: pointer; }
+.threat-panel .tp-item:first-of-type { border-top: none; }
+.threat-panel .tp-t { color: var(--text); }
+.threat-panel .tp-s { font-family: var(--font-mono); font-weight: 600; margin-right: 6px; }
+.threat-panel .tp-f { color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+.threat-panel .tp-scale { color: var(--text-muted); font-size: 11px; margin-top: 8px; line-height: 1.5; }
 .threat-label .pulse {
   width: 6px; height: 6px;
   border-radius: 50%;
@@ -954,9 +970,10 @@ select, input[type="time"] {
   <div class="header-status">
     <div class="header-date" id="headerDate"></div>
     <div class="status-divider"></div>
-    <div class="threat-label" id="headerBadge"><div class="pulse"></div><span class="threat-level-prefix">위협수준</span> <span class="threat-level-text">LOW</span></div>
+    <div class="threat-label" id="headerBadge" role="button" tabindex="0" onclick="toggleThreatPanel()"><div class="pulse"></div><span class="threat-level-prefix">위협수준</span> <span class="threat-level-text">LOW</span></div>
   </div>
 </header>
+<div class="threat-panel" id="threatPanel" hidden></div>
 
 <main class="main-content">
   <!-- Dashboard -->
@@ -1314,19 +1331,72 @@ function renderHeader() {
   document.getElementById('headerDate').textContent = now.toLocaleDateString('ko-KR', opts);
 }
 
+/* ====== THREAT INDEX ======
+   item score 0-100 (5 factors: target 30, exploit 25, technical 15, scale 15, domestic 15).
+   Items without a score fall back to a severity estimate.
+   Threat index = 0.7 x mean(top 5 scores) + 0.3 x max score  (volume-independent).
+   Levels: SEVERE >=80 (or a domestic telecom breach), HIGH 65-79, ELEVATED 50-64, GUARDED 35-49, LOW <35. */
+const SEV_SCORE_FALLBACK = { critical: 80, high: 62, medium: 45, low: 27, info: 12 };
+function itemScore(i) { return (typeof i.score === 'number') ? i.score : (SEV_SCORE_FALLBACK[i.severity] ?? 12); }
+function threatIndex(items) {
+  if (!items.length) return 0;
+  const sc = items.map(itemScore).sort((a, b) => b - a);
+  const top = sc.slice(0, 5);
+  return Math.round(0.7 * top.reduce((x, y) => x + y, 0) / top.length + 0.3 * sc[0]);
+}
+function threatLevel(idx, items) {
+  const telco = (items || []).some(i => i.telcoBreach === true && i.country === 'KR');
+  if (telco || idx >= 80) return { label: 'SEVERE', cls: 'critical', color: SEV_COLORS.critical };
+  if (idx >= 65) return { label: 'HIGH', cls: 'high', color: SEV_COLORS.high };
+  if (idx >= 50) return { label: 'ELEVATED', cls: 'medium', color: SEV_COLORS.medium };
+  if (idx >= 35) return { label: 'GUARDED', cls: 'guarded', color: SEV_COLORS.info };
+  return { label: 'LOW', cls: 'low', color: SEV_COLORS.low };
+}
+function collectionKeys() {
+  return [...new Set(allIncidents.map(collectedKey))].filter(Boolean).sort().reverse();
+}
+const FACTOR_KO = { target: '대상', exploit: '악용', technical: '기술', scale: '규모', domestic: '국내' };
 function updateThreatBadge() {
   const badge = document.getElementById('headerBadge');
   const todayKey = getTodayKey();
   const todayIncidents = allIncidents.filter(i => collectedKey(i) === todayKey);
-  const critCount = todayIncidents.filter(i=>i.severity==='critical').length;
-  const highCount = todayIncidents.filter(i=>i.severity==='high').length;
-  let level = 'low', label = 'LOW';
-  if (critCount > 3) { level='critical'; label='CRITICAL'; }
-  else if (critCount > 0) { level='high'; label='HIGH'; }
-  else if (highCount > 3) { level='medium'; label='ELEVATED'; }
-  badge.className = 'threat-label ' + level;
-  badge.innerHTML = '<div class="pulse"></div><span class="threat-level-prefix">위협수준</span> <span class="threat-level-text">' + label + '</span>';
+  const idx = threatIndex(todayIncidents);
+  const lv = threatLevel(idx, todayIncidents);
+  // trend vs the average of the previous 3 collection days
+  const keys = collectionKeys().filter(k => k < todayKey).slice(0, 3);
+  let trend = '';
+  if (keys.length) {
+    const prev = keys.map(k => threatIndex(allIncidents.filter(i => collectedKey(i) === k)));
+    const avg = prev.reduce((x, y) => x + y, 0) / prev.length;
+    trend = idx > avg + 3 ? '▲' : idx < avg - 3 ? '▼' : '–';
+  }
+  badge.className = 'threat-label ' + lv.cls;
+  badge.title = '위협지수 ' + idx + ' (탭하면 근거 보기)';
+  badge.innerHTML = '<div class="pulse"></div><span class="threat-level-prefix">위협수준</span> <span class="threat-level-text">' + lv.label +
+    '<span class="ti-num">' + idx + '</span>' + (trend ? '<span class="ti-trend">' + trend + '</span>' : '') + '</span>';
+  window.__threat = { idx, lv, items: todayIncidents, key: todayKey, trend, prevKeys: keys };
+  const panel = document.getElementById('threatPanel');
+  if (panel && !panel.hidden) renderThreatPanel();
 }
+function renderThreatPanel() {
+  const panel = document.getElementById('threatPanel');
+  const t = window.__threat; if (!panel || !t) return;
+  const top = t.items.slice().sort((a, b) => itemScore(b) - itemScore(a)).slice(0, 5);
+  const trendTxt = t.trend === '▲' ? '최근 3일 평균보다 상승' : t.trend === '▼' ? '최근 3일 평균보다 하락' : t.trend ? '최근 3일 평균과 비슷' : '';
+  panel.innerHTML =
+    `<div class="tp-head"><span class="tp-title">위협지수 ${t.idx} · <span style="color:${t.lv.color}">${t.lv.label}</span></span><span class="tp-f">${esc(t.key)} 수집분${trendTxt ? ' · ' + trendTxt : ''}</span></div>` +
+    `<div class="tp-formula">위협지수 = 상위 5건 점수 평균 × 0.7 + 최고 점수 × 0.3. 점수(0~100) = 대상 30 + 악용 25 + 기술 15 + 규모 15 + 국내 15</div>` +
+    top.map(i => {
+      const f = i.scoreFactors ? Object.entries(FACTOR_KO).map(([k, n]) => `${n} ${i.scoreFactors[k] ?? 0}`).join(' · ') : '점수 없음(심각도로 추정)';
+      return `<div class="tp-item" onclick="showDetail('${esc(i.id)}')"><div class="tp-t"><span class="tp-s" style="color:${SEV_COLORS[i.severity] || '#888'}">${itemScore(i)}</span>${esc(i.title)}</div><div class="tp-f">${f}</div></div>`;
+    }).join('') +
+    `<div class="tp-scale">SEVERE 80↑ (또는 국내 통신사 직접 침해) · HIGH 65~79 · ELEVATED 50~64 · GUARDED 35~49 · LOW 35 미만</div>`;
+}
+window.toggleThreatPanel = function () {
+  const panel = document.getElementById('threatPanel'); if (!panel) return;
+  panel.hidden = !panel.hidden;
+  if (!panel.hidden) renderThreatPanel();
+};
 
 /* ====== NAVIGATION ====== */
 const VIEW_ORDER = ['viewDashboard','viewMap','viewGraph','viewFeed','viewSettings'];
@@ -2002,14 +2072,13 @@ function renderRegionStats() {
       if (inc.severity === 'critical' || inc.severity === 'high') regionSev[key][inc.severity]++;
     }
   });
-  // Same rule as the header threat level (critical >3 CRITICAL, critical >0 HIGH, high >3 ELEVATED, else LOW),
-  // applied to the incidents currently shown (cumulative when the 누적 toggle is on).
-  const levelOf = (s) => s.critical > 3 ? ['CRITICAL', SEV_COLORS.critical]
-                      : s.critical > 0 ? ['HIGH', SEV_COLORS.high]
-                      : s.high > 3 ? ['ELEVATED', SEV_COLORS.medium]
-                      : ['LOW', SEV_COLORS.low];
+  // Same threat index as the header badge, applied per region to the incidents currently shown
+  // (cumulative when the 누적 toggle is on).
+  const regionItems = {};
+  getFilteredIncidents().forEach(inc => { const k = inc.region === 'Asia' ? 'Asia Pacific' : inc.region; (regionItems[k] = regionItems[k] || []).push(inc); });
+  const levelOf = (s, key) => { const it = regionItems[key] || []; if (!it.length) return ['LOW', SEV_COLORS.low]; const lv = threatLevel(threatIndex(it), it); return [lv.label, lv.color]; };
   el.innerHTML = Object.entries(REGIONS).map(([key, r]) => {
-    const [label, color] = levelOf(regionSev[key]);
+    const [label, color] = levelOf(regionSev[key], key);
     const sel = selectedRegion === key;
     return `<div class="region-stat${sel ? ' selected' : ''}" role="button" tabindex="0" aria-expanded="${sel}" data-region="${key}" onclick="selectRegion('${key}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRegion('${key}')}">` +
       `<span class="r-name">${r.label.replace('·', '·<br>')}</span>` +
