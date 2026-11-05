@@ -192,13 +192,36 @@ def kpis(items, extra=None):
     if extra: tiles += extra
     return '<div class="kpis">' + "".join(f'<div class="kpi"><b style="color:{col}">{v}</b><span>{k}</span></div>' for k, v, col in tiles) + '</div>'
 
+def brief_html(lines):
+    """Consulting-style summary lines 'Label: text' -> bold label + text."""
+    out = ""
+    for l in lines:
+        l = str(l)
+        if ":" in l and 0 < l.index(":") <= 12:
+            lab, txt = l.split(":", 1)
+            out += f'<div style="display:flex;gap:8px;margin:4px 0"><b style="flex:0 0 96px;white-space:nowrap;color:#1e3a8a">{e(lab.strip())}</b><span style="flex:1">{e(txt.strip())}</span></div>'
+        else:
+            out += f"<p>{e(l)}</p>"
+    return out
+
+def daily_lines(root, date):
+    """Archived brief (data/briefs/{date}.json) first, then data/briefing.json if it is for the same date."""
+    for path in (os.path.join(root, "data/briefs", f"{date}.json"), os.path.join(root, "data/briefing.json")):
+        br = load(path, {}) or {}
+        if br.get("date") == date and br.get("lines"):
+            return br["lines"]
+    return []
+
+def weekly_lines(root, start, end):
+    br = load(os.path.join(root, "data/briefs", f"weekly-{start}_{end}.json"), {}) or {}
+    return br.get("lines", []) if br.get("end") == str(end) else []
+
 def daily(root, date, gen):
     items = load(os.path.join(root, "data/daily", f"{date}.json"), [])
     if not items: return None
-    br = load(os.path.join(root, "data/briefing.json"), {})
-    lines = br.get("lines", []) if br.get("date") == date else []
+    lines = daily_lines(root, date)
     wd = WD[date_obj(date).weekday()]
-    summ = "".join(f"<p>{e(l)}</p>" for l in lines) or "<p>당일 요약문 없음</p>"
+    summ = brief_html(lines) or "<p>당일 요약문 없음</p>"
     ch = sorted([i for i in items if i.get("severity") in ("critical", "high")], key=lambda x: (sev_key(x), x.get("id", "")))
     body = (f'<h2>Executive Summary</h2><div class="box">{summ}</div>{kpis(items)}'
             f'{world_map(items)}<h2>분포 현황</h2><div class="two"><div>{sev_table(items)}</div><div>{cat_table(items)}</div></div><div class="two" style="margin-top:10px"><div>{region_table(items)}</div><div>{country_table(items)}</div></div>'
@@ -323,7 +346,9 @@ def weekly(root, end, gen):
         f"최다 카테고리: {top_cat[0]} {CAT_KO.get(top_cat[0],'')} {top_cat[1]}건 / 국내(KR) {len(kr)}건",
         "상위 국가: " + ", ".join(f"{n} {v}건" for n, v in top_c),
     ]
-    box = "".join(f"<p>· {e(s)}</p>" for s in summary)
+    num = "".join(f"<p>· {e(s)}</p>" for s in summary)
+    wl = weekly_lines(root, start_d, end_d)
+    box = (brief_html(wl) + f'<div style="margin-top:8px;padding-top:6px;border-top:1px dashed #c7d2ea"><b style="color:#1e3a8a">주요 수치</b>{num}</div>') if wl else num
     # per-day table
     rows = ""
     for d in dates:
@@ -381,8 +406,7 @@ def main():
         h, items, s = r; rel = f"reports/weekly/Weekly_{s}_{a.date}.pdf"
     to_pdf(h, os.path.join(a.root, rel))
     sev = collections.Counter(i.get("severity") for i in items)
-    br = load(os.path.join(a.root, "data/briefing.json"), {})
-    lines = br.get("lines", []) if (a.mode == "daily" and br.get("date") == a.date) else []
+    lines = daily_lines(a.root, a.date) if a.mode == "daily" else weekly_lines(a.root, s, a.date)
     top = [i.get("title", "") for i in sorted(items, key=lambda x: (sev_key(x), x.get("id", ""))) if i.get("severity") in ("critical", "high")][:5]
     kr = sum(1 for i in items if i.get("country") == "KR")
     print(json.dumps({"ok": True, "mode": a.mode, "date": a.date, "path": rel, "name": os.path.basename(rel), "count": len(items), "critical": sev.get("critical", 0), "high": sev.get("high", 0), "kr": kr, "countries": len({i.get("country") for i in items}), "lines": lines, "top": top, "period": (f"{s} ~ {a.date}" if a.mode == "weekly" else a.date)}, ensure_ascii=False))
