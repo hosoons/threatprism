@@ -300,7 +300,7 @@ def weekly_graph(items):
             f'<div class="muted" style="margin-top:2px">점 = 사건 1건 (색 = 카테고리, 크기 = 연결 수) · 선 = 공통 태그·카테고리·국가가 겹치는 사건</div>{hub_line}')
 
 def correlation_section(items):
-    return f'<h2>그래프로 주간 동향</h2>{weekly_graph(items)}'
+    return f'<h2>이슈 네트워크</h2>{weekly_graph(items)}'
 
 def weekly(root, end, gen):
     end_d = date_obj(end); start_d = end_d - dt.timedelta(days=6)
