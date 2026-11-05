@@ -218,40 +218,70 @@ def norm_tags(i):
     return sorted({str(t).strip().lower() for t in (i.get("tags") or []) if str(t).strip()})
 
 def bubble_matrix(items):
-    """Category x region bubbles: size = count, colour = highest severity in the cell."""
+    """Category x region grid where every item is its own bubble (colour = severity, like the app);
+    Critical/High bubbles carry a number that maps to the colour-grouped list below the chart."""
     regs = [r for r in REGIONS if any(i.get("region") == r for i in items)] or REGIONS[:4]
     cell = collections.defaultdict(list)
     for i in items:
         cell[(i.get("category"), i.get("region"))].append(i)
-    mx = max([len(v) for v in cell.values()] or [1])
-    cw, rh, lw, th = 74, 38, 120, 26
-    W = lw + cw * len(regs) + 52
-    H = th + rh * len(CAT) + 8
+    # global numbering for Critical/High in severity order
+    ch = sorted([i for i in items if i.get("severity") in ("critical", "high")], key=lambda x: (sev_key(x), x.get("id", "")))
+    num = {i.get("id"): n for n, i in enumerate(ch, 1)}
+    per_row = 5
+    cap_rows = max(1, max([-(-len(v) // per_row) for v in cell.values()] or [1]))
+    cap_rows = min(cap_rows, 4)
+    cw, lw, th = 84, 118, 24
+    rh = 12 + 16 * cap_rows
+    W = lw + cw * len(regs) + 44
+    H = th + rh * len(CAT) + 6
     out = [f'<svg width="100%" viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" style="font-family:sans-serif">']
     for ci, r in enumerate(regs):
         x = lw + cw * ci + cw / 2
-        out.append(f'<text x="{x}" y="16" font-size="10" text-anchor="middle" fill="#374151">{e(REGION_KO.get(r, r))}</text>')
-    out.append(f'<text x="{lw + cw * len(regs) + 26}" y="16" font-size="10" text-anchor="middle" fill="#374151" font-weight="700">합계</text>')
+        out.append(f'<text x="{x}" y="15" font-size="10" text-anchor="middle" fill="#374151">{e(REGION_KO.get(r, r))}</text>')
+        out.append(f'<line x1="{lw + cw * ci}" y1="{th}" x2="{lw + cw * ci}" y2="{H - 6}" stroke="#eef0f4"/>')
+    out.append(f'<text x="{lw + cw * len(regs) + 22}" y="15" font-size="10" text-anchor="middle" fill="#374151" font-weight="700">합계</text>')
     for ri, k in enumerate(CAT):
-        y = th + rh * ri + rh / 2
+        y0 = th + rh * ri
         if ri % 2 == 0:
-            out.append(f'<rect x="0" y="{th + rh * ri}" width="{W}" height="{rh}" fill="#f8fafc"/>')
-        out.append(f'<text x="4" y="{y + 4}" font-size="10" fill="#111827">{k} {e(CAT_KO[k])}</text>')
+            out.append(f'<rect x="0" y="{y0}" width="{W}" height="{rh}" fill="#f8fafc"/>')
+        out.append(f'<text x="4" y="{y0 + rh / 2 + 4}" font-size="10" fill="#111827">{k} {e(CAT_KO[k])}</text>')
         tot = 0
         for ci, r in enumerate(regs):
-            v = cell.get((k, r), [])
+            v = sorted(cell.get((k, r), []), key=lambda i: (sev_key(i), i.get("id", "")))
             tot += len(v)
-            if not v:
-                continue
-            top = max(v, key=lambda i: SEVRANK.get(i.get("severity"), 0)).get("severity")
-            rad = 4 + 13 * (len(v) / mx) ** 0.5
-            x = lw + cw * ci + cw / 2
-            out.append(f'<circle cx="{x}" cy="{y}" r="{rad:.1f}" fill="{SEV_COLOR.get(top, "#6b7280")}" fill-opacity="0.78"/>')
-            out.append(f'<text x="{x}" y="{y + 3.5}" font-size="9.5" text-anchor="middle" fill="#ffffff" font-weight="700">{len(v)}</text>')
-        out.append(f'<text x="{lw + cw * len(regs) + 26}" y="{y + 4}" font-size="10" text-anchor="middle" fill="#111827" font-weight="700">{tot}</text>')
+            cap = per_row * cap_rows
+            show = v[:cap] if len(v) <= cap else v[:cap - 1]
+            for n, i in enumerate(show):
+                cx = lw + cw * ci + 10 + (n % per_row) * 15.5
+                cy = y0 + 14 + (n // per_row) * 16
+                col = SEV_COLOR.get(i.get("severity"), "#6b7280")
+                out.append(f'<circle cx="{cx:.1f}" cy="{cy}" r="6.8" fill="{col}" fill-opacity="0.85"/>')
+                if i.get("id") in num:
+                    out.append(f'<text x="{cx:.1f}" y="{cy + 2.6}" font-size="7" text-anchor="middle" fill="#ffffff" font-weight="700">{num[i.get("id")]}</text>')
+            if len(v) > len(show):
+                n = len(show)
+                cx = lw + cw * ci + 10 + (n % per_row) * 15.5; cy = y0 + 14 + (n // per_row) * 16
+                out.append(f'<text x="{cx:.1f}" y="{cy + 3}" font-size="7.5" text-anchor="middle" fill="#6b7280">+{len(v) - len(show)}</text>')
+        out.append(f'<text x="{lw + cw * len(regs) + 22}" y="{y0 + rh / 2 + 4}" font-size="10" text-anchor="middle" fill="#111827" font-weight="700">{tot}</text>')
     out.append('</svg>')
-    legend = " ".join(f'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{SEV_COLOR[s]};margin:0 3px 0 8px"></span>{SEV_KO[s]}' for s in SEV)
-    return "".join(out) + f'<div class="muted" style="margin-top:2px">원 크기 = 건수, 색 = 해당 칸의 최고 심각도 · {legend}</div>'
+    # colour-grouped summary under the chart
+    dot = lambda s: f'<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:{SEV_COLOR[s]};margin-right:5px;vertical-align:middle"></span>'
+    rows = ""
+    for sv in SEV:
+        grp = sorted([i for i in items if i.get("severity") == sv], key=lambda x: x.get("id", ""))
+        if not grp:
+            continue
+        if sv in ("critical", "high"):
+            lines = "".join(f'<div><b>{num[i.get("id")]}</b> {e(i.get("title", ""))} <span class="muted">({e(i.get("category", ""))} · {e(i.get("countryName") or i.get("country") or "")})</span></div>' for i in sorted(grp, key=lambda x: num[x.get("id")]))
+        else:
+            cats = collections.Counter(i.get("category") for i in grp)
+            regs_c = collections.Counter(REGION_KO.get(i.get("region"), i.get("region")) for i in grp)
+            ex = " / ".join(e(i.get("title", "")[:28] + ("…" if len(i.get("title", "")) > 28 else "")) for i in grp[:3])
+            lines = (f'<div>{", ".join(f"{CAT_KO.get(c, c)} {n}" for c, n in cats.most_common())} · '
+                     f'{", ".join(f"{r} {n}" for r, n in regs_c.most_common(3))}</div><div class="muted">예: {ex}</div>')
+        rows += f'<tr><td style="width:96px;white-space:nowrap">{dot(sv)}<b>{SEV_KO[sv]}</b> {len(grp)}건</td><td>{lines}</td></tr>'
+    legend = f'<table style="margin-top:6px"><tr><th>색 (심각도)</th><th>무슨 일이 있었나</th></tr>{rows}</table>'
+    return ("".join(out) + '<div class="muted" style="margin-top:2px">버블 1개 = 사건 1건, 색 = 심각도. 번호는 아래 목록의 Critical·High 항목 번호</div>' + legend)
 
 def tag_heatmap(items, n=10):
     """Lower-triangle co-occurrence of the top tags (number of items carrying both tags)."""
@@ -328,7 +358,7 @@ def tag_flows(items, k=3):
 
 def correlation_section(items):
     return (f'<h2>한 주의 연관관계</h2>'
-            f'<div style="page-break-inside:avoid"><div style="font-weight:700;margin:4px 0">① 카테고리 × 지역: 어떤 위협이 어디에 몰렸나</div>{bubble_matrix(items)}</div>'
+            f'<div><div style="font-weight:700;margin:4px 0;page-break-after:avoid">① 카테고리 × 지역: 어떤 위협이 어디에 몰렸나</div>{bubble_matrix(items)}</div>'
             f'<div style="page-break-inside:avoid;margin-top:10px"><div style="font-weight:700;margin:4px 0">② 태그 동시출현: 무엇과 함께 움직였나</div>{tag_heatmap(items)}</div>'
             f'<div style="margin-top:10px"><div style="font-weight:700;margin:4px 0">③ 이번 주 연결된 흐름 Top 3</div>{tag_flows(items)}</div>')
 
