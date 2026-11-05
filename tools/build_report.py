@@ -145,7 +145,7 @@ def cat_table(items):
     rows = ""
     c = collections.Counter(i.get("category") for i in items)
     for k in CAT:
-        rows += f'<tr><td>{k} {CAT_KO[k]}</td><td class="num">{c.get(k,0)}</td></tr>'
+        rows += f'<tr><td>{CAT_KO[k]}</td><td class="num">{c.get(k,0)}</td></tr>'
     return f'<table><tr><th>카테고리</th><th class="num">건수</th></tr>{rows}</table>'
 
 def region_table(items):
@@ -158,17 +158,17 @@ def cards(items):
     for i in items:
         col = SEV_COLOR.get(i.get("severity"), "#999")
         out += (f'<div class="card" style="border-left-color:{col}"><div class="ct">{pill(i.get("severity"))} {e(i.get("title",""))}</div>'
-                f'<div class="m">{e(i.get("category",""))} · {e(i.get("countryName",""))} · {e(i.get("source",""))} · {e(i.get("date",""))}</div>'
+                f'<div class="m">{e(CAT_KO.get(i.get("category",""), i.get("category","")))} · {e(i.get("countryName",""))} · {e(i.get("source",""))} · {e(i.get("date",""))}</div>'
                 f'<div class="sm">{e(i.get("summary",""))}</div></div>')
     return out or '<p class="muted">해당 항목 없음</p>'
 
 def feed_table(items):
     rows = ""
     for i in sorted(items, key=lambda x: (CAT.index(x["category"]) if x.get("category") in CAT else 9, sev_key(x))):
-        rows += (f'<tr><td style="width:34px">{e(i.get("category",""))}</td><td>{e(i.get("title",""))}</td>'
-                 f'<td style="width:54px">{e(i.get("countryName",""))}</td><td style="width:52px">{pill(i.get("severity"))}</td>'
+        rows += (f'<tr><td style="width:84px;white-space:nowrap">{e(CAT_KO.get(i.get("category",""), i.get("category","")))}</td><td>{e(i.get("title",""))}</td>'
+                 f'<td style="width:66px;white-space:nowrap">{e(i.get("countryName",""))}</td><td style="width:52px">{pill(i.get("severity"))}</td>'
                  f'<td style="width:78px">{e(i.get("source",""))}</td></tr>')
-    return f'<table><tr><th>구분</th><th>제목</th><th>국가</th><th>심각도</th><th>출처</th></tr>{rows}</table>'
+    return f'<table><tr><th>카테고리</th><th>제목</th><th>국가</th><th>심각도</th><th>출처</th></tr>{rows}</table>'
 
 def sources_table(items):
     rows, seen = "", set()
@@ -343,7 +343,7 @@ def weekly(root, end, gen):
     kr = [i for i in items if i.get("country") == "KR"]
     summary = [
         f"기간 내 총 {len(items)}건 수집: Critical {sev.get('critical',0)}건 · High {sev.get('high',0)}건 · Medium {sev.get('medium',0)}건",
-        f"최다 카테고리: {top_cat[0]} {CAT_KO.get(top_cat[0],'')} {top_cat[1]}건 / 국내(KR) {len(kr)}건",
+        f"최다 카테고리: {CAT_KO.get(top_cat[0], top_cat[0])} {top_cat[1]}건 / 국내(KR) {len(kr)}건",
         "상위 국가: " + ", ".join(f"{n} {v}건" for n, v in top_c),
     ]
     num = "".join(f"<p>· {e(s)}</p>" for s in summary)
@@ -360,7 +360,7 @@ def weekly(root, end, gen):
     xr = ""
     for k in CAT:
         c = collections.Counter(i.get("region") for i in items if i.get("category") == k)
-        xr += f'<tr><td>{k} {CAT_KO[k]}</td>' + "".join(f'<td class="num">{c.get(r,0)}</td>' for r in REGIONS) + f'<td class="num"><b>{cs.get(k,0)}</b></td></tr>'
+        xr += f'<tr><td>{CAT_KO[k]}</td>' + "".join(f'<td class="num">{c.get(r,0)}</td>' for r in REGIONS) + f'<td class="num"><b>{cs.get(k,0)}</b></td></tr>'
     cross = f'<table><tr><th>카테고리</th>{hdr}<th class="num">합계</th></tr>{xr}</table>'
     body = (f'<h2>Executive Summary</h2><div class="box">{box}</div>{kpis(items, [("수집일수", len(dates), "#6b7280")])}'
             f'<h2>일자별 추이</h2>{daytab}'
