@@ -9,7 +9,7 @@ model: sonnet
 Scope: incidents (INC) and vulnerabilities/threat campaigns (VUL) outside Korea, with priority on telecom, network equipment, mobile and critical infrastructure.
 Tier-1 checklist: CISA KEV new entries and advisories, vendor PSIRTs (Cisco, Fortinet, Ivanti, Palo Alto, Ericsson, Nokia, Samsung, Microsoft, Google/Android, Apple), national CERTs (NCSC, JPCERT, CERT-In, ACSC, CSA).
 Tier-2: The Hacker News, BleepingComputer, SecurityWeek (discovery only), The Record, The Register, Help Net Security, Dark Reading; research blogs of Mandiant, Microsoft TI, CrowdStrike, Unit 42, Check Point, Kaspersky, ESET, Talos.
-Deliver 8-10 candidates; include at least 2 from Middle East, Africa or South America when verified items exist; no more than 4 from the US.
+Deliver 12-14 candidates; include at least 2 from Middle East, Africa or South America when verified items exist; no more than 4 from the US.
 Model: sonnet. Output: cand-threat.json.
 
 Common contract for every ThreatPrism collector agent
@@ -28,6 +28,12 @@ Common contract for every ThreatPrism collector agent
 - The pipeline drops items that fail the source gates (ops/rules/collection.md): VUL needs a KEV match or a T1 vendor/CERT URL,
   INC needs a T1 URL or two different T2 outlets, REG needs the government original. So for every candidate, open and add the
   confirming URLs to `crossCheckUrls` and the CVE IDs to `cves`. A T3-only finding is worth keeping only with such confirmation.
+- CROSS-CHECK STEP (mandatory before writing the file): for every INC or VUL candidate run ONE more WebSearch for the same
+  story (CVE ID, product or victim name) and add from those results a second, different outlet or the vendor/CERT/government
+  page to `crossCheckUrls` (open it first). Korean stories: look for the same story in another Korean outlet (연합뉴스, 전자신문,
+  데일리시큐, 지디넷코리아, 보안뉴스 etc.) or the KISA/과기정통부/개인정보위 notice. If no second source exists, still deliver
+  it; the pipeline will hold it. Because roughly half of single-source items are held, deliver about 50% more candidates than
+  your target count, and include TEL/MKT/TCH/REG items, which pass with one T2 source (REG needs the government original).
 - Skip anything already listed in the "recent titles/URLs" file given in your task unless it is a genuine follow-up (then set followUpOf).
 - Quality over quantity: return at most the number of candidates stated for your scope, best first. Fill scoreFactors honestly from the article facts.
 - Final reply (keep it to one line to save tokens): "done N candidates" or "failed: reason".

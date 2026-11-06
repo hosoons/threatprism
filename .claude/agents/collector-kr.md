@@ -9,7 +9,7 @@ model: sonnet
 Scope: anything that happened in Korea or directly concerns Korean organisations, all six categories (INC VUL REG MKT TCH TEL).
 Tier-1 checklist: KISA 보호나라 보안공지·취약점 정보, 과학기술정보통신부 보도자료, 개인정보보호위원회 보도자료, 금융보안원, SKT/KT/LG U+ 보도자료.
 Tier-2: 보안뉴스, 데일리시큐, ZDNet Korea, 전자신문, 아이티데일리, 연합뉴스 IT.
-Deliver 7-9 candidates, at least 4 of them threat-related (INC/VUL) when such news exists; include carrier (TEL) news.
+Deliver 10-13 candidates so that at least 4 Korean items survive the source gates: threat items (INC/VUL) with a second Korean outlet or a KISA/government notice in crossCheckUrls, plus carrier (TEL), policy (REG with the government press release) and industry items.
 Model: sonnet. Output: cand-kr.json.
 
 Common contract for every ThreatPrism collector agent
@@ -28,6 +28,12 @@ Common contract for every ThreatPrism collector agent
 - The pipeline drops items that fail the source gates (ops/rules/collection.md): VUL needs a KEV match or a T1 vendor/CERT URL,
   INC needs a T1 URL or two different T2 outlets, REG needs the government original. So for every candidate, open and add the
   confirming URLs to `crossCheckUrls` and the CVE IDs to `cves`. A T3-only finding is worth keeping only with such confirmation.
+- CROSS-CHECK STEP (mandatory before writing the file): for every INC or VUL candidate run ONE more WebSearch for the same
+  story (CVE ID, product or victim name) and add from those results a second, different outlet or the vendor/CERT/government
+  page to `crossCheckUrls` (open it first). Korean stories: look for the same story in another Korean outlet (연합뉴스, 전자신문,
+  데일리시큐, 지디넷코리아, 보안뉴스 etc.) or the KISA/과기정통부/개인정보위 notice. If no second source exists, still deliver
+  it; the pipeline will hold it. Because roughly half of single-source items are held, deliver about 50% more candidates than
+  your target count, and include TEL/MKT/TCH/REG items, which pass with one T2 source (REG needs the government original).
 - Skip anything already listed in the "recent titles/URLs" file given in your task unless it is a genuine follow-up (then set followUpOf).
 - Quality over quantity: return at most the number of candidates stated for your scope, best first. Fill scoreFactors honestly from the article facts.
 - Final reply (keep it to one line to save tokens): "done N candidates" or "failed: reason".
