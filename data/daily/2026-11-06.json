@@ -1,0 +1,288 @@
+[
+ {
+  "id": "inc-2026-1106-009",
+  "title": "비스턴스(구 커먼스코프) CEO 퇴임 예고, 사업 분할 여파",
+  "category": "MKT",
+  "severity": "low",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 35.8,
+  "lng": -78.6,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/cable-technology/vistance-ceo-stepping-down-in-wake-of-commscope-dismantling",
+  "date": "2026-11-05",
+  "summary": "비스턴스 네트웍스(구 커멀스코프) CEO가 2027년 2월 1일 퇴임한다. 러커스는 벨든에 18.4억 달러에 매각하기로 했고 OWN·CCS는 암페놀에 126억 달러에 팔렸다. 3분기 오로라 매출은 5% 감소했다.",
+  "tags": [
+   "telecom",
+   "vendor",
+   "m-and-a",
+   "market"
+  ],
+  "score": 21,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 3,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "trust": 60,
+  "sourceTier": "T2"
+ },
+ {
+  "id": "inc-2026-1106-008",
+  "title": "옵티멈(구 알티스USA), 전략·재무 거래 검토 특별위 구성",
+  "category": "MKT",
+  "severity": "low",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 40.7,
+  "lng": -74.0,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/cable-technology/optimum-forms-group-to-explore-potential-strategic-and-financial-transactions-",
+  "date": "2026-11-04",
+  "summary": "옵티멈이 이사회를 11명으로 늘리고 전략·재무 거래를 검토할 특별위원회를 만들었다. 2027년 만기 부채가 약 63억 달러이며 주가는 연초 대비 57% 하락했다. 매각 포함 여부는 밝히지 않았다.",
+  "tags": [
+   "telecom",
+   "cable",
+   "restructuring",
+   "market"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "trust": 60,
+  "sourceTier": "T2"
+ },
+ {
+  "id": "inc-2026-1106-007",
+  "title": "AT&T, AST스페이스모바일 위성망과 첫 통화 핸드오프 성공",
+  "category": "TEL",
+  "severity": "low",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 32.8,
+  "lng": -96.8,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/satellite/at-t-rakuten-tout-integration-with-starlink-rival-ast-spacemobile-for-d2d-services",
+  "date": "2026-11-04",
+  "summary": "AT&T가 자사 셀룰러망과 AST스페이스모바일 위성망 간 첫 통화 핸드오프를 완료했다. 상용 서비스 전 베타 단계를 거치며 시기는 미정이다. 라쿠텐은 위성 통과당 4~6분 연결에 그쳐 초기 서비스가 제한적이다.",
+  "tags": [
+   "telecom",
+   "satellite",
+   "d2d",
+   "5g"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "trust": 60,
+  "sourceTier": "T2"
+ },
+ {
+  "id": "inc-2026-1106-006",
+  "title": "보다폰쓰리, 에릭슨 대규모 MIMO 라디오 상용 5G SA에 세계 최초 적용",
+  "category": "TCH",
+  "severity": "low",
+  "country": "GB",
+  "countryName": "영국",
+  "region": "Europe",
+  "lat": 51.5,
+  "lng": -0.1,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/5g/eurobites-vodafonethree-claims-world-first-with-ericsson-mimo-rollout",
+  "date": "2026-11-04",
+  "summary": "보다폰쓰리가 런던 상용 5G SA망에 에릭슨 AIR 3266 매시브 MIMO 라디오를 세계 최초로 배치했다고 밝혔다. 최대 400MHz 대역을 지원하며 전력 절감 30% 이상을 주장한다. 에릭슨 장비는 영국 내 1만여 개 사이트에 쓰인다. GSMA는 기후 복원력 정책 원칙도 발표했다.",
+  "tags": [
+   "telecom",
+   "5g",
+   "ran",
+   "resilience"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "trust": 60,
+  "sourceTier": "T2"
+ },
+ {
+  "id": "inc-2026-1106-005",
+  "title": "도이치텔레콤, 스페이스X 美 이통 진출 대비…3분기 실적 상향",
+  "category": "TEL",
+  "severity": "low",
+  "country": "DE",
+  "countryName": "독일",
+  "region": "Europe",
+  "lat": 52.5,
+  "lng": 13.4,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/finance/deutsche-telekom-braces-for-spacex-impact-in-us",
+  "date": "2026-11-05",
+  "summary": "도이치텔레콤 CEO는 스페이스X의 미국 이동통신 진출을 진지하게 보고 있다고 밝혔다. 스페이스X는 79MHz 대역으로 약 2천억 달러가 필요하다고 추정했고, 3분기 순매출은 7.5% 증가한 311억 유로였다. 미국이 순매출의 65.7%를 차지한다.",
+  "tags": [
+   "telecom",
+   "spacex",
+   "t-mobile",
+   "5g"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "trust": 60,
+  "sourceTier": "T2"
+ },
+ {
+  "id": "inc-2026-1106-004",
+  "title": "암도크스, T-모바일과 법적 분쟁에 주가 반토막·전망 하향",
+  "category": "MKT",
+  "severity": "low",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 38.9,
+  "lng": -77.0,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/ai-machine-learning/amdocs-shares-nosedive-on-legal-bust-up-with-t-mobile",
+  "date": "2026-11-04",
+  "summary": "통신 BSS 공급사 암도크스가 T-모바일과의 계약 분쟁으로 프랑크푸르트 주가가 약 절반 하락했다. 2027 회계연도 매출은 14.3~17.9% 감소를 전망했으며 T-모바일은 매출의 약 5분의 1을 차지한다. 세부 내용은 비공개이고 T-모바일은 계약을 해지하지 않았다.",
+  "tags": [
+   "telecom",
+   "vendor-risk",
+   "bss",
+   "market"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "trust": 60,
+  "sourceTier": "T2"
+ },
+ {
+  "id": "inc-2026-1106-003",
+  "title": "삼성 네트웍스, 최소 9년 만에 최악의 5G 분기…오픈랜 후퇴",
+  "category": "MKT",
+  "severity": "medium",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.3,
+  "lng": 127.0,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/5g/samsung-suffers-its-worst-5g-quarter-but-knows-it-can-outlast-rivals",
+  "date": "2026-11-05",
+  "summary": "삼성 네트웍스의 3분기 매출은 약 4000억 원으로 전년 대비 감소했다. 보다폰쓰리가 영국 오픈랜 계획(2,500개 사이트)을 포기했고 2025년 삼성의 RAN 점유율은 5%다. 에릭슨·노키아 무선 부문은 각각 9%, 10% 성장했다.",
+  "tags": [
+   "telecom",
+   "ran",
+   "open-ran",
+   "samsung"
+  ],
+  "score": 38,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 15
+  },
+  "nonThreat": true,
+  "trust": 60,
+  "sourceTier": "T2"
+ },
+ {
+  "id": "inc-2026-1106-002",
+  "title": "CryptoPayment Gateway 워드프레스 플러그인 CVSS 10.0 취약점 악용 시도",
+  "category": "VUL",
+  "severity": "high",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 37.77,
+  "lng": -122.42,
+  "source": "The Hacker News",
+  "sourceUrl": "https://thehackernews.com/2026/11/attackers-target-unpatched.html",
+  "date": "2026-11-03",
+  "summary": "CVE-2026-81648은 인증 없이 관리자 기능을 실행해 파일 삭제, 결제 설정 변조, 지갑 자격증명 평문 탈취가 가능하다. Defused Cyber가 실제 악용 시도를 관측했고 패치는 없어 플러그인 제거와 키 교체가 필요하다.",
+  "tags": [
+   "wordpress",
+   "rce",
+   "exploited",
+   "crypto"
+  ],
+  "score": 56,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 15,
+   "scale": 3,
+   "domestic": 3
+  },
+  "trust": 85,
+  "sourceTier": "T1"
+ },
+ {
+  "id": "inc-2026-1106-001",
+  "title": "아마데우스 침해로 대한항공·아시아나 등 아시아 항공사 고객정보 유출",
+  "category": "INC",
+  "severity": "critical",
+  "country": "JP",
+  "countryName": "일본",
+  "region": "Asia",
+  "lat": 35.68,
+  "lng": 139.69,
+  "source": "The Record",
+  "sourceUrl": "https://therecord.media/asian-airlines-announce-data-breach-it-provider-incident",
+  "date": "2026-11-04",
+  "summary": "스페인 항공 IT업체 아마데우스 침해로 일본항공(9.2만명), 캐세이퍼시픽(5.3만건), 싱가포르항공(4.6만건) 등 아시아 항공사 고객정보가 유출됐다. 대한항공과 아시아나도 영향을 받았다고 확인했으며 접근은 2023년 8월부터 2026년 9월까지 이어졌다.",
+  "tags": [
+   "data-breach",
+   "supply-chain",
+   "airline",
+   "third-party"
+  ],
+  "score": 75,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 10,
+   "scale": 15,
+   "domestic": 15
+  },
+  "trust": 75,
+  "sourceTier": "T1"
+ }
+]
