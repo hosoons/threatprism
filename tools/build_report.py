@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """ThreatPrism report builder: daily / weekly PDF from data/daily/*.json (HTML -> PDF via Chromium)."""
-import argparse, base64, collections, datetime as dt, html, json, os, sys
+import argparse, base64, collections, datetime as dt, html, json, os, re, sys
 
 SEV = ["critical", "high", "medium", "low", "info"]
 SEV_KO = {"critical": "Critical", "high": "High", "medium": "Medium", "low": "Low", "info": "Info"}
@@ -357,52 +357,190 @@ def weekly_graph(items):
 def correlation_section(items):
     return f'<h2>이슈 네트워크</h2>{weekly_graph(items)}'
 
+TELCO_WORDS = ("telecom", "carrier", "5g", "lte", "sim", "mobile-network", "ss7", "diameter", "ran", "통신", "이통", "skt", "kt", "lg u+", "lgu+", "telco")
+
+def collect_day(i):
+    m = re.match(r"inc-(\d{4})-(\d{2})(\d{2})-", i.get("id", ""))
+    return f"{m.group(1)}-{m.group(2)}-{m.group(3)}" if m else i.get("date", "")
+
+def window_items(root, start_d, end_d):
+    """Items collected in [start, end]: data/daily files first, older days from the data/incidents.json archive."""
+    man = load(os.path.join(root, "data/daily/manifest.json"), []) or []
+    per = {}
+    for d in man:
+        if start_d <= date_obj(d) <= end_d:
+            per[d] = load(os.path.join(root, "data/daily", f"{d}.json"), []) or []
+    for i in load(os.path.join(root, "data/incidents.json"), []) or []:
+        d = collect_day(i)
+        try:
+            dd = date_obj(d)
+        except ValueError:
+            continue
+        if start_d <= dd <= end_d and d not in man:
+            per.setdefault(d, []).append(i)
+    return {d: per[d] for d in sorted(per)}
+
+def is_telco(i):
+    if i.get("category") == "TEL" or i.get("telcoBreach"):
+        return True
+    tags = {str(t).strip().lower() for t in (i.get("tags") or [])}
+    if tags & {"telecom", "telco", "carrier", "5g", "sim-swap", "sim-farm", "ss7", "mobile-network", "ran", "satellite"}:
+        return True
+    title = i.get("title", "")
+    return bool(re.search(r"통신사|이통|통신망|기지국|SKT|SK텔레콤|LG유플러스|\bKT\b|\bSIM\b|5G|6G|telecom|carrier", title, re.I))
+
+def delta(cur, prev):
+    if prev is None:
+        return ""
+    d = cur - prev
+    arrow = "▲" if d > 0 else ("▼" if d < 0 else "–")
+    return f"{arrow}{abs(d)}" if d else "–"
+
+def kpi_tiles(tiles):
+    return '<div class="kpis">' + "".join(
+        f'<div class="kpi"><b style="color:{col}">{v}</b><span>{k}</span>' + (f'<div style="font-size:8pt;color:#6b7280">전주 {dl}</div>' if dl else "") + '</div>'
+        for k, v, col, dl in tiles) + '</div>'
+
+def index_trend_svg(per):
+    days = list(per)
+    if not days:
+        return ""
+    W, H, pad = 680, 150, 28
+    bw = (W - 2 * pad) / len(days)
+    out = f'<svg viewBox="0 0 {W} {H + 34}" width="100%" style="font-family:sans-serif">'
+    for lv, col in ((80, SEV_COLOR["critical"]), (65, SEV_COLOR["high"]), (50, SEV_COLOR["medium"])):
+        y = H - lv / 100 * (H - 10)
+        out += f'<line x1="{pad}" x2="{W - pad}" y1="{y:.0f}" y2="{y:.0f}" stroke="{col}" stroke-dasharray="3 3" stroke-width="0.8"/><text x="{W - pad + 2}" y="{y + 3:.0f}" font-size="8" fill="{col}">{lv}</text>'
+    for k, d in enumerate(days):
+        idx, lab, col = threat_index(per[d])
+        h = idx / 100 * (H - 10)
+        x = pad + k * bw + bw * 0.2
+        out += (f'<rect x="{x:.0f}" y="{H - h:.0f}" width="{bw * 0.6:.0f}" height="{h:.0f}" rx="3" fill="{col}"/>'
+                f'<text x="{x + bw * 0.3:.0f}" y="{H - h - 4:.0f}" font-size="10" font-weight="700" text-anchor="middle" fill="#111827">{idx}</text>'
+                f'<text x="{x + bw * 0.3:.0f}" y="{H + 13}" font-size="9" text-anchor="middle" fill="#374151">{d[5:]} ({WD[date_obj(d).weekday()]})</text>'
+                f'<text x="{x + bw * 0.3:.0f}" y="{H + 26}" font-size="8" text-anchor="middle" fill="{col}">{lab} · {len(per[d])}건</text>')
+    return out + "</svg>"
+
+def auto_themes(items, n=4):
+    """Fallback storylines: connected groups of items sharing tags (ignoring very generic tags)."""
+    generic = {"security", "cybersecurity", "vulnerability", "patch", "korea", "update", "news"}
+    ids = [i.get("id") for i in items]
+    tag_map = collections.defaultdict(list)
+    for i in items:
+        for t in norm_tags(i):
+            if t not in generic:
+                tag_map[t].append(i.get("id"))
+    parent = {x: x for x in ids}
+    def f(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]; x = parent[x]
+        return x
+    for t, group in tag_map.items():
+        if 2 <= len(group) <= 12:
+            for g in group[1:]:
+                parent[f(g)] = f(group[0])
+    groups = collections.defaultdict(list)
+    for i in items:
+        groups[f(i.get("id"))].append(i)
+    gs = [g for g in groups.values() if len(g) >= 2]
+    gs.sort(key=lambda g: -(sum(sorted((item_score(x) for x in g), reverse=True)[:3])))
+    themes = []
+    for g in gs[:n]:
+        tc = collections.Counter(t for x in g for t in norm_tags(x) if t not in generic)
+        themes.append({"title": " · ".join(t for t, _ in tc.most_common(3)), "insight": "", "implication": "", "ids": [x.get("id") for x in g]})
+    return themes
+
+def theme_cards(themes, by_id):
+    out = ""
+    for k, t in enumerate(themes, 1):
+        its = sorted([by_id[x] for x in t.get("ids", []) if x in by_id], key=lambda x: -item_score(x))
+        if not its:
+            continue
+        mx = max(item_score(x) for x in its)
+        col = SEV_COLOR["critical"] if mx >= 75 else SEV_COLOR["high"] if mx >= 55 else SEV_COLOR["medium"] if mx >= 35 else SEV_COLOR["low"]
+        countries = ", ".join(sorted({x.get("countryName", "") for x in its if x.get("countryName")}))[:60]
+        lis = "".join(f'<li>{pill(x.get("severity"))} {e(x.get("title", ""))} <span class="muted">· {e(x.get("source", ""))} · 점수 {item_score(x)}</span></li>' for x in its[:4])
+        more = f'<div class="muted" style="font-size:8pt">외 {len(its) - 4}건</div>' if len(its) > 4 else ""
+        ins = f'<div class="sm" style="margin:3px 0"><b>무엇이 일어났나</b> {e(t["insight"])}</div>' if t.get("insight") else ""
+        imp = f'<div class="sm" style="margin:3px 0"><b style="color:#1e3a8a">통신사 시사점</b> {e(t["implication"])}</div>' if t.get("implication") else ""
+        out += (f'<div class="card" style="border-left-color:{col}"><div class="ct">흐름 {k}. {e(t.get("title", ""))}</div>'
+                f'<div class="m">관련 {len(its)}건 · 최고 점수 {mx} · {e(countries)}</div>{ins}{imp}'
+                f'<ul style="margin:4px 0 0 16px;padding:0;font-size:8.5pt">{lis}</ul>{more}</div>')
+    return out or '<p class="muted">해당 항목 없음</p>'
+
+def cat_trend_table(items, prev):
+    rows = ""
+    pc = collections.Counter(i.get("category") for i in prev) if prev is not None else None
+    for k in CAT:
+        a = [i for i in items if i.get("category") == k]
+        if not a and not (pc and pc.get(k)):
+            continue
+        avg = round(sum(item_score(i) for i in a) / len(a)) if a else 0
+        top = max(a, key=item_score) if a else None
+        rows += (f'<tr><td style="white-space:nowrap">{CAT_KO[k]}</td><td class="num">{len(a)}</td>'
+                 f'<td class="num">{delta(len(a), pc.get(k, 0)) if pc is not None else "-"}</td><td class="num">{avg}</td>'
+                 f'<td>{e(top.get("title", "")) if top else ""}</td></tr>')
+    return f'<table><tr><th>카테고리</th><th class="num">건수</th><th class="num">전주 대비</th><th class="num">평균 점수</th><th>최고 위협 항목</th></tr>{rows}</table>'
+
+def actions_table(actions):
+    if not actions:
+        return ""
+    rows = ""
+    for a in actions:
+        if isinstance(a, dict):
+            rows += f'<tr><td style="white-space:nowrap;width:46px"><b>{e(a.get("priority", ""))}</b></td><td>{e(a.get("action", ""))}</td><td style="width:150px">{e(a.get("why", ""))}</td></tr>'
+        else:
+            rows += f'<tr><td></td><td>{e(str(a))}</td><td></td></tr>'
+    return f'<h2>권고 조치</h2><table><tr><th>우선</th><th>조치</th><th>근거 이슈</th></tr>{rows}</table>'
+
+def compact_cards(items, n):
+    out = ""
+    for i in sorted(items, key=lambda x: -item_score(x))[:n]:
+        col = SEV_COLOR.get(i.get("severity"), "#999")
+        out += (f'<div class="card" style="border-left-color:{col};padding:5px 9px"><div class="ct" style="font-size:9.5pt">{pill(i.get("severity"))} {e(i.get("title", ""))}</div>'
+                f'<div class="m">{e(CAT_KO.get(i.get("category", ""), ""))} · {e(i.get("countryName", ""))} · {e(i.get("source", ""))} · {collect_day(i)}{score_txt(i)}</div>'
+                f'<div class="sm">{e(i.get("summary", ""))}</div></div>')
+    return out or '<p class="muted">해당 항목 없음</p>'
+
 def weekly(root, end, gen):
     end_d = date_obj(end); start_d = end_d - dt.timedelta(days=6)
-    man = load(os.path.join(root, "data/daily/manifest.json"), [])
-    dates = sorted(d for d in man if start_d <= date_obj(d) <= end_d)
-    items, per = [], {}
-    for d in dates:
-        arr = load(os.path.join(root, "data/daily", f"{d}.json"), [])
-        per[d] = arr; items += arr
+    per = window_items(root, start_d, end_d)
+    items = [i for d in per for i in per[d]]
     if not items: return None
-    cs = collections.Counter(i.get("category") for i in items)
-    top_cat = cs.most_common(1)[0]
-    cc = collections.Counter(i.get("countryName") for i in items)
-    top_c = cc.most_common(3)
+    prev_per = window_items(root, start_d - dt.timedelta(days=7), start_d - dt.timedelta(days=1))
+    prev = [i for d in prev_per for i in prev_per[d]] or None
+    by_id = {i.get("id"): i for i in items}
+    br = load(os.path.join(root, "data/briefs", f"weekly-{start_d}_{end_d}.json"), {}) or {}
+    if br.get("end") != str(end_d):
+        br = {}
+    lines = br.get("lines", [])
+    themes = br.get("themes") or auto_themes(items)
     sev = collections.Counter(i.get("severity") for i in items)
-    ch = sorted([i for i in items if i.get("severity") in ("critical", "high")], key=lambda x: (sev_key(x), x.get("id", "")), reverse=False)
+    ch = sev.get("critical", 0) + sev.get("high", 0)
+    idx, lab, col = threat_index(items)
     kr = [i for i in items if i.get("country") == "KR"]
-    summary = [
-        f"기간 내 총 {len(items)}건 수집: Critical {sev.get('critical',0)}건 · High {sev.get('high',0)}건 · Medium {sev.get('medium',0)}건",
-        f"최다 카테고리: {CAT_KO.get(top_cat[0], top_cat[0])} {top_cat[1]}건 / 국내(KR) {len(kr)}건",
-        "상위 국가: " + ", ".join(f"{n} {v}건" for n, v in top_c),
-    ]
-    num = "".join(f"<p>· {e(s)}</p>" for s in summary)
-    wl = weekly_lines(root, start_d, end_d)
-    box = (brief_html(wl) + f'<div style="margin-top:8px;padding-top:6px;border-top:1px dashed #c7d2ea"><b style="color:#1e3a8a">주요 수치</b>{num}</div>') if wl else num
-    # per-day table
-    rows = ""
-    for d in dates:
-        a = per[d]; c = collections.Counter(i.get("severity") for i in a)
-        rows += f'<tr><td>{d} ({WD[date_obj(d).weekday()]})</td><td class="num">{len(a)}</td><td class="num">{c.get("critical",0)}</td><td class="num">{c.get("high",0)}</td><td class="num">{c.get("medium",0)}</td><td class="num">{c.get("low",0)+c.get("info",0)}</td></tr>'
-    daytab = f'<table><tr><th>수집일</th><th class="num">건수</th><th class="num">Critical</th><th class="num">High</th><th class="num">Medium</th><th class="num">Low·Info</th></tr>{rows}</table>'
-    # category x region
-    hdr = "".join(f'<th class="num">{REGION_KO[r]}</th>' for r in REGIONS)
-    xr = ""
-    for k in CAT:
-        c = collections.Counter(i.get("region") for i in items if i.get("category") == k)
-        xr += f'<tr><td>{CAT_KO[k]}</td>' + "".join(f'<td class="num">{c.get(r,0)}</td>' for r in REGIONS) + f'<td class="num"><b>{cs.get(k,0)}</b></td></tr>'
-    cross = f'<table><tr><th>카테고리</th>{hdr}<th class="num">합계</th></tr>{xr}</table>'
-    body = (f'<h2>Executive Summary</h2><div class="box">{box}</div>{kpis(items, [threat_tile(items), ("수집일수", len(dates), "#6b7280")])}'
-            f'<h2>일자별 추이</h2>{daytab}'
-            f'{world_map(items)}<h2>분포 현황</h2><div class="two"><div>{sev_table(items)}</div><div>{country_table(items)}</div></div>'
+    tel = [i for i in items if is_telco(i)]
+    tiles = [("총 수집", len(items), "#111827", delta(len(items), len(prev)) if prev else ""),
+             ("Critical·High", ch, SEV_COLOR["critical"], delta(ch, sum(1 for i in prev if i.get("severity") in ("critical", "high"))) if prev else ""),
+             (f"주간 위협지수 · {lab}", idx, col, delta(idx, threat_index(prev)[0]) if prev else ""),
+             ("국내(KR)", len(kr), "#2f6fe4", delta(len(kr), sum(1 for i in prev if i.get("country") == "KR")) if prev else ""),
+             ("통신 관련", len(tel), "#7c3aed", delta(len(tel), sum(1 for i in prev if is_telco(i))) if prev else "")]
+    summ = brief_html(lines) if lines else '<p class="muted">주간 요약문이 아직 생성되지 않았습니다. 아래 이슈 흐름과 수치를 참고하십시오.</p>'
+    watch = br.get("watch") or []
+    watch_html = ("<h2>다음 주 주목 포인트</h2><ul>" + "".join(f"<li>{e(w)}</li>" for w in watch) + "</ul>") if watch else ""
+    body = (f'<h2>Executive Summary</h2><div class="box">{summ}</div>{kpi_tiles(tiles)}'
+            f'<h2>일자별 위협지수 추이</h2>{index_trend_svg(per)}'
+            f'<h2>핵심 이슈 흐름</h2><p class="muted" style="margin-top:-4px">한 주의 기사를 같은 주제·행위자·제품으로 묶은 흐름입니다. 흐름별로 무엇이 일어났고 통신사에 어떤 의미인지 정리했습니다.</p>{theme_cards(themes, by_id)}'
+            f'{actions_table(br.get("actions"))}{watch_html}'
+            f'<h2>카테고리별 동향</h2>{cat_trend_table(items, prev)}'
+            f'<h2>통신사 관점 ({len(tel)}건)</h2>{compact_cards(tel, 5)}'
+            f'<h2>국내 동향 ({len(kr)}건)</h2>{compact_cards(kr, 5)}'
             f'{correlation_section(items)}'
-            f'<h2>핵심 항목 (Critical · High) {len(ch)}건</h2>{cards(ch)}'
-            f'<h2>국내(KR) 동향 {len(kr)}건</h2>{feed_table(kr) if kr else "<p class=muted>해당 항목 없음</p>"}'
-            f'<h2>전체 항목 (일자별)</h2>' + "".join(f'<div class="day" style="padding:3px 6px;margin-top:6px">{d} ({WD[date_obj(d).weekday()]}) · {len(per[d])}건</div>{feed_table(per[d])}' for d in reversed(dates)) +
-            f'<h2>참조 출처</h2>{sources_table(items)}')
-    right = f"{start_d} ~ {end_d}<br>{len(dates)}일 · {len(items)}건"
+            f'{world_map(items)}<div class="two"><div>{region_table(items)}</div><div>{country_table(items)}</div></div>'
+            f'<h2>부록 A. 상위 위협 Top 10</h2>{compact_cards(items, 10)}'
+            f'<h2>부록 B. 전체 항목</h2>{feed_table(items)}'
+            f'<h2>부록 C. 참조 출처</h2>{sources_table(items)}')
+    right = f"{start_d} ~ {end_d}<br>{len(per)}일 · {len(items)}건"
     return wrap(logo_b64(root), "ThreatPrism 주간 보안 인텔리전스 보고서", "WEEKLY SECURITY INTELLIGENCE REPORT", right, body, gen), items, start_d
 
 def to_pdf(html_text, out):

@@ -9,4 +9,13 @@ Weekly (Mondays, 5-7 lines): 핵심 (the week's governing message) → 흐름①
 
 Content: lead with what matters most (critical/high, Korea, telecom); name products/actors/organisations; only key verified figures (CVSS, affected count, countries, versions, patch level). No copied titles, URLs, outlet names, item counts or severity tallies. Use only facts present in the given items.
 
-Output files: daily `{"date":"YYYY-MM-DD","lines":[...]}`; weekly `{"start":"YYYY-MM-DD","end":"YYYY-MM-DD","lines":[...]}`.
+Weekly analysis (the weekly PDF is built from this file, so it must be analytic, not a list of articles):
+- themes: 3-5 storylines that group the week's items by shared actor, product, victim chain or trend. Each theme has
+  "title" (Korean, ≤20 chars, names the pattern, e.g. "국내 업무 SW 공급망 연쇄 침해"), "ids" (item ids that belong to it),
+  "insight" (무엇이 일어났나: 2-3 sentences, actors, figures, how it evolved over the week) and "implication"
+  (통신사 시사점: why it matters for a telecom security centre and what to check). Order by risk (highest scores first).
+- actions: 3-5 objects {"priority": "즉시" | "1주 내" | "1개월 내", "action": concrete check or fix with product versions,
+  "why": "흐름 N · short reason"}.
+- watch: 3-4 things to watch next week (pending investigations, patches, policy decisions).
+
+Output files: daily `{"date":"YYYY-MM-DD","lines":[...]}`; weekly `{"start":"YYYY-MM-DD","end":"YYYY-MM-DD","lines":[...],"themes":[...],"actions":[...],"watch":[...]}`.
