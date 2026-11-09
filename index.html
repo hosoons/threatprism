@@ -1289,7 +1289,7 @@ async function init() {
     try {
       const mr = await fetch('data/daily/manifest.json?v=' + Date.now(), {cache:'no-store'});
       if (mr.ok) {
-        const days = await mr.json();
+        const days = await mr.json(); window.__lastCollect = (days || []).slice().sort().pop() || '';
         const have = new Set(allIncidents.map(i => i.id));
         const parts = await Promise.all((days || []).map(d =>
           fetch('data/daily/' + d + '.json?v=' + Date.now(), {cache:'no-store'}).then(r => r.ok ? r.json() : []).catch(() => [])));
@@ -2668,7 +2668,7 @@ async function loadSubscribers() {
 function updateSettingsInfo() {
   const dates = allIncidents.map(i=>i.date).filter(Boolean);
   if (dates.length) {
-    document.getElementById('lastUpdate').textContent = dates.sort().reverse()[0];
+    document.getElementById('lastUpdate').textContent = window.__lastCollect || dates.sort().reverse()[0];
   }
   document.getElementById('totalData').textContent = allIncidents.length + '건';
 }
