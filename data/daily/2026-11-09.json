@@ -1,0 +1,194 @@
+[
+ {
+  "id": "inc-2026-1109-006",
+  "title": "BT, 상반기 매출 88억 파운드…TalkTalk 인수는 전망 제외",
+  "category": "MKT",
+  "severity": "low",
+  "country": "GB",
+  "countryName": "영국",
+  "region": "Europe",
+  "lat": 51.5,
+  "lng": -0.12,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/operations/eurobites-bt-confirms-outlook-after-steady-h1-plays-patriot-card",
+  "date": "2026-11-05",
+  "summary": "BT의 상반기 매출은 1% 늘어난 88억 파운드, 조정 EBITDA는 41억 파운드였다. 연간 전망은 유지했으며 TalkTalk 인수 계획은 전망에 포함되지 않았다.",
+  "tags": [
+   "telecom",
+   "m&a",
+   "bt"
+  ],
+  "score": 21,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 0,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "trust": 60,
+  "sourceTier": "T2"
+ },
+ {
+  "id": "inc-2026-1109-005",
+  "title": "GSMA, 6G가 2040년 세계경제에 1.24조 달러 기여 전망",
+  "category": "REG",
+  "severity": "low",
+  "country": "GB",
+  "countryName": "영국",
+  "region": "Europe",
+  "lat": 51.5,
+  "lng": -0.12,
+  "source": "GSMA",
+  "sourceUrl": "https://www.gsma.com/newsroom/?p=26269",
+  "date": "2026-11-05",
+  "summary": "GSMA는 6G가 2040년 세계 GDP의 0.7%인 1.24조 달러를 더할 것으로 전망했다. 주파수가 부족하면 5,200억 달러(42%)의 효과를 잃을 수 있다고 경고했다. 중대역이 기여분의 70%를 차지한다.",
+  "tags": [
+   "6g",
+   "spectrum",
+   "gsma",
+   "telecom"
+  ],
+  "score": 23,
+  "scoreFactors": {
+   "target": 5,
+   "exploit": 0,
+   "technical": 0,
+   "scale": 15,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "trust": 85,
+  "sourceTier": "T1"
+ },
+ {
+  "id": "inc-2026-1109-004",
+  "title": "우크라이나 키이우스타, 전시 속 3분기 매출 17.5% 성장",
+  "category": "TEL",
+  "severity": "low",
+  "country": "UA",
+  "countryName": "우크라이나",
+  "region": "Europe",
+  "lat": 50.45,
+  "lng": 30.52,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/operations/eurobites-ukraine-s-kyivstar-cracks-on-in-q3",
+  "date": "2026-11-06",
+  "summary": "키이우스타 3분기 매출은 3억4,900만 달러로 17.5% 늘었고 EBITDA는 10.3% 증가했다. 사장은 가장 어려운 조건에서도 네트워크가 유지됐다고 밝혔다.",
+  "tags": [
+   "telecom",
+   "resilience",
+   "ukraine"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "trust": 60,
+  "sourceTier": "T2"
+ },
+ {
+  "id": "inc-2026-1109-003",
+  "title": "금융위, 금융권 580여곳 보안 전수점검…침해 37개사 47만건",
+  "category": "REG",
+  "severity": "medium",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "금융위원회(korea.kr)",
+  "sourceUrl": "https://www.korea.kr/news/policyNewsView.do?newsId=148975098",
+  "date": "2026-11-05",
+  "summary": "금융위원회는 9월 30일 이후 37개사에서 40건의 침해로 약 47.3만건이 유출된 데 대응해 은행·보험·증권·가상자산거래소 등 580여개사의 외부 접점과 내부통제를 전수 점검한다고 밝혔다. 대형사 취약점 점검을 연 2회로 늘리고 중대 취약점 발견 시 서비스 차단을 의무화하며 내년 1분기 디지털금융안전법안을 추진한다.",
+  "tags": [
+   "regulation",
+   "finance",
+   "vulnerability-assessment",
+   "korea"
+  ],
+  "score": 45,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 15,
+   "domestic": 15
+  },
+  "nonThreat": true,
+  "trust": 85,
+  "sourceTier": "T1",
+  "sourcePending": true
+ },
+ {
+  "id": "inc-2026-1109-002",
+  "title": "미래에셋증권 해킹, 고객 3,800명 계좌번호·임직원 3.5만명 정보 유출",
+  "category": "INC",
+  "severity": "high",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "전자신문",
+  "sourceUrl": "https://www.etnews.com/20261107000011",
+  "date": "2026-11-07",
+  "summary": "미래에셋증권이 11월 4~5일 모바일웹 휴대폰 인증 로그인과 그룹웨어 'mi-global'에 대한 외부 해킹으로 고객 약 3,800명의 계좌번호와 임직원 35,255명의 이름·사번 등이 유출됐다고 공지했다. 주민등록번호 등 고유식별정보는 유출되지 않았으며 금융위·금감원·개인정보위에 신고했다. 미래에셋생명·자산운용 등 그룹 계열사 침해가 잇따르고 있다.",
+  "tags": [
+   "data-breach",
+   "finance",
+   "groupware",
+   "korea"
+  ],
+  "score": 58,
+  "scoreFactors": {
+   "target": 20,
+   "exploit": 5,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 15
+  },
+  "trust": 90,
+  "sourceTier": "T2",
+  "sourcePending": true
+ },
+ {
+  "id": "inc-2026-1109-001",
+  "title": "KAC공항서비스, 더존비즈온 해킹 연계 개인정보 유출 가능성 공지",
+  "category": "INC",
+  "severity": "high",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "데일리시큐",
+  "sourceUrl": "https://www.dailysecu.com/news/articleView.html?idxno=209352",
+  "date": "2026-11-07",
+  "summary": "KAC공항서비스가 더존비즈온 APO 백업서비스 침해로 이름·연락처·이메일이 유출됐을 가능성을 공지했다. 더존은 암호화된 백업 데이터 일부가 반출됐으나 암호키 유출은 확인되지 않았고 KISA에 신고했다고 밝혔다. 실제 유출 여부와 범위는 조사 중이다.",
+  "tags": [
+   "data-breach",
+   "supply-chain",
+   "douzone",
+   "korea"
+  ],
+  "score": 65,
+  "scoreFactors": {
+   "target": 20,
+   "exploit": 5,
+   "technical": 10,
+   "scale": 15,
+   "domestic": 15
+  },
+  "followUpOf": "inc-2026-1105-015",
+  "trust": 90,
+  "sourceTier": "T2",
+  "sourcePending": true
+ }
+]
