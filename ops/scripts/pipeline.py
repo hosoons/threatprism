@@ -381,6 +381,9 @@ def cmd_render(a):
     top = sorted([i for i in items if i["severity"] in ("critical", "high")], key=lambda x: (SEV_RANK[x["severity"]], -x.get("score", 0)))
     wd = "월화수목금토일"[dt.date.fromisoformat(a.date).weekday()]
     tag = "[TEST] " if a.test else ""
+    # Monday (weekly report goes out with the daily one): "Daily/Weekly Briefing"; Tue-Fri: "Daily Briefing"
+    is_weekly = dt.date.fromisoformat(a.date).weekday() == 0 or bool(a.weekly_url)
+    title = "Daily/Weekly Briefing" if is_weekly else "Daily Briefing"
     now = dt.datetime.fromisoformat(a.now).replace(tzinfo=KST) if a.now else None
     dl = delay_info(now)
     dump(dl, os.path.join(run, "delay.json"))
@@ -391,7 +394,7 @@ def cmd_render(a):
     head = top[0]["title"] if top else (items[0]["title"] if items else "")
     if len(head) > 40:
         head = head[:40] + "…"
-    push = [f"{tag}{dtag}[ThreatPrism Daily Briefing] 오늘 {len(items)}건 · 위협지수 {idx} {lab} · 핵심: {head}"]
+    push = [f"{tag}{dtag}[ThreatPrism {title}] 오늘 {len(items)}건 · 위협지수 {idx} {lab} · 핵심: {head}"]
     push.append("일일 보고서 PDF: " + a.daily_url if a.daily_url else "일일 보고서 PDF: 생성 지연")
     if weekly:
         push.append("주간 보고서 PDF: " + weekly)
@@ -402,7 +405,7 @@ def cmd_render(a):
     push.append(APP)
     open(os.path.join(run, "push.txt"), "w", encoding="utf-8").write("\n".join(push))
     # slack (#briefing)
-    sl = [f":threatprism: *{tag}{dtag}ThreatPrism Daily Briefing · {a.date}* · 위협지수 {idx} {lab}", ""]
+    sl = [f":threatprism: *{tag}{dtag}ThreatPrism {title} · {a.date}* · 위협지수 {idx} {lab}", ""]
     if dnote:
         sl += [f":warning: {dnote}", ""]
     for l in lines:
@@ -435,14 +438,14 @@ def cmd_render(a):
     level_box = (f'<p style="font-size:12px;color:#444;background:#f3f4f6;border-radius:6px;padding:6px 10px;margin:8px 0">위협지수 안내 · {e(lvl)}<br>'
                  f'<span style="color:#888">산식: 상위 5건 점수 평균×0.7 + 최고 점수×0.3. 국가 사이버위기경보 5단계(정상·관심·주의·경계·심각)와 비교해 읽을 수 있게 만든 참고 지표이며 공식 경보가 아닙니다.</span></p>' if lvl else "")
     body = (f'<div style="font-family:Arial,sans-serif;color:#111;max-width:600px">'
-            f'<div style="margin-bottom:8px"><b style="font-size:18px">{tag}{dtag}ThreatPrism Daily Briefing</b></div>{delay_box}'
+            f'<div style="margin-bottom:8px"><b style="font-size:18px">{tag}{dtag}ThreatPrism {title}</b></div>{delay_box}'
             f'<p style="font-size:13px;color:#444;margin:4px 0 10px">{a.date} ({wd}) · 오늘 총 {len(items)}건 수집 · 위협지수 <b>{idx} {lab}</b></p>'
             f'{brief_html}<p style="font-size:14px;margin:14px 0 4px"><b>주요 항목</b></p><ul style="font-size:13px;line-height:1.5;padding-left:18px;margin:4px 0">{lis}</ul>'
             f'<p style="font-size:13px">카테고리: {cats}<br>지역: {regs}</p>{buttons}{level_box}'
             f'<p style="font-size:12px;color:#666">모든 항목은 검증된 공개 출처 기반이며 상세 내용은 앱에서 확인하세요.</p>'
             f'<p style="font-size:11px;color:#888">수신 거부는 앱의 알림 설정 &gt; 이메일 구독 목록에서 가능합니다.</p>{footer}</div>')
     open(os.path.join(run, "email.html"), "w", encoding="utf-8").write(body)
-    open(os.path.join(run, "email-subject.txt"), "w", encoding="utf-8").write(f"{tag}{dtag}[ThreatPrism] Daily Briefing - {a.date}")
+    open(os.path.join(run, "email-subject.txt"), "w", encoding="utf-8").write(f"{tag}{dtag}[ThreatPrism] {title} - {a.date}")
     print(json.dumps({"push_chars": len("\n".join(push)), "email_bytes": len(body.encode()), "slack_chars": len("\n".join(sl)), "threat": [idx, lab]}, ensure_ascii=False))
 
 
