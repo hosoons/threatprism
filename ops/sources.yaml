@@ -3,7 +3,7 @@
 # adopted only when a T1/T2 source confirms it). Match is on the registrable domain or any subdomain of it.
 # KR press: the doc standard is Naver news partnership (콘텐츠/검색 제휴). Entries marked "naver: unverified"
 # are provisionally T2 and must be confirmed by the quarterly review (ops/runs/source-review-*.md).
-version: 2026-11-05
+version: 2026-11-09
 
 T1:
   # government / CERT / regulators
@@ -34,6 +34,13 @@ T1:
   - etsi.org
   - 3gpp.org
   - gsma.com
+  # added 2026-11-09: government suffixes (registry-controlled) needed by the REG gate
+  - go.kr
+  - gov
+  - gov.uk
+  - go.jp
+  - gov.au
+  - gov.sg
   # vendor PSIRT / security bulletins
   - cisco.com
   - fortiguard.com
@@ -53,6 +60,28 @@ T1:
   - juniper.net
   - zyxel.com
   - siemens.com
+  # added 2026-11-09: vendor/project advisories needed by the VUL gate
+  - openssh.com
+  - openssl.org
+  - qnap.com
+  - synology.com
+  - broadcom.com
+  - vmware.com
+  - oracle.com
+  - adobe.com
+  - redhat.com
+  - mozilla.org
+  - wordpress.org
+  - kernel.org
+  - citrix.com
+  - f5.com
+  - arista.com
+  - tp-link.com
+  - huawei.com
+  - hpe.com
+  - dell.com
+  - ibm.com
+  - douzone.com
   # carriers (official press rooms)
   - sktelecom.com
   - kt.com
@@ -88,6 +117,11 @@ T2:
   - mobileworldlive.com
   - arstechnica.com
   - wired.com
+  # added 2026-11-09
+  - securityaffairs.com
+  - telecomtv.com
+  - euronews.com
+  - cision.com           # press-release distribution (carrier/vendor releases)
   # vendor threat research
   - cloud.google.com
   - crowdstrike.com
@@ -118,9 +152,24 @@ T2:
   - boannews.com         # naver: unverified
   - dailysecu.com        # naver: unverified
   - itdaily.kr           # naver: unverified
+  - newdaily.co.kr       # naver: unverified
+  - yonhapnews.co.kr     # naver: unverified
+  - bloter.net           # naver: unverified
+  - digitaltoday.co.kr   # naver: unverified
+  - segye.com            # naver: unverified
+  - heraldcorp.com       # naver: unverified
 
 # Blacklist heuristics applied by ops/scripts/pipeline.py (any hit discards the item):
 #   not https · raw IP host · punycode (xn--) host · risky TLD (.zip .mov .xyz .top .click .buzz .loan .work .gq .tk .ml .cf .ga)
 #   look-alike of a whitelisted domain (edit distance 1-2) · domain in BLOCK below
+# SAFE: legitimate domains that are NOT look-alikes although their name is close to a listed domain
+# (exempt from the look-alike rule only; every other blacklist check still applies)
+SAFE:
+  - newdaily.co.kr
+  - cision.com
+  - yonhapnews.co.kr
+  - openssl.org
+  - openssh.com
+
 BLOCK:
   - example-blocked.invalid
