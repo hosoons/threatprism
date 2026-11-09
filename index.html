@@ -1138,7 +1138,7 @@ select, input[type="time"] {
     <div class="settings-section">
       <h3>ℹ️ 정보</h3>
       <div class="setting-row">
-        <div class="setting-label">ThreatPrism v1.5</div>
+        <div class="setting-label">ThreatPrism v1.6</div>
         <div class="setting-value">Claude Scheduled Task 기반</div>
       </div>
       <div class="setting-row">
@@ -1344,6 +1344,7 @@ function threatIndex(items) {
   const top = sc.slice(0, 5);
   return Math.round(0.7 * top.reduce((x, y) => x + y, 0) / top.length + 0.3 * sc[0]);
 }
+/*LEVEL_INFO:begin*/const LEVEL_INFO = {"SEVERE": {"ko": "심각", "step": 5, "range": "80 이상 또는 국내 통신사 직접 침해", "meaning": "국내 통신 서비스·가입자에 즉각 피해 가능. 비상 대응과 경영진 보고"}, "HIGH": {"ko": "경계", "step": 4, "range": "65~79", "meaning": "악용이 확인된 중대 위협 다수. 당일 점검·패치 착수"}, "ELEVATED": {"ko": "주의", "step": 3, "range": "50~64", "meaning": "주요 위협이 복수 존재하나 대규모 피해는 제한적. 1주 내 점검·모니터링 강화"}, "GUARDED": {"ko": "관심", "step": 2, "range": "35~49", "meaning": "일상적 위협 수준. 통상 모니터링 유지"}, "LOW": {"ko": "정상", "step": 1, "range": "35 미만", "meaning": "특이 위협 없음"}};/*LEVEL_INFO:end*/
 function threatLevel(idx, items) {
   const telco = (items || []).some(i => i.telcoBreach === true && i.country === 'KR');
   if (telco || idx >= 80) return { label: 'SEVERE', cls: 'critical', color: SEV_COLORS.critical };
@@ -1390,7 +1391,9 @@ function renderThreatPanel() {
       const f = i.scoreFactors ? Object.entries(FACTOR_KO).map(([k, n]) => `${n} ${i.scoreFactors[k] ?? 0}`).join(' · ') : '점수 없음(심각도로 추정)';
       return `<div class="tp-item" onclick="showDetail('${esc(i.id)}')"><div class="tp-t"><span class="tp-s" style="color:${SEV_COLORS[i.severity] || '#888'}">${itemScore(i)}</span>${esc(i.title)}</div><div class="tp-f">${f}</div></div>`;
     }).join('') +
-    `<div class="tp-scale">SEVERE 80↑ (또는 국내 통신사 직접 침해) · HIGH 65~79 · ELEVATED 50~64 · GUARDED 35~49 · LOW 35 미만</div>`;
+    `<div class="tp-scale">5단계: SEVERE 심각(80↑ 또는 국내 통신사 직접 침해) · HIGH 경계(65~79) · ELEVATED 주의(50~64) · GUARDED 관심(35~49) · LOW 정상(35 미만)</div>` +
+    `<div class="tp-scale"><b>${esc(t.lv.label)}(${esc((LEVEL_INFO[t.lv.label] || {}).ko || '')})</b> = 5단계 중 ${(LEVEL_INFO[t.lv.label] || {}).step || ''}단계: ${esc((LEVEL_INFO[t.lv.label] || {}).meaning || '')}</div>` +
+    `<div class="tp-scale">국가 사이버위기경보 5단계(정상·관심·주의·경계·심각)와 비교해 읽을 수 있게 만든 참고 지표이며 공식 경보가 아닙니다.</div>`;
 }
 window.toggleThreatPanel = function () {
   const panel = document.getElementById('threatPanel'); if (!panel) return;
