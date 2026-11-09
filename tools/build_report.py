@@ -52,7 +52,7 @@ th { background:#eef2fb; text-align:left; padding:4px 6px; border-bottom:1px sol
 td { padding:4px 6px; border-bottom:1px solid #eef0f4; vertical-align:top; }
 tr { page-break-inside:avoid; }
 .num { text-align:right; white-space:nowrap; }
-.pill { display:inline-block; color:#fff; font-size:7.5pt; font-weight:700; border-radius:9px; padding:0 7px; line-height:1.55; }
+.pill { display:inline-block; box-sizing:border-box; width:56px; text-align:center; color:#fff; font-size:7.5pt; font-weight:700; border-radius:9px; padding:0; line-height:1.55; vertical-align:baseline; }  /* fixed width = widest label (Medium) */
 .bar { height:9px; border-radius:4px; display:inline-block; vertical-align:middle; }
 .card { border:1px solid #e5e7eb; border-left:5px solid #999; border-radius:6px; padding:7px 10px; margin:6px 0; page-break-inside:avoid; }
 .card .ct { font-weight:700; font-size:10pt; }
@@ -175,7 +175,7 @@ def feed_table(items):
     rows = ""
     for i in sorted(items, key=lambda x: (CAT.index(x["category"]) if x.get("category") in CAT else 9, sev_key(x))):
         rows += (f'<tr><td style="width:84px;white-space:nowrap">{e(CAT_KO.get(i.get("category",""), i.get("category","")))}</td><td>{e(i.get("title",""))}</td>'
-                 f'<td style="width:66px;white-space:nowrap">{e(i.get("countryName",""))}</td><td style="width:52px">{pill(i.get("severity"))}</td>'
+                 f'<td style="width:66px;white-space:nowrap">{e(i.get("countryName",""))}</td><td style="width:64px">{pill(i.get("severity"))}</td>'
                  f'<td style="width:78px">{e(i.get("source",""))}</td></tr>')
     return f'<table><tr><th>카테고리</th><th>제목</th><th>국가</th><th>심각도</th><th>출처</th></tr>{rows}</table>'
 
