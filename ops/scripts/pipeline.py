@@ -2,10 +2,12 @@
 """ThreatPrism deterministic pipeline (no LLM tokens).
 
   seen    --repo R --date D --out O        recent titles/URLs (7 days) -> O/seen.json for collectors
-  select  --repo R --date D --run O        candidates O/cand-*.json -> O/daily.json, O/manifest.json, O/stats.json
-  render  --repo R --date D --run O [--daily-url U] [--weekly-url W] [--test]
-                                           O/daily.json + O/brief.json -> O/email.html, O/slack.json, O/push.txt
-Scoring rules: ops/rules/scoring.md. Selection rules: ops/rules/collection.md.
+  select  --repo R --date D --run O        candidates O/cand-*.json -> O/daily.json, O/manifest.json, O/stats.json, O/held.json
+  render  --repo R --date D --run O [--daily-url U] [--weekly-url W] [--test] [--now YYYY-MM-DDTHH:MM]
+                                           O/daily.json + O/brief.json -> O/email.html, O/slack.json, O/push.txt, O/delay.json
+  runlog  --repo R --date D --run O [--collectors "a|b"] [--status "push=..;email=..;slack=..;pdf=..;errors=a|b"]
+                                           prints the run log JSON (ops/runs/prod-<date>.json) incl. 발송 지연 flag
+Scoring rules: ops/rules/scoring.md. Selection rules: ops/rules/collection.md. Shortfall handling: ops/rules/escalation.md.
 """
 import argparse, datetime as dt, glob, html, json, os, re, sys
 
@@ -17,6 +19,10 @@ FMAX = {"target": 30, "exploit": 25, "technical": 15, "scale": 15, "domestic": 1
 ANGLO = {"US", "GB", "CA", "AU", "NZ", "IE"}
 SEV_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}
 APP = "https://hosoons.github.io/threatprism/"
+MIN_TOTAL = 14
+KST = dt.timezone(dt.timedelta(hours=9))
+TARGET_HHMM = (10, 0)      # scheduled delivery target (KST)
+DELAY_AFTER_HHMM = (10, 30)  # sending later than this is flagged as 발송 지연
 e = html.escape
 
 
@@ -88,7 +94,7 @@ TRUST_MIN = 60
 
 def load_sources(repo):
     path = os.path.join(repo, "ops/sources.yaml")
-    out = {"T1": set(), "T2": set(), "BLOCK": set(), "unverified": set()}
+    out = {"T1": set(), "T2": set(), "BLOCK": set(), "SAFE": set(), "unverified": set()}
     try:
         cur = None
         for raw in open(path, encoding="utf-8"):
@@ -158,7 +164,7 @@ def blacklist_hit(url, src):
     if in_list(host, src["BLOCK"]):
         return "blocked domain"
     rd = reg_domain(host)
-    if not in_list(host, src["T1"] | src["T2"]):
+    if not in_list(host, src["T1"] | src["T2"] | src["SAFE"]):
         for d in src["T1"] | src["T2"]:
             if len(rd) >= 6 and 0 < lev(rd, d) <= 2:
                 return f"look-alike of {d}"
@@ -250,7 +256,7 @@ def cmd_select(a):
             c["tags"] = [str(t).strip().lower().replace(" ", "-") for t in c.get("tags", [])][:5]
             ok, info = source_check(c, src, kev)
             if not ok:
-                held.append({"title": str(c.get("title"))[:60], "url": c.get("sourceUrl"), **info})
+                held.append({"title": str(c.get("title"))[:60], "url": c.get("sourceUrl"), "category": c.get("category"), "country": c.get("country"), "file": os.path.basename(p), "candidate": c, **info})
                 continue
             if info["kevMatch"]:
                 c.setdefault("scoreFactors", {})["exploit"] = 25
@@ -260,6 +266,9 @@ def cmd_select(a):
             if info["naverUnverified"]:
                 c["sourcePending"] = True
             cands.append(grade(c))
+    # a story that was held in one file but passed with better sources in another is no longer held
+    ok_urls = {norm_url(c.get("sourceUrl")) for c in cands}
+    held = [h for h in held if norm_url(h.get("url")) not in ok_urls]
     # dedupe against recent days and within the batch
     seen = recent(a.repo, a.date)
     seen_urls = {norm_url(i.get("sourceUrl")) for i in seen}
@@ -325,13 +334,41 @@ def cmd_select(a):
         "floors": floors, "threatIndex": idx, "threatLevel": lab,
         "severity": {s: sum(1 for i in allitems if i["severity"] == s) for s in SEV_RANK},
     }
+    need = {"korea>=4": 4, "telecom>=3": 3, "non-anglo>=3": 3}
+    stats["gaps"] = [{"floor": k, "have": v, "need": need[k]} for k, v in floors.items() if v < need[k]]
+    stats["missingCategories"] = [k for k in CATS if stats["byCategory"][k] == 0]
+    stats["minTotal"] = MIN_TOTAL
+    stats["needMore"] = bool(len(allitems) < MIN_TOTAL or stats["gaps"])
     dump(stats, os.path.join(run, "stats.json"))
-    print(json.dumps({**{k: stats[k] for k in ("candidates", "afterDedupe", "added", "total", "threatIndex", "threatLevel", "floors", "kevEntries")}, "held": len(held)}, ensure_ascii=False))
+    # held candidates that a source-upgrade round may rescue (missing second source / T1 original)
+    dump([h for h in held if not str(h.get("reason", "")).startswith("blacklist")], os.path.join(run, "held.json"))
+    print(json.dumps({**{k: stats[k] for k in ("candidates", "afterDedupe", "added", "total", "threatIndex", "threatLevel", "floors", "kevEntries")}, "held": len(held), "needMore": stats["needMore"], "gaps": stats["gaps"]}, ensure_ascii=False))
 
 
 def newest_weekly(repo):
     files = sorted(glob.glob(os.path.join(repo, "reports/weekly/Weekly_*.pdf")))
     return APP + "reports/weekly/" + os.path.basename(files[-1]) if files else ""
+
+
+def levels(repo):
+    return (load(os.path.join(repo, "ops/levels.json"), {}) or {}).get("levels", {})
+
+
+def level_line(repo, lab):
+    lv = levels(repo).get(lab)
+    if not lv:
+        return ""
+    return f"{lab}({lv['ko']}) = 5단계 중 {lv['step']}단계: {lv['meaning']}"
+
+
+def delay_info(now=None):
+    """KST send time vs. the 10:00 target. Later than 10:30 => delayed (발송 지연)."""
+    n = now or dt.datetime.now(KST)
+    mins = n.hour * 60 + n.minute
+    limit = DELAY_AFTER_HHMM[0] * 60 + DELAY_AFTER_HHMM[1]
+    target = TARGET_HHMM[0] * 60 + TARGET_HHMM[1]
+    return {"sentAtKst": n.strftime("%Y-%m-%d %H:%M"), "delayed": mins > limit, "lateMinutes": max(0, mins - target),
+            "rule": f"기준 {TARGET_HHMM[0]:02d}:{TARGET_HHMM[1]:02d} KST, {DELAY_AFTER_HHMM[0]:02d}:{DELAY_AFTER_HHMM[1]:02d} 초과 시 발송 지연"}
 
 
 def cmd_render(a):
@@ -344,24 +381,39 @@ def cmd_render(a):
     top = sorted([i for i in items if i["severity"] in ("critical", "high")], key=lambda x: (SEV_RANK[x["severity"]], -x.get("score", 0)))
     wd = "월화수목금토일"[dt.date.fromisoformat(a.date).weekday()]
     tag = "[TEST] " if a.test else ""
+    now = dt.datetime.fromisoformat(a.now).replace(tzinfo=KST) if a.now else None
+    dl = delay_info(now)
+    dump(dl, os.path.join(run, "delay.json"))
+    dtag = "[발송 지연] " if dl["delayed"] else ""
+    dnote = (f"발송 지연: {dl['sentAtKst'][-5:]} KST 발송 (기준 {TARGET_HHMM[0]:02d}:{TARGET_HHMM[1]:02d}, {DELAY_AFTER_HHMM[0]:02d}:{DELAY_AFTER_HHMM[1]:02d} 초과)") if dl["delayed"] else ""
+    lvl = level_line(a.repo, lab)
     # push text
     head = top[0]["title"] if top else (items[0]["title"] if items else "")
     if len(head) > 40:
         head = head[:40] + "…"
-    push = [f"{tag}[ThreatPrism Daily Briefing] 오늘 {len(items)}건 · 위협지수 {idx} {lab} · 핵심: {head}"]
+    push = [f"{tag}{dtag}[ThreatPrism Daily Briefing] 오늘 {len(items)}건 · 위협지수 {idx} {lab} · 핵심: {head}"]
     push.append("일일 보고서 PDF: " + a.daily_url if a.daily_url else "일일 보고서 PDF: 생성 지연")
     if weekly:
         push.append("주간 보고서 PDF: " + weekly)
+    if lvl:
+        push.append("※ " + lvl)
+    if dnote:
+        push.append(dnote)
     push.append(APP)
     open(os.path.join(run, "push.txt"), "w", encoding="utf-8").write("\n".join(push))
     # slack (#briefing)
-    sl = [f":threatprism: *{tag}ThreatPrism Daily Briefing · {a.date}* · 위협지수 {idx} {lab}", ""]
+    sl = [f":threatprism: *{tag}{dtag}ThreatPrism Daily Briefing · {a.date}* · 위협지수 {idx} {lab}", ""]
+    if dnote:
+        sl += [f":warning: {dnote}", ""]
     for l in lines:
         lb, _, tx = str(l).partition(":")
         sl.append(f"*{lb.strip()}* {tx.strip()}" if tx else str(l))
     sl += ["", "*주요 항목 (High/Critical)*"]
     sl += [f"• [{CAT_KO.get(i['category'], i['category'])}·{i['country']}] {i['title']} — {i['source']}" for i in top[:5]]
-    sl += ["", f"총 {len(items)}건 · 전체 내용과 출처는 대시보드에서 확인하세요.", APP]
+    sl += ["", f"총 {len(items)}건 · 전체 내용과 출처는 대시보드에서 확인하세요."]
+    if lvl:
+        sl.append(f"_위협지수 안내: {lvl}_")
+    sl.append(APP)
     dump({"text": "\n".join(sl)}, os.path.join(run, "slack.json"))
     # email html (no images, bgcolor only)
     rows = "".join(
@@ -379,21 +431,43 @@ def cmd_render(a):
     if weekly:
         buttons += btn(weekly, "주간 보고서 PDF 열기", 6)
     footer = ('<a href="https://hosoons.github.io/threatprism/" style="text-decoration:none;color:inherit"><table width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:16px 0"><tr><td bgcolor="#0f1420" style="border:1px solid #2a3550;border-radius:12px;padding:16px"><table width="100%" cellpadding="0" cellspacing="0"><tr><td valign="middle" style="font-family:Arial,sans-serif"><a href="https://hosoons.github.io/threatprism/" style="text-decoration:none"><div style="font-size:22px;font-weight:bold;color:#ffffff">ThreatPrism</div><div style="font-size:11px;letter-spacing:2px;color:#8a94ad">SECURITY INTELLIGENCE</div></a></td><td align="right" valign="top"><table cellpadding="0" cellspacing="0"><tr><td bgcolor="#1d6fd6" style="border-radius:8px;padding:8px 14px"><a href="https://hosoons.github.io/threatprism/" style="color:#ffffff;font-weight:bold;font-size:13px;text-decoration:none;white-space:nowrap">앱 열기</a></td></tr></table></td></tr><tr><td colspan="2" style="padding-top:10px;font-size:13px"><a href="https://hosoons.github.io/threatprism/" style="color:#8ab4f8">https://hosoons.github.io/threatprism/</a></td></tr></table></td></tr></table></a>')
+    delay_box = (f'<p style="font-size:12px;color:#b45309;background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:6px 10px;margin:4px 0 8px">{e(dnote)}</p>' if dnote else "")
+    level_box = (f'<p style="font-size:12px;color:#444;background:#f3f4f6;border-radius:6px;padding:6px 10px;margin:8px 0">위협지수 안내 · {e(lvl)}<br>'
+                 f'<span style="color:#888">산식: 상위 5건 점수 평균×0.7 + 최고 점수×0.3. 국가 사이버위기경보 5단계(정상·관심·주의·경계·심각)와 비교해 읽을 수 있게 만든 참고 지표이며 공식 경보가 아닙니다.</span></p>' if lvl else "")
     body = (f'<div style="font-family:Arial,sans-serif;color:#111;max-width:600px">'
-            f'<div style="margin-bottom:8px"><b style="font-size:18px">{tag}ThreatPrism Daily Briefing</b></div>'
+            f'<div style="margin-bottom:8px"><b style="font-size:18px">{tag}{dtag}ThreatPrism Daily Briefing</b></div>{delay_box}'
             f'<p style="font-size:13px;color:#444;margin:4px 0 10px">{a.date} ({wd}) · 오늘 총 {len(items)}건 수집 · 위협지수 <b>{idx} {lab}</b></p>'
             f'{brief_html}<p style="font-size:14px;margin:14px 0 4px"><b>주요 항목</b></p><ul style="font-size:13px;line-height:1.5;padding-left:18px;margin:4px 0">{lis}</ul>'
-            f'<p style="font-size:13px">카테고리: {cats}<br>지역: {regs}</p>{buttons}'
+            f'<p style="font-size:13px">카테고리: {cats}<br>지역: {regs}</p>{buttons}{level_box}'
             f'<p style="font-size:12px;color:#666">모든 항목은 검증된 공개 출처 기반이며 상세 내용은 앱에서 확인하세요.</p>'
             f'<p style="font-size:11px;color:#888">수신 거부는 앱의 알림 설정 &gt; 이메일 구독 목록에서 가능합니다.</p>{footer}</div>')
     open(os.path.join(run, "email.html"), "w", encoding="utf-8").write(body)
-    open(os.path.join(run, "email-subject.txt"), "w", encoding="utf-8").write(f"{tag}[ThreatPrism] Daily Briefing - {a.date}")
+    open(os.path.join(run, "email-subject.txt"), "w", encoding="utf-8").write(f"{tag}{dtag}[ThreatPrism] Daily Briefing - {a.date}")
     print(json.dumps({"push_chars": len("\n".join(push)), "email_bytes": len(body.encode()), "slack_chars": len("\n".join(sl)), "threat": [idx, lab]}, ensure_ascii=False))
+
+
+def cmd_runlog(a):
+    """Assemble ops/runs/prod-<date>.json (no secrets, no e-mail addresses) from the run directory."""
+    st = load(os.path.join(a.run, "stats.json"), {}) or {}
+    dl = load(os.path.join(a.run, "delay.json"), {}) or {}
+    kv = dict(x.split("=", 1) for x in a.status.split(";") if "=" in x)
+    held = st.get("held", [])
+    errs = []
+    if st.get("needMore"):
+        errs.append(f"수집 기준 미달: total {st.get('total')} < {MIN_TOTAL} 또는 floor 미충족 {st.get('gaps')}")
+    if dl.get("delayed"):
+        errs.append(f"발송 지연: {dl.get('sentAtKst')} KST 발송 ({dl.get('rule')})")
+    log = {"date": a.date, "collectors": [x for x in a.collectors.split("|") if x],
+           "stats": {k: st.get(k) for k in ("candidates", "afterDedupe", "added", "total", "threatIndex", "threatLevel", "floors", "kevEntries", "gaps", "missingCategories")},
+           "held": len(held), "heldReasons": sorted({str(h.get("reason", ""))[:70] for h in held}),
+           "delivery": {"sentAtKst": dl.get("sentAtKst"), "delayed": bool(dl.get("delayed")), "label": "발송 지연" if dl.get("delayed") else "정시", "lateMinutes": dl.get("lateMinutes"), "rule": dl.get("rule")},
+           "pdf": kv.get("pdf", ""), "push": kv.get("push", ""), "email": kv.get("email", ""), "slack": kv.get("slack", ""), "errors": errs + [x for x in kv.get("errors", "").split("|") if x]}
+    print(json.dumps(log, ensure_ascii=False, indent=1))
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["seen", "select", "render"])
+    ap.add_argument("cmd", choices=["seen", "select", "render", "runlog"])
     ap.add_argument("--repo", required=True)
     ap.add_argument("--date", required=True)
     ap.add_argument("--run")
@@ -401,6 +475,9 @@ def main():
     ap.add_argument("--daily-url", default="")
     ap.add_argument("--weekly-url", default="")
     ap.add_argument("--test", action="store_true")
+    ap.add_argument("--now", default="", help="override KST send time for tests, e.g. 2026-11-09T11:05")
+    ap.add_argument("--collectors", default="", help="runlog: one-line collector replies separated by |")
+    ap.add_argument("--status", default="", help="runlog: push=..;email=..;slack=..;pdf=.. as k=v;k=v")
     ap.add_argument("--kev", default="", help="path to CISA known_exploited_vulnerabilities.json (cisagov/kev-data)")
     a = ap.parse_args()
     if a.cmd == "seen":
@@ -408,6 +485,8 @@ def main():
         cmd_seen(a)
     elif a.cmd == "select":
         cmd_select(a)
+    elif a.cmd == "runlog":
+        cmd_runlog(a)
     else:
         cmd_render(a)
 
