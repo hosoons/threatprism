@@ -45,6 +45,12 @@ b2 = "document.getElementById('lastUpdate').textContent = window.__lastCollect |
 if a2 in html:
     html = html.replace(a2, b2, 1)
 
+# 5) severity chips: one fixed width (widest label CRITICAL, monospace) so all chips match
+a3 = ".sev-chip { font-size: 10px; padding: 2px 7px; border-radius: 6px; font-weight: 600; font-family: var(--font-mono); text-transform: uppercase; }"
+b3 = ".sev-chip { display: inline-block; box-sizing: border-box; width: calc(8ch + 16px); text-align: center; font-size: 10px; padding: 2px 0; border-radius: 6px; font-weight: 600; font-family: var(--font-mono); text-transform: uppercase; }"
+if a3 in html:
+    html = html.replace(a3, b3, 1)
+
 if html != orig:
     open(idx_path, "w", encoding="utf-8").write(html)
     print("index.html updated for v" + ver)

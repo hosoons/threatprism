@@ -234,10 +234,10 @@ def level_box(root, lab):
     for k in order:
         d = (cfg.get("levels") or {}).get(k, {})
         on = k == lab
-        cells += (f'<td style="padding:4px 6px;border:1px solid #d1d5db;text-align:center;font-size:10px;{"background:#1e3a8a;color:#fff;font-weight:bold" if on else "background:#f9fafb;color:#374151"}">'
+        cells += (f'<td style="width:20%;vertical-align:middle;padding:4px 6px;border:1px solid #d1d5db;text-align:center;font-size:10px;{"background:#1e3a8a;color:#fff;font-weight:bold" if on else "background:#f9fafb;color:#374151"}">'
                   f'{e(k)}<br>{e(d.get("ko",""))}<br><span style="font-weight:normal">{e(d.get("range",""))}</span></td>')
     return (f'<div class="box" style="margin-top:8px;font-size:11px"><b>위협지수 안내</b> · 현재 {e(lab)}({e(lv.get("ko",""))}) = 5단계 중 {lv.get("step")}단계: {e(lv.get("meaning",""))}'
-            f'<table style="border-collapse:collapse;width:100%;margin:6px 0"><tr>{cells}</tr></table>'
+            f'<table style="border-collapse:collapse;table-layout:fixed;width:100%;margin:6px 0"><tr>{cells}</tr></table>'
             f'<span style="color:#6b7280">{e(cfg.get("formula",""))} {e(cfg.get("note",""))}</span></div>')
 
 def brief_html(lines):
