@@ -46,7 +46,7 @@ h2 { font-size:12pt; margin:16px 0 6px; padding-left:8px; border-left:4px solid 
 .kpis { display:flex; gap:8px; margin-top:10px; }
 .kpi { flex:1; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; text-align:center; }
 .kpi b { display:block; font-size:19pt; line-height:1.2; }
-.kpi span { font-size:8pt; color:#6b7280; }
+.kpi span { font-size:7.5pt; color:#6b7280; }
 table { width:100%; border-collapse:collapse; font-size:8.8pt; }
 th { background:#eef2fb; text-align:left; padding:4px 6px; border-bottom:1px solid #cbd5e1; font-weight:600; }
 td { padding:4px 6px; border-bottom:1px solid #eef0f4; vertical-align:top; }
@@ -536,9 +536,11 @@ def weekly(root, end, gen):
     idx, lab, col = threat_index(items)
     kr = [i for i in items if i.get("country") == "KR"]
     tel = [i for i in items if is_telco(i)]
+    glo = [i for i in items if i.get("country") != "KR"]
     tiles = [("총 수집", len(items), "#111827", delta(len(items), len(prev)) if prev else ""),
              ("Critical·High", ch, SEV_COLOR["critical"], delta(ch, sum(1 for i in prev if i.get("severity") in ("critical", "high"))) if prev else ""),
              (f"주간 위협지수 · {lab}", idx, col, delta(idx, threat_index(prev)[0]) if prev else ""),
+             ("글로벌(해외)", len(glo), "#0e7490", delta(len(glo), sum(1 for i in prev if i.get("country") != "KR")) if prev else ""),
              ("국내(KR)", len(kr), "#2f6fe4", delta(len(kr), sum(1 for i in prev if i.get("country") == "KR")) if prev else ""),
              ("통신 관련", len(tel), "#7c3aed", delta(len(tel), sum(1 for i in prev if is_telco(i))) if prev else "")]
     summ = brief_html(lines) if lines else '<p class="muted">주간 요약문이 아직 생성되지 않았습니다. 아래 이슈 흐름과 수치를 참고하십시오.</p>'
@@ -549,8 +551,9 @@ def weekly(root, end, gen):
             f'<h2>핵심 이슈 흐름</h2><p class="muted" style="margin-top:-4px">한 주의 기사를 같은 주제·행위자·제품으로 묶은 흐름입니다. 흐름별로 무엇이 일어났고 통신사에 어떤 의미인지 정리했습니다.</p>{theme_cards(themes, by_id)}'
             f'{actions_table(br.get("actions"))}{watch_html}'
             f'<h2>카테고리별 동향</h2>{cat_trend_table(items, prev)}'
-            f'<h2>통신사 관점 ({len(tel)}건)</h2>{compact_cards(tel, 5)}'
+            f'<h2>글로벌 동향 ({len(glo)}건)</h2>{compact_cards(glo, 5)}'
             f'<h2>국내 동향 ({len(kr)}건)</h2>{compact_cards(kr, 5)}'
+            f'<h2>통신사 관점 ({len(tel)}건)</h2>{compact_cards(tel, 5)}'
             f'{correlation_section(items)}'
             f'{world_map(items)}<div class="two"><div>{region_table(items)}</div><div>{country_table(items)}</div></div>'
             f'<h2>부록 A. 상위 위협 Top 10</h2>{compact_cards(items, 10)}'
