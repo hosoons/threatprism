@@ -20,6 +20,13 @@ done
 git config user.name "ThreatPrism Bot"
 git config user.email "threatprism-bot@users.noreply.github.com"
 
+# stamp app version (VERSION) and threat-level legend (ops/levels.json) into index.html; idempotent
+python3 tools/stamp_app.py .
+git add index.html
+if ! git diff --cached --quiet; then
+  git commit -m "App: stamp v$(cat VERSION)"
+fi
+
 push_retry() {
   for i in 1 2 3; do
     if git pull --rebase origin main && git push origin HEAD:main; then return 0; fi
@@ -31,8 +38,8 @@ push_retry() {
 git add reports/
 if ! git diff --cached --quiet; then
   git commit -m "Report: $MODES $D"
-  push_retry
 fi
+push_retry
 
 # wait (max ~7 min) until every PDF is reachable on GitHub Pages
 PAGES="https://hosoons.github.io/threatprism"
