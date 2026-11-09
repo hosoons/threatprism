@@ -35,6 +35,16 @@ new = ("`<div class=\"tp-scale\">5단계: SEVERE 심각(80↑ 또는 국내 통�
 if old in html:
     html = html.replace(old, new, 1)
 
+# 4) "최근 업데이트" = latest collection date (manifest), not the newest article date
+a1 = "const days = await mr.json();"
+b1 = "const days = await mr.json(); window.__lastCollect = (days || []).slice().sort().pop() || '';"
+if a1 in html and "__lastCollect" not in html:
+    html = html.replace(a1, b1, 1)
+a2 = "document.getElementById('lastUpdate').textContent = dates.sort().reverse()[0];"
+b2 = "document.getElementById('lastUpdate').textContent = window.__lastCollect || dates.sort().reverse()[0];"
+if a2 in html:
+    html = html.replace(a2, b2, 1)
+
 if html != orig:
     open(idx_path, "w", encoding="utf-8").write(html)
     print("index.html updated for v" + ver)
