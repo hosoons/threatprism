@@ -1,1 +1,48 @@
-{"date":"2026-11-09","collectors":["collector-kr: 5 candidates (stale search results, no TEL)","collector-threat-global: 1 candidate (stale search results)","collector-telecom-industry: 9 candidates (mostly one Light Reading page)","extra round collector-kr: 5 candidates"],"stats":{"candidates":12,"afterDedupe":6,"added":6,"total":6,"threatIndex":50,"threatLevel":"ELEVATED","floors":{"korea>=4":3,"telecom>=3":3,"non-anglo>=3":4},"kevEntries":1769,"held":8,"heldReasons":["INC needs T1 or two independent T2 (x3)","blacklist look-alike domain (x2)","REG needs T1 original","VUL needs KEV match or T1 source (x2)"]},"pdf":"weekly ready; daily PDF not generated after ~27 min wait (생성 지연)","push":"sent","email":"sent to 3","slack":"ok (HTTP 200)","errors":["First attempt this day failed: GitHub write path unavailable (connector disabled, git proxy 403); rerun after reconnect","Total 6 < 14 and floors korea/telecom unmet after one extra round","Daily PDF Daily_2026-11-09.pdf not built by GitHub Actions"]}
+{
+ "date": "2026-11-09",
+ "collectors": [
+  "collector-kr: 수집",
+  "collector-threat-global: 수집",
+  "collector-telecom-industry: 수집",
+  "복구 재수집(2회): 17건 달성"
+ ],
+ "stats": {
+  "candidates": 25,
+  "afterDedupe": 11,
+  "added": 11,
+  "total": 17,
+  "threatIndex": 66,
+  "threatLevel": "HIGH",
+  "floors": {
+   "korea>=4": 4,
+   "telecom>=3": 4,
+   "non-anglo>=3": 9
+  },
+  "kevEntries": 1769,
+  "gaps": [],
+  "missingCategories": []
+ },
+ "held": 10,
+ "heldReasons": [
+  "INC needs a T1 source or two independent T2 sources",
+  "REG needs the government/regulator original (T1)",
+  "VUL needs a CISA KEV match or a T1 vendor/CERT source",
+  "trust 20 < 60",
+  "trust 40 < 60"
+ ],
+ "delivery": {
+  "sentAtKst": "2026-11-09 14:29",
+  "delayed": true,
+  "label": "발송 지연",
+  "lateMinutes": 269,
+  "rule": "기준 10:00 KST, 10:30 초과 시 발송 지연"
+ },
+ "pdf": "generated(daily+weekly)",
+ "push": "owner-test",
+ "email": "owner-test",
+ "slack": "skipped(no-resend)",
+ "errors": [
+  "발송 지연: 2026-11-09 14:29 KST 발송 (기준 10:00 KST, 10:30 초과 시 발송 지연)",
+  "최초 10시 실행 시 GitHub 쓰기 불가로 6건 발행 후 복구 재실행(v1.6)"
+ ]
+}
