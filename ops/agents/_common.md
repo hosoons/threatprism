@@ -23,3 +23,7 @@ Common contract for every ThreatPrism collector agent
 - Skip anything already listed in the "recent titles/URLs" file given in your task unless it is a genuine follow-up (then set followUpOf).
 - Quality over quantity: return at most the number of candidates stated for your scope, best first. Fill scoreFactors honestly from the article facts.
 - Final reply (keep it to one line to save tokens): "done N candidates" or "failed: reason".
+- Search tactics when results look stale or thin: run at least 8 different queries (topics: ransomware, data breach, zero-day/KEV, supply chain, telecom, regulator action;
+  Korean and English; with the date or "11월" in them), repeat weak ones with mode "extended", and prefer queries naming a T1 source (KISA 보호나라, 과기정통부,
+  개인정보위, CISA, vendor PSIRT). On Mondays and the first working day after a holiday the window is 96 h (T1 120 h) - see collection.md. If you still deliver fewer than
+  your target, say in the one-line reply how many queries you ran.
