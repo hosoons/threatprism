@@ -224,6 +224,22 @@ def threat_tile(items):
     idx, lab, col = threat_index(items)
     return (f"위협지수 · {lab}", idx, col)
 
+def level_box(root, lab):
+    """Short legend that explains the threat index so every reader reads the level the same way (ops/levels.json)."""
+    cfg = load(os.path.join(root, "ops/levels.json"), {}) or {}
+    lv = (cfg.get("levels") or {}).get(lab)
+    if not lv: return ""
+    order = ["LOW", "GUARDED", "ELEVATED", "HIGH", "SEVERE"]
+    cells = ""
+    for k in order:
+        d = (cfg.get("levels") or {}).get(k, {})
+        on = k == lab
+        cells += (f'<td style="padding:4px 6px;border:1px solid #d1d5db;text-align:center;font-size:10px;{"background:#1e3a8a;color:#fff;font-weight:bold" if on else "background:#f9fafb;color:#374151"}">'
+                  f'{e(k)}<br>{e(d.get("ko",""))}<br><span style="font-weight:normal">{e(d.get("range",""))}</span></td>')
+    return (f'<div class="box" style="margin-top:8px;font-size:11px"><b>위협지수 안내</b> · 현재 {e(lab)}({e(lv.get("ko",""))}) = 5단계 중 {lv.get("step")}단계: {e(lv.get("meaning",""))}'
+            f'<table style="border-collapse:collapse;width:100%;margin:6px 0"><tr>{cells}</tr></table>'
+            f'<span style="color:#6b7280">{e(cfg.get("formula",""))} {e(cfg.get("note",""))}</span></div>')
+
 def brief_html(lines):
     """Consulting-style summary lines 'Label: text' -> bold label + text."""
     out = ""
@@ -255,7 +271,7 @@ def daily(root, date, gen):
     wd = WD[date_obj(date).weekday()]
     summ = brief_html(lines) or "<p>당일 요약문 없음</p>"
     ch = sorted([i for i in items if i.get("severity") in ("critical", "high")], key=lambda x: (sev_key(x), x.get("id", "")))
-    body = (f'<h2>Executive Summary</h2><div class="box">{summ}</div>{kpis(items, [threat_tile(items)])}'
+    body = (f'<h2>Executive Summary</h2><div class="box">{summ}</div>{kpis(items, [threat_tile(items)])}{level_box(root, threat_index(items)[1])}'
             f'{world_map(items)}<h2>분포 현황</h2><div class="two"><div>{sev_table(items)}</div><div>{cat_table(items)}</div></div><div class="two" style="margin-top:10px"><div>{region_table(items)}</div><div>{country_table(items)}</div></div>'
             f'<h2>핵심 항목 (Critical · High)</h2>{cards(ch)}'
             f'<h2>전체 항목</h2>{feed_table(items)}'
@@ -528,7 +544,7 @@ def weekly(root, end, gen):
     summ = brief_html(lines) if lines else '<p class="muted">주간 요약문이 아직 생성되지 않았습니다. 아래 이슈 흐름과 수치를 참고하십시오.</p>'
     watch = br.get("watch") or []
     watch_html = ("<h2>다음 주 주목 포인트</h2><ul>" + "".join(f"<li>{e(w)}</li>" for w in watch) + "</ul>") if watch else ""
-    body = (f'<h2>Executive Summary</h2><div class="box">{summ}</div>{kpi_tiles(tiles)}'
+    body = (f'<h2>Executive Summary</h2><div class="box">{summ}</div>{kpi_tiles(tiles)}{level_box(root, lab)}'
             f'<h2>일자별 위협지수 추이</h2>{index_trend_svg(per)}'
             f'<h2>핵심 이슈 흐름</h2><p class="muted" style="margin-top:-4px">한 주의 기사를 같은 주제·행위자·제품으로 묶은 흐름입니다. 흐름별로 무엇이 일어났고 통신사에 어떤 의미인지 정리했습니다.</p>{theme_cards(themes, by_id)}'
             f'{actions_table(br.get("actions"))}{watch_html}'
