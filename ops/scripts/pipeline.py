@@ -274,7 +274,7 @@ def cmd_select(a):
     seen_urls = {norm_url(i.get("sourceUrl")) for i in seen}
     pool = []
     for c in sorted(cands, key=lambda x: -x["score"]):
-        if norm_url(c["sourceUrl"]) in seen_urls and not c.get("followUpOf"):
+        if norm_url(c["sourceUrl"]) in seen_urls:  # same page already published (also for follow-ups: a follow-up must have its own URL)
             continue
         if any(not c.get("followUpOf") and similar(c["title"], s.get("title")) for s in seen):
             continue

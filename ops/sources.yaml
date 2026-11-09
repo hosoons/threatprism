@@ -121,6 +121,7 @@ T2:
   - securityaffairs.com
   - telecomtv.com
   - euronews.com
+  - cnbc.com
   - cision.com           # press-release distribution (carrier/vendor releases)
   # vendor threat research
   - cloud.google.com
@@ -158,6 +159,9 @@ T2:
   - digitaltoday.co.kr   # naver: unverified
   - segye.com            # naver: unverified
   - heraldcorp.com       # naver: unverified
+  - mt.co.kr             # naver: unverified
+  - mtn.co.kr            # naver: unverified
+  - newspim.com          # naver: unverified
 
 # Blacklist heuristics applied by ops/scripts/pipeline.py (any hit discards the item):
 #   not https · raw IP host · punycode (xn--) host · risky TLD (.zip .mov .xyz .top .click .buzz .loan .work .gq .tk .ml .cf .ga)
@@ -170,6 +174,10 @@ SAFE:
   - yonhapnews.co.kr
   - openssl.org
   - openssh.com
+  - mt.co.kr
+  - mtn.co.kr
+  - newspim.com
+  - cnbc.com
 
 BLOCK:
   - example-blocked.invalid

@@ -15,3 +15,13 @@ Rules
 - `telcoBreach: true` only when a Korean telecom operator itself was breached; such an item is always critical.
 - Grades: critical ≥75 · high 55-74 · medium 35-54 · low 20-34 · info <20.
 - Threat index of a set = 0.7 × mean(top 5 scores) + 0.3 × max score. Levels: SEVERE ≥80 (or a Korean telecom breach) · HIGH 65-79 · ELEVATED 50-64 · GUARDED 35-49 · LOW <35.
+
+Level legend (full text in `ops/levels.json`, shown in app, daily and weekly PDF; reference only, not an official alert)
+
+| level | 한글 | range | meaning |
+|---|---|---|---|
+| SEVERE | 심각 (5) | ≥80 or Korean telecom breach | immediate impact possible on Korean telecom service/subscribers; emergency response, executive report |
+| HIGH | 경계 (4) | 65-79 | several exploited serious threats; start checks/patching the same day |
+| ELEVATED | 주의 (3) | 50-64 | several notable threats, limited large-scale damage; check within a week, raise monitoring |
+| GUARDED | 관심 (2) | 35-49 | routine threat level; normal monitoring |
+| LOW | 정상 (1) | <35 | no notable threat |
