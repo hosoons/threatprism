@@ -376,7 +376,8 @@ def cmd_render(a):
     items = load(os.path.join(run, "daily.json"), None) or load(os.path.join(a.repo, "data/daily", f"{a.date}.json"), []) or []
     brief = load(os.path.join(run, "brief.json"), None) or load(os.path.join(a.repo, "data/briefing.json"), {}) or {}
     lines = brief.get("lines", []) if brief.get("date") == a.date else []
-    weekly = a.weekly_url or newest_weekly(a.repo)
+    # weekly PDF link only on Monday (or when a weekly URL is passed); Tue-Fri mails carry the daily report only
+    weekly = a.weekly_url or (newest_weekly(a.repo) if dt.date.fromisoformat(a.date).weekday() == 0 else "")
     idx, lab = threat_index(items)
     top = sorted([i for i in items if i["severity"] in ("critical", "high")], key=lambda x: (SEV_RANK[x["severity"]], -x.get("score", 0)))
     wd = "월화수목금토일"[dt.date.fromisoformat(a.date).weekday()]
