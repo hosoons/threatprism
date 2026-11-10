@@ -450,12 +450,18 @@ body::before {
 }
 .alert-cat-chip {
   font-size: 10px;
-  padding: 2px 6px;
+  padding: 3px 4px;
   border-radius: 4px;
   font-weight: 600;
   font-family: var(--font-display);
-  letter-spacing: .03em;
+  letter-spacing: 0;
   flex-shrink: 0;
+  width: 92px;
+  box-sizing: border-box;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* --- Map View --- */
@@ -678,11 +684,16 @@ body::before {
 }
 .feed-card-cat {
   font-size: 10px;
-  padding: 2px 8px;
+  padding: 3px 4px;
   border-radius: 4px;
   font-weight: 600;
   font-family: var(--font-display);
-  letter-spacing: .04em;
+  letter-spacing: 0;
+  display: inline-block;
+  width: 92px;
+  box-sizing: border-box;
+  text-align: center;
+  white-space: nowrap;
 }
 .feed-card-sev {
   font-size: 10px;
