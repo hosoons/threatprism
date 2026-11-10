@@ -1,0 +1,55 @@
+{
+ "date": "2026-11-10",
+ "collectors": [
+  "collector-kr: 4 candidates",
+  "collector-threat-global: 9 candidates",
+  "collector-telecom-industry: 2 candidates",
+  "upgrade: 1 of 7",
+  "extra kr 2, threat 4, telecom 1",
+  "round C kr 2, telecom 3"
+ ],
+ "stats": {
+  "candidates": 18,
+  "afterDedupe": 15,
+  "added": 15,
+  "total": 15,
+  "threatIndex": 74,
+  "threatLevel": "HIGH",
+  "floors": {
+   "korea>=4": 3,
+   "telecom>=3": 3,
+   "non-anglo>=3": 5
+  },
+  "kevEntries": 1772,
+  "gaps": [
+   {
+    "floor": "korea>=4",
+    "have": 3,
+    "need": 4
+   }
+  ],
+  "missingCategories": []
+ },
+ "held": 8,
+ "heldReasons": [
+  "INC needs a T1 source or two independent T2 sources",
+  "REG needs the government/regulator original (T1)",
+  "VUL needs a CISA KEV match or a T1 vendor/CERT source",
+  "blacklist: look-alike of apnews.com (https://www.ajunews.com/view/2026"
+ ],
+ "delivery": {
+  "sentAtKst": "2026-11-10 09:20",
+  "delayed": false,
+  "label": "정시",
+  "lateMinutes": 0,
+  "rule": "기준 10:00 KST, 10:30 초과 시 발송 지연"
+ },
+ "pdf": "generated",
+ "push": "sent",
+ "email": "sent to 3",
+ "slack": "ok",
+ "errors": [
+  "수집 기준 미달: total 15 < 14 또는 floor 미충족 [{'floor': 'korea>=4', 'have': 3, 'need': 4}]",
+  "korea floor 3/4 unmet after round C"
+ ]
+}
