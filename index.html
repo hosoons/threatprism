@@ -456,7 +456,7 @@ body::before {
   font-family: var(--font-display);
   letter-spacing: 0;
   flex-shrink: 0;
-  width: 92px;
+  width: 66px;
   box-sizing: border-box;
   text-align: center;
   white-space: nowrap;
@@ -690,7 +690,7 @@ body::before {
   font-family: var(--font-display);
   letter-spacing: 0;
   display: inline-block;
-  width: 92px;
+  width: 66px;
   box-sizing: border-box;
   text-align: center;
   white-space: nowrap;
@@ -1748,6 +1748,10 @@ function renderCategoryGrid() {
   }).join('');
 }
 
+/* Short labels for fixed-width category chips (only REG is longer than 6 characters) */
+const CHIP_SHORT = { REG: '규제·준수' };
+function chipName(c) { return CHIP_SHORT[c] || CATEGORIES[c]?.name || c; }
+
 /* ====== ALERT LIST ====== */
 function renderAlertList() {
   const el = document.getElementById('alertList');
@@ -1765,7 +1769,7 @@ function renderAlertList() {
         <div class="alert-title">${esc(a.title)}</div>
         <div class="alert-meta"><span>${a.date}</span><span>${a.countryName||''}</span></div>
       </div>
-      <span class="alert-cat-chip" data-cat="${a.category}">${CATEGORIES[a.category]?.name||a.category}</span>
+      <span class="alert-cat-chip" data-cat="${a.category}">${chipName(a.category)}</span>
     </div>
   `).join('');
 }
@@ -2471,7 +2475,7 @@ function feedCardHTML(inc) {
   return `
     <div class="feed-card" data-cat="${inc.category}" onclick="showDetail('${inc.id}')">
       <div class="feed-card-header">
-        <span class="feed-card-cat">${CATEGORIES[inc.category]?.name||inc.category}</span>
+        <span class="feed-card-cat">${chipName(inc.category)}</span>
         <span class="sev-chip ${inc.severity}">${inc.severity}</span>
         <span class="feed-card-date">${inc.date}</span>
       </div>
@@ -2692,7 +2696,7 @@ window.showDetail = function(id) {
   document.getElementById('modalTitle').textContent = inc.title;
   document.getElementById('modalMeta').innerHTML = `
     <span class="sev-chip ${inc.severity}">${inc.severity}</span>
-    <span class="alert-cat-chip" data-cat="${inc.category}">${CATEGORIES[inc.category]?.name||inc.category}</span>
+    <span class="alert-cat-chip" data-cat="${inc.category}">${chipName(inc.category)}</span>
     <span style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono)">${inc.date}</span>
   `;
   document.getElementById('modalBody').textContent = inc.summary || '상세 요약 없음';
