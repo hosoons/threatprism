@@ -22,7 +22,8 @@ APP = "https://hosoons.github.io/threatprism/"
 MIN_TOTAL = 14
 KST = dt.timezone(dt.timedelta(hours=9))
 TARGET_HHMM = (10, 0)      # scheduled delivery target (KST)
-DELAY_AFTER_HHMM = (10, 30)  # sending later than this is flagged as 발송 지연
+DELAY_AFTER_HHMM = (10, 10)  # sending later than this is flagged as 발송 지연
+SEND_FROM_HHMM = (9, 45)     # notifications are held until this KST time (send window 09:45-10:00)
 e = html.escape
 
 
@@ -368,7 +369,7 @@ def level_line(repo, lab):
 
 
 def delay_info(now=None):
-    """KST send time vs. the 10:00 target. Later than 10:30 => delayed (발송 지연)."""
+    """KST send time vs. the 10:00 target. Later than 10:10 => delayed (발송 지연)."""
     n = now or dt.datetime.now(KST)
     mins = n.hour * 60 + n.minute
     limit = DELAY_AFTER_HHMM[0] * 60 + DELAY_AFTER_HHMM[1]
@@ -456,6 +457,21 @@ def cmd_render(a):
     print(json.dumps({"push_chars": len("\n".join(push)), "email_bytes": len(body.encode()), "slack_chars": len("\n".join(sl)), "threat": [idx, lab]}, ensure_ascii=False))
 
 
+def cmd_hold(a):
+    """Wait until the send window opens (09:45 KST). Waits at most 540 s per call so it fits one Bash call;
+    prints READY when it is time to send, otherwise WAIT <minutes left> (call again)."""
+    import time
+    def left():
+        n = dt.datetime.now(KST)
+        start = n.replace(hour=SEND_FROM_HHMM[0], minute=SEND_FROM_HHMM[1], second=0, microsecond=0)
+        return (start - n).total_seconds()
+    t0 = time.time()
+    while left() > 0 and time.time() - t0 < 540:
+        time.sleep(min(30, max(1, left())))
+    r = left()
+    print("READY" if r <= 0 else f"WAIT {int(r // 60) + 1}")
+
+
 def cmd_runlog(a):
     """Assemble ops/runs/prod-<date>.json (no secrets, no e-mail addresses) from the run directory."""
     st = load(os.path.join(a.run, "stats.json"), {}) or {}
@@ -477,7 +493,7 @@ def cmd_runlog(a):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["seen", "select", "render", "runlog"])
+    ap.add_argument("cmd", choices=["seen", "select", "render", "runlog", "hold"])
     ap.add_argument("--repo", required=True)
     ap.add_argument("--date", required=True)
     ap.add_argument("--run")
@@ -495,6 +511,8 @@ def main():
         cmd_seen(a)
     elif a.cmd == "select":
         cmd_select(a)
+    elif a.cmd == "hold":
+        cmd_hold(a)
     elif a.cmd == "runlog":
         cmd_runlog(a)
     else:

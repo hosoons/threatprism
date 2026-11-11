@@ -13,7 +13,7 @@
   4  push data to GitHub (one commit)  -> GitHub Actions builds PDFs, Pages, #daily-report
   5  wait for reports/ready/daily-{date}.json (git pull loop, no tokens)
   6  pipeline.py render       -> push.txt, email.html, slack.json, delay.json  (no tokens)
-  6b delivery clock: render flags 발송 지연 when sent after 10:30 KST (target 10:00); runlog writes ops/runs/prod-<date>.json
+  6b delivery clock: notifications held until 09:45 KST (pipeline.py hold); render flags 발송 지연 when sent after 10:10 KST (target 09:45-10:00); runlog writes ops/runs/prod-<date>.json
   7  send: Claude push · one Gmail with BCC to subscribers · Slack #briefing
 ```
 
