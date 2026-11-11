@@ -1,6 +1,48 @@
 {
  "date": "2026-11-11",
- "lastStepReached": 4,
+ "collectors": [
+  "collector-kr: done 6 candidates (below target, results thin/stale)",
+  "collector-threat-global: done 6 candidates (below target, results thin/stale)",
+  "collector-telecom-industry: done 3 candidates (target missed, results stale)"
+ ],
+ "stats": {
+  "candidates": 18,
+  "afterDedupe": 15,
+  "added": 15,
+  "total": 15,
+  "threatIndex": 79,
+  "threatLevel": "HIGH",
+  "floors": {
+   "korea>=4": 4,
+   "telecom>=3": 3,
+   "non-anglo>=3": 5
+  },
+  "kevEntries": 1779,
+  "gaps": [],
+  "missingCategories": []
+ },
+ "held": 6,
+ "heldReasons": [
+  "INC needs a T1 source or two independent T2 sources",
+  "REG needs the government/regulator original (T1)",
+  "trust 20 < 60",
+  "trust 40 < 60"
+ ],
+ "delivery": {
+  "sentAtKst": "2026-11-11 13:07",
+  "delayed": true,
+  "label": "발송 지연",
+  "lateMinutes": 187,
+  "rule": "기준 10:00 KST, 10:30 초과 시 발송 지연"
+ },
+ "pdf": "generated",
+ "push": "sent",
+ "email": "sent to 1",
+ "slack": "ok",
+ "errors": [
+  "발송 지연: 2026-11-11 13:07 KST 발송 (기준 10:00 KST, 10:30 초과 시 발송 지연)"
+ ],
+ "lastStepReached": 8,
  "stepTimes": {
   "0": "12:55",
   "1": "12:58",
@@ -9,7 +51,12 @@
   "2-roundB": "13:01",
   "2-roundC": "13:04",
   "3": "13:05",
-  "4-start": "13:05"
+  "4-start": "13:05",
+  "4": "13:06",
+  "5": "13:07",
+  "6": "13:07",
+  "7": "13:08",
+  "8": "13:08"
  },
  "error": "",
  "notes": [
@@ -20,6 +67,18 @@
   "round B: kr=3 REG, industry=2 MKT, threat=3; select3 total 12, gaps [], needMore True",
   "round C: threat=3, kr=1; select4 total 15, added 15, held 6, needMore False",
   "summary-writer: done; brief.json valid (7 lines), facts cross-checked against daily.json",
-  "needMore false after round C: total 15, held 6"
- ]
+  "needMore false after round C: total 15, held 6",
+  "publish: push_files ok (5 files, first try)",
+  "dedupe note: inc-2026-1111-004 and -005 both cover Outlook CVE-2026-124194 (select did not merge them)",
+  "pdf: ready marker found on first wait loop (generatedAt 04:07:40Z)",
+  "render --test ok",
+  "notify: push sent, gmail sent to 1 recipient, slack HTTP200 ok"
+ ],
+ "escalationRounds": [
+  "A",
+  "B",
+  "C"
+ ],
+ "commitSha": "bcdde9e9471b7bb1d7c73364e04a39be1ed7388b",
+ "mode": "E2E"
 }
