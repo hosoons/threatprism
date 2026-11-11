@@ -53,6 +53,12 @@ def tokens(t):
     return {w for w in re.findall(r"[0-9a-z가-힣]+", (t or "").lower()) if len(w) > 1}
 
 
+def cve_ids(c):
+    """CVE IDs named in an item (title, summary, cves): two items on the same CVE in one batch are one story."""
+    txt = " ".join([c.get("title", ""), c.get("summary", "")] + [str(x) for x in (c.get("cves") or [])])
+    return {x.upper() for x in re.findall(r"CVE-\d{4}-\d{4,7}", txt, re.I)}
+
+
 def similar(a, b):
     x, y = tokens(a), tokens(b)
     return bool(x and y) and len(x & y) / len(x | y) >= 0.6
@@ -278,7 +284,7 @@ def cmd_select(a):
             continue
         if any(not c.get("followUpOf") and similar(c["title"], s.get("title")) for s in seen):
             continue
-        if any(norm_url(c["sourceUrl"]) == norm_url(p["sourceUrl"]) or similar(c["title"], p["title"]) for p in pool):
+        if any(norm_url(c["sourceUrl"]) == norm_url(p["sourceUrl"]) or similar(c["title"], p["title"]) or (cve_ids(c) & cve_ids(p)) for p in pool):
             continue
         pool.append(c)
     # selection: all critical/high, then floors, then by score up to 18 (max 20)
