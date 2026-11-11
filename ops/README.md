@@ -19,6 +19,7 @@
 
 | file | role |
 |---|---|
+| `ops/runbook/production.md` | daily run procedure read by the 09:05 task and the 09:50 watchdog (single source) |
 | `ops/sources.yaml` | T1/T2 domain whitelist, SAFE (look-alike exemptions), BLOCK list (quarterly review) |
 | `ops/rules/collection.md` | source tiers, verification, selection floors, candidate schema |
 | `ops/rules/scoring.md` | 5-factor score, severity grades, threat index |
