@@ -1,0 +1,25 @@
+{
+ "date": "2026-11-11",
+ "lastStepReached": 4,
+ "stepTimes": {
+  "0": "12:55",
+  "1": "12:58",
+  "2-select1": "12:58",
+  "2-roundA": "12:59",
+  "2-roundB": "13:01",
+  "2-roundC": "13:04",
+  "3": "13:05",
+  "4-start": "13:05"
+ },
+ "error": "",
+ "notes": [
+  "setup ok: clone tp+kev ok, seen ok",
+  "collectors: kr=6, threat=6, industry=3 candidates (all below target, search results thin/stale)",
+  "select1: added 7, total 7, held 7, needMore (korea 2/4, total 7/14); starting escalation round A",
+  "round A: collector-upgrade rescued 3 of 7; select2 total 8, korea 3/4, needMore; starting round B",
+  "round B: kr=3 REG, industry=2 MKT, threat=3; select3 total 12, gaps [], needMore True",
+  "round C: threat=3, kr=1; select4 total 15, added 15, held 6, needMore False",
+  "summary-writer: done; brief.json valid (7 lines), facts cross-checked against daily.json",
+  "needMore false after round C: total 15, held 6"
+ ]
+}
