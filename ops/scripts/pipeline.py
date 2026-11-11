@@ -375,7 +375,7 @@ def delay_info(now=None):
     limit = DELAY_AFTER_HHMM[0] * 60 + DELAY_AFTER_HHMM[1]
     target = TARGET_HHMM[0] * 60 + TARGET_HHMM[1]
     return {"sentAtKst": n.strftime("%Y-%m-%d %H:%M"), "delayed": mins > limit, "lateMinutes": max(0, mins - target),
-            "rule": f"기준 {TARGET_HHMM[0]:02d}:{TARGET_HHMM[1]:02d} KST, {DELAY_AFTER_HHMM[0]:02d}:{DELAY_AFTER_HHMM[1]:02d} 초과 시 발송 지연"}
+            "rule": f"발송 {SEND_FROM_HHMM[0]:02d}:{SEND_FROM_HHMM[1]:02d}~{TARGET_HHMM[0]:02d}:{TARGET_HHMM[1]:02d} KST, {DELAY_AFTER_HHMM[0]:02d}:{DELAY_AFTER_HHMM[1]:02d} 초과 시 발송 지연"}
 
 
 def cmd_render(a):
@@ -465,6 +465,12 @@ def cmd_hold(a):
         n = dt.datetime.now(KST)
         start = n.replace(hour=SEND_FROM_HHMM[0], minute=SEND_FROM_HHMM[1], second=0, microsecond=0)
         return (start - n).total_seconds()
+    if a.now:  # test hook: report only, no waiting
+        n = dt.datetime.fromisoformat(a.now).replace(tzinfo=KST)
+        start = n.replace(hour=SEND_FROM_HHMM[0], minute=SEND_FROM_HHMM[1], second=0, microsecond=0)
+        r = (start - n).total_seconds()
+        print("READY" if r <= 0 else f"WAIT {int(r // 60) + 1}")
+        return
     t0 = time.time()
     while left() > 0 and time.time() - t0 < 540:
         time.sleep(min(30, max(1, left())))
