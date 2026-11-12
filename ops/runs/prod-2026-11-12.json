@@ -1,1 +1,1 @@
-{"date":"2026-11-12","mode":"PRODUCTION","startedKst":"09:07","status":"running","lastStep":"0","stepTimes":{},"writePath":"A","error":"","notes":[]}
+{"date":"2026-11-12","mode":"PRODUCTION","startedKst":"09:07","status":"failed","lastStep":"0-5 pipeline.py seen","stepTimes":{},"writePath":"A","error":"Bash permission denied by auto-mode classifier (Code from External) when running ops/scripts/pipeline.py from the cloned repo","notes":[]}
