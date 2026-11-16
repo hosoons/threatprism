@@ -1,0 +1,56 @@
+{
+ "date": "2026-11-16",
+ "collectors": [
+  "kr:10 candidates",
+  "threat:4 candidates",
+  "industry:8 candidates"
+ ],
+ "stats": {
+  "candidates": 16,
+  "afterDedupe": 14,
+  "added": 14,
+  "total": 14,
+  "threatIndex": 62,
+  "threatLevel": "ELEVATED",
+  "floors": {
+   "korea>=4": 4,
+   "telecom>=3": 3,
+   "non-anglo>=3": 8
+  },
+  "kevEntries": 1781,
+  "gaps": [],
+  "missingCategories": [
+   "REG"
+  ]
+ },
+ "held": 6,
+ "heldReasons": [
+  "INC needs a T1 source or two independent T2 sources",
+  "REG needs the government/regulator original (T1)",
+  "VUL needs a CISA KEV match or a T1 vendor/CERT source",
+  "blacklist: look-alike of apnews.com (https://www.fnnews.com/news/20261"
+ ],
+ "delivery": {
+  "sentAtKst": "2026-11-16 11:43",
+  "delayed": true,
+  "label": "발송 지연",
+  "lateMinutes": 103,
+  "rule": "발송 09:45~10:00 KST, 10:10 초과 시 발송 지연"
+ },
+ "pdf": "weekly generated, daily NOT_READY",
+ "push": "sent",
+ "email": "sent to 4",
+ "slack": "ok",
+ "errors": [
+  "발송 지연: 2026-11-16 11:43 KST 발송 (발송 09:45~10:00 KST, 10:10 초과 시 발송 지연)",
+  "late start (GitHub write path missing until 11:31 KST)"
+ ],
+ "mode": "PRODUCTION",
+ "writePath": "A",
+ "status": "done",
+ "stepTimes": {
+  "start": "11:31",
+  "send": "11:43"
+ },
+ "lastStep": "8"
+}
