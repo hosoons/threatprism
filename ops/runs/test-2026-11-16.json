@@ -1,0 +1,57 @@
+{
+ "date": "2026-11-16",
+ "mode": "TEST",
+ "status": "done",
+ "lastStep": "STEP6",
+ "writePath": "A (GitHub MCP)",
+ "error": null,
+ "stepTimes": {
+  "STEP0": "05:21:09",
+  "STEP1": "05:22:27",
+  "STEP2": "05:22:27",
+  "STEP3": "05:23:34",
+  "STEP4": "05:23:34",
+  "STEP5": "05:23:34",
+  "STEP6": "05:23:34"
+ },
+ "checks": {
+  "clone": true,
+  "toolsLoaded": true,
+  "pipelineSeen": true,
+  "collectors": true,
+  "select": true,
+  "summary": true,
+  "render": true,
+  "push": true,
+  "gmail": true,
+  "slack": true,
+  "githubWrite": true
+ },
+ "collectorReplies": {
+  "kr": "done 4 candidates (~9 searches; PIPC item lacks gov original, KISA item T3 source)",
+  "threat": "done 4 candidates (~9 searches; CISA KEV page unfetchable, Check Point/Chrome items lack 2nd source)",
+  "industry": "done 0 candidates (5 queries, 3 opens; all stale or seen)"
+ },
+ "hold": "READY",
+ "notes": [
+  "push.txt/email include a weekly PDF link although --weekly-url was empty",
+  "push.txt is 435 chars (>200, may be truncated on mobile)",
+  "collector-industry returned 0 candidates; select held 5 of 8"
+ ],
+ "stats": {
+  "total": 15,
+  "threatIndex": 67,
+  "threatLevel": "HIGH",
+  "held": [
+   {"title": "KISA, 침입 사고 잇따라 누리집 7곳 중단·긴급 점검", "reason": "INC needs a T1 source or two independent T2 sources"},
+   {"title": "금융위, 금융사 580곳 외부접점·내부통제 긴급 점검", "reason": "REG needs the government/regulator original (T1)"},
+   {"title": "개인정보위, AI 해킹 대응 정책포럼 개최…과징금 매출 10%", "reason": "REG needs the government/regulator original (T1)"},
+   {"title": "체크포인트 Gaia OS 루트 권한 상승 결함 악용, KEV 등재", "reason": "trust 40 < 60"},
+   {"title": "윈도우 CLFS 'SignDrop' 제로데이 PoC 공개, 패치 없음", "reason": "VUL needs a CISA KEV match or a T1 vendor/CERT source"}
+  ],
+  "added": 1,
+  "floors": {"korea>=4": 4, "telecom>=3": 7, "non-anglo>=3": 12},
+  "needMore": false,
+  "gaps": []
+ }
+}
