@@ -1,4 +1,11 @@
-# ThreatPrism production runbook (single source of truth for the daily run)
+# ThreatPrism production runbook (reference)
+
+> NOTE (2026-11-16): the scheduled tasks no longer read this file at run time. On 11/12 the run was blocked with
+> "Bash permission denied by auto-mode classifier (Code from External)" because the commands came from a repo file.
+> The executable steps now live in the task prompts themselves ("ThreatPrism Daily Briefing" 09:01, "ThreatPrism
+> Watchdog" 10:08), each with an owner authorization line. Keep this file as the human-readable reference and update
+> both task prompts when a step changes.
+
 
 Read by the scheduled tasks "ThreatPrism Daily Briefing" (MODE=PRODUCTION, 09:05 KST weekdays) and
 "ThreatPrism Watchdog" (MODE=RETRY, only when the 09:05 run did not publish). The Slack webhook is NOT in this
