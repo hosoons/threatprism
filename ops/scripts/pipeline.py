@@ -322,7 +322,7 @@ def cmd_select(a):
     start = max([int(i["id"][-3:]) for i in existing if str(i.get("id", "")).startswith(prefix)] or [0])
     keep = ["title", "category", "severity", "country", "countryName", "region", "lat", "lng", "source", "sourceUrl", "date",
             "summary", "tags", "score", "scoreFactors", "nonThreat", "telcoBreach", "followUpOf", "crossCheckUrl",
-            "sources", "trust", "sourceTier", "kev", "sourcePending"]
+            "sources", "crossCheckUrls", "cves", "trust", "sourceTier", "kev", "sourcePending"]
     final = []
     for n, c in enumerate(sorted(chosen, key=lambda x: (SEV_RANK[x["severity"]], -x["score"])), start + 1):
         o = {"id": f"{prefix}{n:03d}"}
