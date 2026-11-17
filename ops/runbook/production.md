@@ -61,6 +61,12 @@ python3 /tmp/tp/ops/scripts/pipeline.py select --repo /tmp/tp --date $D --run /t
 If stats.json has needMore=true, follow /tmp/tp/ops/rules/escalation.md exactly (rounds A, B, C; run select after each
 round; stop when needMore is false). Never lower a gate or invent items; record any shortfall.
 
+## STEP 2b VERIFY (after the last select, before the summary)
+python3 /tmp/tp/ops/scripts/pipeline.py verify --repo /tmp/tp --date $D --run /tmp/run
+Checks CVE ids against the official CVE List, adds sourceGrade, drops made-up-CVE VUL items (no KEV, no T1). It prints
+`dropped` and `needMore`. If items were dropped and needMore is now true, run ONE round B gap fill for the missing floor,
+then select and verify again (verify-drop.json keeps dropped URLs out). Never blocks on network trouble. Tests: python3 ops/scripts/test_verify.py
+
 ## STEP 3 EXECUTIVE SUMMARY
 Agent tool (general-purpose, model "sonnet"): "You are the ThreatPrism agent summary-writer. Read and follow
 /tmp/tp/ops/agents/summary-writer.md and /tmp/tp/ops/rules/summary.md. Today is <D>. Items: /tmp/run/daily.json.

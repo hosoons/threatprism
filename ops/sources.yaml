@@ -3,7 +3,7 @@
 # adopted only when a T1/T2 source confirms it). Match is on the registrable domain or any subdomain of it.
 # KR press: the doc standard is Naver news partnership (콘텐츠/검색 제휴). Entries marked "naver: unverified"
 # are provisionally T2 and must be confirmed by the quarterly review (ops/runs/source-review-*.md).
-version: 2026-11-09
+version: 2026-11-17
 
 T1:
   # government / CERT / regulators
@@ -41,6 +41,9 @@ T1:
   - go.jp
   - gov.au
   - gov.sg
+  # added 2026-11-17 (evidence opened 2026-11-17):
+  - govt.nz              # NZ government namespace: "reserved for statutory entities and Government programmes", moderated by the Government Digital Delivery Agency (dns.govt.nz moderation policy)
+  - jvn.jp               # Japan Vulnerability Notes: "operated jointly by the JPCERT Coordination Center and IPA" (jvn.jp/en/nav/jvn.html)
   # vendor PSIRT / security bulletins
   - cisco.com
   - fortiguard.com

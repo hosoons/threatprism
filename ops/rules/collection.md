@@ -12,7 +12,9 @@ Source filter (3 stages; ops/sources.yaml is the single source of truth, enforce
 2. Blacklist — any hit discards the item: not https, raw IP host, punycode host, risky TLD, look-alike of a listed domain
    (edit distance 1-2), BLOCK list. Collectors also skip sites with no byline, no ownership/contact page, no corrections
    policy, AI mass-aggregators, and domains that look newly registered. Popularity (traffic rank) is never a trust signal.
-   Google Web Risk / PhishTank / VirusTotal lookups are not wired in yet (they need an API key and network allow-listing).
+   Google Web Risk / PhishTank / VirusTotal lookups are not wired in (API key + network allow-list needed; the sandbox shell cannot reach news sites).
+   `pipeline.py verify` (after the last select) checks every CVE id against the official CVE List (CVEProject/cvelistV5 on GitHub): an unknown or REJECTED CVE is flagged `cveUnverified`;
+   a VUL item without KEV match and without a T1 source is dropped. It also adds `sourceGrade` (A-D registry grade, E = unlisted). Network trouble never blocks publishing.
 3. Cross-check — category gates
    - VUL: CISA KEV match (cisagov/kev-data, cloned each run) or a T1 vendor/CERT advisory URL
    - INC: a T1 source, or two independent T2 domains; T3-only reports are held

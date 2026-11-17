@@ -93,7 +93,7 @@ def threat_index(items):
 
 # ---------- source filter: whitelist (ops/sources.yaml) -> blacklist heuristics -> cross-check / KEV ----------
 TWO_LEVEL = {"co.kr", "or.kr", "go.kr", "ac.kr", "re.kr", "ne.kr", "co.uk", "gov.uk", "org.uk", "ac.uk", "com.au", "gov.au",
-             "co.jp", "or.jp", "go.jp", "ne.jp", "com.sg", "gov.sg", "co.in", "gov.in", "com.br", "gov.br", "co.za", "com.cn", "gov.cn"}
+             "co.jp", "or.jp", "go.jp", "ne.jp", "govt.nz", "co.nz", "org.nz", "com.sg", "gov.sg", "co.in", "gov.in", "com.br", "gov.br", "co.za", "com.cn", "gov.cn"}
 RISKY_TLD = {"zip", "mov", "xyz", "top", "click", "buzz", "loan", "work", "gq", "tk", "ml", "cf", "ga"}
 TIER_BASE = {"T1": 70, "T2": 60, "T3": 20}
 TRUST_MIN = 60
@@ -249,6 +249,7 @@ def cmd_select(a):
     cands, bad, held = [], [], []
     src = load_sources(a.repo)
     kev = load_kev(a.kev) if a.kev else set()
+    vdrop = {norm_url(u) for u in (load(os.path.join(run, "verify-drop.json"), []) or [])}
     for p in sorted(glob.glob(os.path.join(run, "cand-*.json"))):
         arr = load(p, [])
         if not isinstance(arr, list):
@@ -258,6 +259,9 @@ def cmd_select(a):
             miss = [k for k in REQ if not c.get(k)]
             if miss or c.get("category") not in CATS or not str(c.get("sourceUrl", "")).startswith("http"):
                 bad.append(f"{os.path.basename(p)}: {str(c.get('title'))[:30]} missing {miss}")
+                continue
+            if norm_url(c.get("sourceUrl")) in vdrop:
+                held.append({"title": str(c.get("title"))[:60], "url": c.get("sourceUrl"), "category": c.get("category"), "country": c.get("country"), "file": os.path.basename(p), "reason": "verify-drop (CVE/link check)"})
                 continue
             c["region"] = c["region"] if c["region"] in REGIONS else "Asia"
             c["tags"] = [str(t).strip().lower().replace(" ", "-") for t in c.get("tags", [])][:5]
@@ -350,6 +354,131 @@ def cmd_select(a):
     # held candidates that a source-upgrade round may rescue (missing second source / T1 original)
     dump([h for h in held if not str(h.get("reason", "")).startswith("blacklist")], os.path.join(run, "held.json"))
     print(json.dumps({**{k: stats[k] for k in ("candidates", "afterDedupe", "added", "total", "threatIndex", "threatLevel", "floors", "kevEntries")}, "held": len(held), "needMore": stats["needMore"], "gaps": stats["gaps"]}, ensure_ascii=False))
+
+
+CVE_BASE = os.environ.get("TP_CVE_BASE", "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves")
+
+
+def cve_state(cve, base=None, timeout=6):
+    """Existence check against the official CVE List (CVEProject/cvelistV5 on GitHub, which the sandbox can reach).
+    Returns ok | notfound | rejected | unchecked. A network problem is 'unchecked' and never blocks publishing."""
+    import urllib.request, urllib.error
+    m = re.fullmatch(r"CVE-(\d{4})-(\d{4,7})", cve.upper())
+    if not m:
+        return "notfound"
+    year, num = m.group(1), m.group(2)
+    url = f"{(base or CVE_BASE).rstrip('/')}/{year}/{int(num) // 1000}xxx/CVE-{year}-{num}.json"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "ThreatPrism-verify/1.0"})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            d = json.loads(r.read().decode("utf-8", "replace"))
+        return "rejected" if str((d.get("cveMetadata") or {}).get("state", "")).upper() == "REJECTED" else "ok"
+    except urllib.error.HTTPError as e:
+        return "notfound" if e.code == 404 else "unchecked"
+    except Exception:
+        return "unchecked"
+
+
+def registry_grades(repo):
+    """domain -> grade letter (A-D) from ops/sources.yaml via ops/scripts/build_registry.py; {} if unavailable."""
+    try:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import build_registry as br
+        return {d: br.GRADE[m["kind"]][0] for d, m in br.parse(repo).items()}
+    except Exception:
+        return {}
+
+
+def grade_of(url, reg):
+    host, best = host_of(url)[1], "E"
+    for d, g in reg.items():
+        if (host == d or host.endswith("." + d)) and g < best:
+            best = g
+    return best
+
+
+def floors_of(items):
+    return {"korea>=4": sum(1 for c in items if c.get("country") == "KR"),
+            "telecom>=3": sum(1 for c in items if c.get("category") == "TEL" or "telecom" in c.get("tags", []) or (c.get("scoreFactors") or {}).get("target") == 30),
+            "non-anglo>=3": sum(1 for c in items if c.get("country") not in ANGLO)}
+
+
+def cmd_verify(a):
+    """Independent checks on the items added in this run (run after the last `select`, before the summary):
+    - sourceGrade A-E from the source registry (back data)
+    - every CVE id must exist and not be REJECTED in the official CVE List. An unknown CVE is flagged (cveUnverified);
+      on a VUL item with no KEV match and no T1 source it is dropped, because a made-up CVE is the typical hallucination
+    - optional run/linkcheck.json from the link-verifier agent [{url, status: ok|dead|mismatch|blocked, note}];
+      dead or mismatch items are dropped
+    Dropped URLs go to run/verify-drop.json so that another `select` does not bring them back.
+    Network trouble gives status 'unchecked' and never blocks publishing."""
+    from concurrent.futures import ThreadPoolExecutor
+    import time
+    run = a.run
+    items = load(os.path.join(run, "daily.json"), []) or []
+    existing = {i.get("id") for i in (load(os.path.join(a.repo, "data/daily", f"{a.date}.json"), []) or [])}
+    reg = registry_grades(a.repo)
+    link = {}
+    if a.linkcheck:
+        for x in load(a.linkcheck, []) or []:
+            if isinstance(x, dict) and x.get("url"):
+                link[norm_url(x["url"])] = x
+    ids_of = {}
+    for i in items:
+        if i.get("id") in existing:
+            continue
+        ids_of[i["id"]] = sorted({x.upper() for x in CVE_RE.findall(" ".join([i.get("title", ""), i.get("summary", "")] + list(i.get("cves") or [])))})[:6]
+    allids = sorted({c for v in ids_of.values() for c in v})[:40]
+    t0 = time.time()
+    with ThreadPoolExecutor(8) as ex:
+        res = dict(zip(allids, ex.map(lambda c: cve_state(c, a.cve_base or None), allids)))
+    kept, dropped = [], []
+    cnt = {"ok": 0, "notfound": 0, "rejected": 0, "unchecked": 0}
+    for i in items:
+        if i.get("id") not in ids_of:
+            kept.append(i); continue
+        i["sourceGrade"] = grade_of(i.get("sourceUrl", ""), reg) if reg else None
+        if i["sourceGrade"] is None:
+            del i["sourceGrade"]
+        ids = ids_of[i["id"]]
+        for c in ids:
+            cnt[res[c]] += 1
+        bad = [c for c in ids if res[c] in ("notfound", "rejected")]
+        if bad:
+            i["cveUnverified"] = bad
+            if i.get("category") == "VUL" and not i.get("kev") and i.get("sourceTier") != "T1":
+                dropped.append({"title": str(i.get("title"))[:60], "url": i.get("sourceUrl"), "reason": f"unknown CVE {','.join(bad)} on non-KEV, non-T1 VUL item"})
+                continue
+        elif ids and all(res[c] == "ok" for c in ids):
+            i["cveVerified"] = True
+        lc = link.get(norm_url(i.get("sourceUrl")))
+        if lc:
+            st = str(lc.get("status", "")).lower()
+            if st in ("dead", "mismatch"):
+                dropped.append({"title": str(i.get("title"))[:60], "url": i.get("sourceUrl"), "reason": f"link check {st}: {str(lc.get('note', ''))[:80]}"})
+                continue
+            if st == "ok":
+                i["linkChecked"] = True
+        kept.append(i)
+    dump(kept, os.path.join(run, "daily.json"))
+    prev = load(os.path.join(run, "verify-drop.json"), []) or []
+    dump(sorted({*prev, *[d["url"] for d in dropped]}), os.path.join(run, "verify-drop.json"))
+    st = load(os.path.join(run, "stats.json"), {}) or {}
+    idx, lab = threat_index(kept)
+    fl = floors_of(kept)
+    need = {"korea>=4": 4, "telecom>=3": 3, "non-anglo>=3": 3}
+    st.update({"total": len(kept), "added": sum(1 for i in kept if i.get("id") not in existing), "threatIndex": idx, "threatLevel": lab, "floors": fl,
+               "byCategory": {k: sum(1 for i in kept if i["category"] == k) for k in CATS},
+               "byRegion": {r: sum(1 for i in kept if i["region"] == r) for r in REGIONS},
+               "severity": {s: sum(1 for i in kept if i["severity"] == s) for s in SEV_RANK}})
+    st["gaps"] = [{"floor": k, "have": v, "need": need[k]} for k, v in fl.items() if v < need[k]]
+    st["missingCategories"] = [k for k in CATS if st["byCategory"][k] == 0]
+    st["needMore"] = bool(len(kept) < MIN_TOTAL or st["gaps"])
+    st["verify"] = {"checkedItems": len(ids_of), "cve": cnt, "cveIds": len(allids), "linkChecked": sum(1 for i in kept if i.get("linkChecked")),
+                    "dropped": len(dropped), "seconds": round(time.time() - t0, 1)}
+    st["verifyDropped"] = dropped
+    dump(st, os.path.join(run, "stats.json"))
+    print(json.dumps({"verify": st["verify"], "dropped": [d["reason"] for d in dropped], "total": st["total"], "needMore": st["needMore"], "gaps": st["gaps"]}, ensure_ascii=False))
 
 
 def newest_weekly(repo):
@@ -490,7 +619,7 @@ def cmd_runlog(a):
     if dl.get("delayed"):
         errs.append(f"발송 지연: {dl.get('sentAtKst')} KST 발송 ({dl.get('rule')})")
     log = {"date": a.date, "collectors": [x for x in a.collectors.split("|") if x],
-           "stats": {k: st.get(k) for k in ("candidates", "afterDedupe", "added", "total", "threatIndex", "threatLevel", "floors", "kevEntries", "gaps", "missingCategories")},
+           "stats": {k: st.get(k) for k in ("candidates", "afterDedupe", "added", "total", "threatIndex", "threatLevel", "floors", "kevEntries", "gaps", "missingCategories", "verify", "verifyDropped")},
            "held": len(held), "heldReasons": sorted({str(h.get("reason", ""))[:70] for h in held}),
            "delivery": {"sentAtKst": dl.get("sentAtKst"), "delayed": bool(dl.get("delayed")), "label": "발송 지연" if dl.get("delayed") else "정시", "lateMinutes": dl.get("lateMinutes"), "rule": dl.get("rule")},
            "pdf": kv.get("pdf", ""), "push": kv.get("push", ""), "email": kv.get("email", ""), "slack": kv.get("slack", ""), "errors": errs + [x for x in kv.get("errors", "").split("|") if x]}
@@ -499,7 +628,7 @@ def cmd_runlog(a):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["seen", "select", "render", "runlog", "hold"])
+    ap.add_argument("cmd", choices=["seen", "select", "verify", "render", "runlog", "hold"])
     ap.add_argument("--repo", required=True)
     ap.add_argument("--date", required=True)
     ap.add_argument("--run")
@@ -511,12 +640,16 @@ def main():
     ap.add_argument("--collectors", default="", help="runlog: one-line collector replies separated by |")
     ap.add_argument("--status", default="", help="runlog: push=..;email=..;slack=..;pdf=.. as k=v;k=v")
     ap.add_argument("--kev", default="", help="path to CISA known_exploited_vulnerabilities.json (cisagov/kev-data)")
+    ap.add_argument("--linkcheck", default="", help="verify: path to link-verifier output [{url,status,note}]")
+    ap.add_argument("--cve-base", default="", help="verify: override base URL of the CVE List mirror (tests)")
     a = ap.parse_args()
     if a.cmd == "seen":
         a.out = a.out or a.run
         cmd_seen(a)
     elif a.cmd == "select":
         cmd_select(a)
+    elif a.cmd == "verify":
+        cmd_verify(a)
     elif a.cmd == "hold":
         cmd_hold(a)
     elif a.cmd == "runlog":

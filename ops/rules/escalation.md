@@ -19,6 +19,7 @@ Round C: wider window (last attempt)
   (KISA 보호나라, 과기정통부, 개인정보위, CISA alerts, vendor PSIRT pages) and use WebSearch mode "extended". Run select again.
 
 Notes
+- RETRY mode (watchdog) climbs the same ladder A-C; it is not limited to one round. 11/17 was published with Korea 1/4 because the retry stopped after one gap-fill round.
 - Windows: Monday and the first working day after a public holiday start from the last working day (96 h; T1 120 h),
   because weekends and holidays produce few news items. Other days: 48 h (T1 72 h).
 - Items published today before this run are kept: select merges with data/daily/<today>.json and dedupes against it.
