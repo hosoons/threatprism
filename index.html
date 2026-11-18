@@ -586,6 +586,7 @@ body::before {
 }
 .graph-container svg { width: 100%; height: 100%; }
 .graph-container svg text { pointer-events: none; user-select: none; }
+.graph-container svg text.node-label { paint-order: stroke; stroke: var(--card); stroke-width: 3px; stroke-linejoin: round; }
 .graph-legend {
   display: flex;
   gap: 10px;
@@ -913,6 +914,7 @@ select, input[type="time"] {
 .modal-source a { color: var(--accent); text-decoration: none; }
 
 /* --- Trend Chart --- */
+.chart-note { font-size: 10px; color: var(--text-muted); margin: 6px 4px 0; }
 .chart-container {
   background: var(--card);
   border: 1px solid var(--border);
@@ -1012,6 +1014,7 @@ select, input[type="time"] {
     </div>
     <div class="section-title">7일 추이</div>
     <div class="chart-container"><canvas id="trendChart"></canvas></div>
+    <div class="chart-note">점선 구간 = 수집 데이터가 없는 날(주말·휴일·미게시)</div>
   </section>
 
   <!-- Map -->
@@ -1149,7 +1152,7 @@ select, input[type="time"] {
     <div class="settings-section">
       <h3>ℹ️ 정보</h3>
       <div class="setting-row">
-        <div class="setting-label">ThreatPrism v1.7</div>
+        <div class="setting-label">ThreatPrism v1.8</div>
         <div class="setting-value">Claude Scheduled Task 기반</div>
       </div>
       <div class="setting-row">
@@ -1788,9 +1791,11 @@ function renderTrendChart() {
     last7.push(d.toISOString().slice(0,10));
   }
   const trendBase = (viewMode === 'cumulative' && (dateRange.from || dateRange.to)) ? getFilteredIncidents() : allIncidents;
+  // days with no collection at all (weekend, holiday, unpublished run) are gaps, not "0 incidents"
+  const collectedDays = new Set(allIncidents.map(collectedKey));
   const countsByCat = {};
   Object.keys(CATEGORIES).forEach(cat => {
-    countsByCat[cat] = last7.map(date => trendBase.filter(i=>i.category===cat && collectedKey(i)===date).length);
+    countsByCat[cat] = last7.map(date => collectedDays.has(date) ? trendBase.filter(i=>i.category===cat && collectedKey(i)===date).length : null);
   });
   if (trendChart) trendChart.destroy();
   const style = getComputedStyle(document.documentElement);
@@ -1808,7 +1813,9 @@ function renderTrendChart() {
         borderWidth: 2,
         pointRadius: 3,
         pointBackgroundColor: cat.color,
-        tension: .3,
+        tension: 0,
+        spanGaps: true,
+        segment: { borderDash: c => (c.p0.skip || c.p1.skip || c.p0.raw == null || c.p1.raw == null) ? [4, 4] : undefined },
         fill: false
       }))
     },
@@ -2221,7 +2228,7 @@ function syncGraphControls() {
   const lvv = document.getElementById('graphLevelVal'); if (lvv) lvv.textContent = graphState.level;
   const box = document.getElementById('graphRange'); if (box) box.hidden = graphState.period !== 'custom';
   const hint = document.getElementById('graphLevelHint');
-  if (hint) hint.textContent = graphState.mode === 'tag' ? '함께 나온 횟수 ' + graphState.level + '회 이상' : '유사도 ' + (graphState.level + 1) + '점 이상';
+  if (hint) hint.textContent = graphState.mode === 'tag' ? '함께 나온 횟수 ' + graphState.level + '회 이상' : '유사도 ' + (graphState.level + 2) + '점 이상';
 }
 function graphEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function graphPeriodLabel() {
@@ -2238,12 +2245,16 @@ function buildIncidentGraph(items) {
     id: inc.id, kind: 'incident', label: inc.title || '', category: inc.category, severity: inc.severity,
     tags: (inc.tags || []).map(t => String(t).toLowerCase()), country: inc.country || '', linkCount: 0
   }));
-  const minScore = graphState.level + 1;
+  const minScore = graphState.level + 2;
+  // tags carried by >25% of the incidents (e.g. #telecom) say nothing about similarity: ignore them for linking
+  const tagFreq = new Map();
+  nodes.forEach(n => new Set(n.tags).forEach(t => tagFreq.set(t, (tagFreq.get(t) || 0) + 1)));
+  const generic = new Set([...tagFreq].filter(([, c]) => c >= 8 && c > nodes.length * 0.25).map(([t]) => t));
   const links = [];
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
       const a = nodes[i], b = nodes[j];
-      const shared = a.tags.filter(t => b.tags.includes(t)).length;
+      const shared = a.tags.filter(t => !generic.has(t) && b.tags.includes(t)).length;
       const sameCat = a.category === b.category;
       let score = shared * 2;
       if (sameCat) score += 1;
@@ -2409,9 +2420,22 @@ function renderGraph() {
     .attr('font-size', labelSize)
     .attr('font-family', 'Outfit, sans-serif')
     .attr('fill', textColor)
-    .attr('fill-opacity', d => d.showLabel ? 0.85 : 0)
+    .attr('opacity', d => d.showLabel ? 0.85 : 0)
     .attr('text-anchor', 'middle');
 
+  label.each(function (d) { let t = 0; try { t = this.getComputedTextLength(); } catch (_) {} d.lw = t || shortLabel(d).length * labelSize(d) * 0.95; });
+  const placeLabels = () => {
+    const placed = [];
+    ranked.forEach(n => {
+      if (!labelled.has(n.id)) return;
+      const hw = (n.lw || 40) / 2, fs = labelSize(n);
+      const x = Math.max(hw + 2, Math.min(w - hw - 2, n.x)), y = Math.max(fs + 2, n.y - n.r - 5);
+      const rc = { x0: x - hw, x1: x + hw, y0: y - fs, y1: y + 2 };
+      const hit = placed.some(p => rc.x0 < p.x1 && rc.x1 > p.x0 && rc.y0 < p.y1 && rc.y1 > p.y0);
+      n.showLabel = !hit; if (!hit) placed.push(rc);
+    });
+    label.attr('opacity', d => d.showLabel ? 0.85 : 0);
+  };
   const adjacency = new Map(nodes.map(n => [n.id, new Set()]));
   const lid = (x) => typeof x === 'string' ? x : x.id;
   links.forEach(l => { adjacency.get(lid(l.source))?.add(lid(l.target)); adjacency.get(lid(l.target))?.add(lid(l.source)); });
@@ -2426,13 +2450,13 @@ function renderGraph() {
       .attr('fill-opacity', n => (n.id === d.id || nb.has(n.id)) ? 1 : 0.15)
       .attr('stroke-opacity', n => (n.id === d.id || nb.has(n.id)) ? 1 : 0.15);
     if (d.category) node.filter(n => n.id === d.id).select('circle').attr('filter', `url(#glow-${d.category})`);
-    label.attr('fill-opacity', n => (n.id === d.id || nb.has(n.id)) ? 1 : 0.1);
+    label.attr('opacity', n => (n.id === d.id || nb.has(n.id)) ? 1 : 0.1);
     label.filter(n => n.id === d.id).text(d.kind === 'tag' ? `${d.label} (${d.count}건)` : d.label).attr('font-size', 11).attr('fill', hiText);
   })
   .on('mouseleave', () => {
     link.attr('stroke-opacity', 0.35).attr('stroke', lineColor).attr('stroke-width', d => 0.3 + d.value * (isTag ? 0.35 : 0.15));
     node.select('circle').attr('fill-opacity', 0.75).attr('stroke-opacity', 0.9).attr('filter', null);
-    label.attr('fill-opacity', d => d.showLabel ? 0.85 : 0).attr('fill', textColor).text(shortLabel).attr('font-size', labelSize);
+    label.attr('opacity', d => d.showLabel ? 0.85 : 0).attr('fill', textColor).text(shortLabel).attr('font-size', labelSize);
   })
   .on('click', (e, d) => { if (d.kind === 'tag') showTagIncidents(d); else showDetail(d.id); });
 
@@ -2443,8 +2467,10 @@ function renderGraph() {
       d.y = Math.max(d.r, Math.min(h - d.r, d.y));
       return `translate(${d.x},${d.y})`;
     });
-    label.attr('x', d => d.x).attr('y', d => d.y - d.r - 5);
+    label.attr('x', d => Math.max((d.lw || 40) / 2 + 2, Math.min(w - (d.lw || 40) / 2 - 2, d.x))).attr('y', d => Math.max(labelSize(d) + 2, d.y - d.r - 5));
+    if (simulation.alpha() < 0.08) placeLabels();
   });
+  simulation.on('end', placeLabels);
 }
 
 function renderGraphLegend() {
