@@ -36,3 +36,10 @@ Selection (done by the pipeline script, collectors just deliver good candidates)
 - Follow-ups: if a story continues an item from the last 7 days, set `followUpOf` to that item's id and summarise only the new facts.
 
 Candidate JSON fields: title (Korean, ≤60 chars), category (INC VUL REG MKT TCH TEL), country (ISO alpha-2), countryName (Korean), region (Asia, Europe, North America, South America, Africa, Middle East, Oceania), lat, lng, source, sourceUrl, crossCheckUrls (list of confirming URLs you opened), cves (list, optional), date (article date YYYY-MM-DD), summary (Korean, 2-3 sentences), tags (3-5 English, lowercase, hyphenated, reuse common tags such as ransomware, zero-day, supply-chain, telecom, data-breach), scoreFactors {target, exploit, technical, scale, domestic}, nonThreat (bool), telcoBreach (bool), followUpOf (optional id).
+
+
+## Verify step additions (v1.9)
+- `pipeline.py verify` also cross-checks the CVSS base score an item states (title/summary) against the CVE record (cvelistV5):
+  a score that matches none of the record's scores is flagged `cvssMismatch {claimed, record}` (flag only, never dropped; the record may lag the vendor).
+  A CVE published more than 180 days before the item date and not in KEV gets `cveAgeDays` (informational).
+  Both counts appear in the run log under stats.verify (cvssMismatch, oldCve). Summary writers should quote the CVSS of the record when they differ.

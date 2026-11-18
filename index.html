@@ -8,11 +8,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#080c14">
-<meta name="description" content="통신·보안 위협 동향을 매 평일 09:00(KST)에 자동 갱신하는 일일 보안 인텔리전스 대시보드">
+<meta name="description" content="통신·보안 위협 동향을 매 평일 09:35(KST) 전후 자동 갱신하는 일일 보안 인텔리전스 대시보드">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ThreatPrism">
 <meta property="og:title" content="ThreatPrism · Daily Security Intelligence">
-<meta property="og:description" content="통신·보안 위협 동향 대시보드 · 평일 09:00 자동 갱신">
+<meta property="og:description" content="통신·보안 위협 동향 대시보드 · 평일 09:35 자동 갱신">
 <meta property="og:url" content="https://hosoons.github.io/threatprism/">
 <meta property="og:image" content="https://hosoons.github.io/threatprism/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -20,7 +20,7 @@
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ThreatPrism · Daily Security Intelligence">
-<meta name="twitter:description" content="통신·보안 위협 동향 대시보드 · 평일 09:00 자동 갱신">
+<meta name="twitter:description" content="통신·보안 위협 동향 대시보드 · 평일 09:35 자동 갱신">
 <meta name="twitter:image" content="https://hosoons.github.io/threatprism/og-image.png">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -1093,15 +1093,15 @@ select, input[type="time"] {
     <div class="settings-section">
       <h3>ℹ️ 자동 수집 안내</h3>
       <div class="setting-row" style="display:block">
-        <div class="setting-label">매 평일 09:00 (KST) 자동 갱신</div>
-        <div class="setting-desc" style="margin-top:6px;line-height:1.6">데이터는 평일(월~금) 오전 9시에 자동 수집되어 이 사이트에 반영됩니다. 푸시 알림과 이메일 브리핑에는 이 사이트 링크가 포함됩니다. 수집 일정과 알림 수신 설정은 이 화면이 아니라 자동 수집 작업에서 관리됩니다.</div>
+        <div class="setting-label">매 평일 09:35 (KST) 전후 자동 갱신</div>
+        <div class="setting-desc" style="margin-top:6px;line-height:1.6">데이터는 평일(월~금) 오전 9시 5분부터 자동 수집되어 09:35 전후 이 사이트에 반영되고, 푸시·이메일·Slack은 09:45부터 발송됩니다. 푸시 알림과 이메일 브리핑에는 이 사이트 링크가 포함됩니다. 수집 일정과 알림 수신 설정은 이 화면이 아니라 자동 수집 작업에서 관리됩니다.</div>
       </div>
     </div>
     <div class="settings-section" style="display:none">
       <h3>📅 브리핑 일정</h3>
       <div class="setting-row">
         <div><div class="setting-label">브리핑 시간</div><div class="setting-desc">매일 브리핑 수집 시간</div></div>
-        <input type="time" id="settingTime" value="09:00">
+        <input type="time" id="settingTime" value="09:45">
       </div>
       <div class="setting-row">
         <div><div class="setting-label">활성 요일</div><div class="setting-desc">브리핑을 받을 요일 선택</div></div>
@@ -1152,7 +1152,7 @@ select, input[type="time"] {
     <div class="settings-section">
       <h3>ℹ️ 정보</h3>
       <div class="setting-row">
-        <div class="setting-label">ThreatPrism v1.8</div>
+        <div class="setting-label">ThreatPrism v1.9</div>
         <div class="setting-value">Claude Scheduled Task 기반</div>
       </div>
       <div class="setting-row">
@@ -1227,7 +1227,7 @@ let feedFilter = 'ALL';
 let viewMode = 'today'; // 'today' | 'cumulative' (default: today)
 let dateRange = { from: null, to: null }; // custom date range filter
 let settings = {
-  time: '09:00',
+  time: '09:45',
   days: [1,2,3,4,5],
   push: true,
   email: true,
@@ -1704,6 +1704,7 @@ async function loadBrief() {
     if (r.ok) briefData = await r.json();
   } catch (e) { briefData = null; }
   renderBrief();
+  try { paintLastUpdate(); } catch (_) {}
 }
 function renderBrief() {
   const el = document.getElementById('briefBox');
@@ -2658,7 +2659,7 @@ async function subscribeEmail() {
       const subs = readLocalSubs();
       if (!subs.includes(email)) { subs.push(email); writeLocalSubs(subs); }
       setEmailToggle(true);
-      showEmailStatus('구독 요청 접수: ' + email + ' · 다음 평일 09:00 브리핑부터 발송됩니다.', 'var(--sev-low)');
+      showEmailStatus('구독 요청 접수: ' + email + ' · 다음 평일 09:45 브리핑부터 발송됩니다.', 'var(--sev-low)');
     } else {
       const subs = readLocalSubs();
       if (!subs.includes(email)) { subs.push(email); writeLocalSubs(subs); }
@@ -2706,10 +2707,18 @@ async function loadSubscribers() {
     subs.map(e => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;font-family:var(--font-mono);color:var(--text-muted)">${esc(e)}</span><button onclick="unsubscribeEmail('${esc(e)}')" style="padding:2px 8px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--sev-high);font-size:11px;cursor:pointer">수신 거부</button></div>`).join('');
 }
 
+function paintLastUpdate() {
+  const el = document.getElementById('lastUpdate');
+  if (!el) return;
+  const day = window.__lastCollect || allIncidents.map(i=>i.date).filter(Boolean).sort().reverse()[0] || '';
+  // app update time stamped by the pipeline (KST); shown only when it belongs to the latest collection day
+  const t = briefData && briefData.publishedAtKst && String(briefData.publishedAtKst).slice(0,10) === day ? String(briefData.publishedAtKst).slice(11) : '';
+  if (day) el.textContent = t ? `${day} ${t} KST` : day;
+}
 function updateSettingsInfo() {
   const dates = allIncidents.map(i=>i.date).filter(Boolean);
   if (dates.length) {
-    document.getElementById('lastUpdate').textContent = window.__lastCollect || dates.sort().reverse()[0];
+    paintLastUpdate();
   }
   document.getElementById('totalData').textContent = allIncidents.length + '건';
 }

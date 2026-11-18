@@ -21,9 +21,28 @@ SEV_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}
 APP = "https://hosoons.github.io/threatprism/"
 MIN_TOTAL = 14
 KST = dt.timezone(dt.timedelta(hours=9))
-TARGET_HHMM = (10, 0)      # scheduled delivery target (KST)
-DELAY_AFTER_HHMM = (10, 10)  # sending later than this is flagged as 발송 지연
-SEND_FROM_HHMM = (9, 45)     # notifications are held until this KST time (send window 09:45-10:00)
+def _hhmm(v, d):
+    try:
+        h, m = str(v).split(":")
+        return (int(h), int(m))
+    except Exception:
+        return d
+
+
+def load_timeline():
+    """ops/timeline.json is the single source of truth for the daily clock; defaults keep old behaviour if it is missing."""
+    try:
+        t = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "timeline.json"), encoding="utf-8"))
+    except Exception:
+        t = {}
+    return t
+
+
+TL = load_timeline()
+TARGET_HHMM = _hhmm(TL.get("target"), (10, 0))            # scheduled delivery target (KST)
+DELAY_AFTER_HHMM = _hhmm(TL.get("delayAfter"), (10, 10))  # sending later than this is flagged as 발송 지연
+SEND_FROM_HHMM = _hhmm(TL.get("sendFrom"), (9, 45))       # notifications are held until this KST time
+PUBLISH_FROM_HHMM = _hhmm(TL.get("publishFrom"), (9, 35))  # app data is published no earlier than this (RETRY publishes at once)
 e = html.escape
 
 
@@ -359,24 +378,47 @@ def cmd_select(a):
 CVE_BASE = os.environ.get("TP_CVE_BASE", "https://raw.githubusercontent.com/CVEProject/cvelistV5/main/cves")
 
 
-def cve_state(cve, base=None, timeout=6):
-    """Existence check against the official CVE List (CVEProject/cvelistV5 on GitHub, which the sandbox can reach).
-    Returns ok | notfound | rejected | unchecked. A network problem is 'unchecked' and never blocks publishing."""
+def cve_info(cve, base=None, timeout=6):
+    """Look a CVE id up in the official CVE List (CVEProject/cvelistV5 on GitHub, which the sandbox can reach).
+    Returns {"state": ok|notfound|rejected|unchecked, "scores": [CVSS base scores of the record], "published": "YYYY-MM-DD"|""}.
+    A network problem is 'unchecked' and never blocks publishing."""
     import urllib.request, urllib.error
     m = re.fullmatch(r"CVE-(\d{4})-(\d{4,7})", cve.upper())
     if not m:
-        return "notfound"
+        return {"state": "notfound", "scores": [], "published": ""}
     year, num = m.group(1), m.group(2)
     url = f"{(base or CVE_BASE).rstrip('/')}/{year}/{int(num) // 1000}xxx/CVE-{year}-{num}.json"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "ThreatPrism-verify/1.0"})
         with urllib.request.urlopen(req, timeout=timeout) as r:
             d = json.loads(r.read().decode("utf-8", "replace"))
-        return "rejected" if str((d.get("cveMetadata") or {}).get("state", "")).upper() == "REJECTED" else "ok"
+        meta = d.get("cveMetadata") or {}
+        if str(meta.get("state", "")).upper() == "REJECTED":
+            return {"state": "rejected", "scores": [], "published": ""}
+        scores = []
+        conts = [(d.get("containers") or {}).get("cna") or {}] + list((d.get("containers") or {}).get("adp") or [])
+        for c in conts:
+            for mt in c.get("metrics") or []:
+                for k, v in mt.items():
+                    if k.startswith("cvssV") and isinstance(v, dict) and isinstance(v.get("baseScore"), (int, float)):
+                        scores.append(float(v["baseScore"]))
+        return {"state": "ok", "scores": sorted(set(scores)), "published": str(meta.get("datePublished", ""))[:10]}
     except urllib.error.HTTPError as e:
-        return "notfound" if e.code == 404 else "unchecked"
+        return {"state": "notfound" if e.code == 404 else "unchecked", "scores": [], "published": ""}
     except Exception:
-        return "unchecked"
+        return {"state": "unchecked", "scores": [], "published": ""}
+
+
+def cve_state(cve, base=None, timeout=6):
+    return cve_info(cve, base, timeout)["state"]
+
+
+CVSS_CLAIM = re.compile(r"CVSS(?:\s*v?(?:3\.[01]|4\.0|[234]))?\s*[:：]?\s*(10\.0|\d\.\d)(?!\d)", re.I)
+
+
+def cvss_claims(text):
+    """CVSS base scores that an item states in its title/summary (e.g. 'CVSS 9.8', 'CVSS 4.0 9.2' -> 9.2)."""
+    return sorted({float(x) for x in CVSS_CLAIM.findall(text or "") if 0 <= float(x) <= 10})
 
 
 def registry_grades(repo):
@@ -431,9 +473,11 @@ def cmd_verify(a):
     allids = sorted({c for v in ids_of.values() for c in v})[:40]
     t0 = time.time()
     with ThreadPoolExecutor(8) as ex:
-        res = dict(zip(allids, ex.map(lambda c: cve_state(c, a.cve_base or None), allids)))
+        info = dict(zip(allids, ex.map(lambda c: cve_info(c, a.cve_base or None), allids)))
+    res = {c: v["state"] for c, v in info.items()}
     kept, dropped = [], []
     cnt = {"ok": 0, "notfound": 0, "rejected": 0, "unchecked": 0}
+    cvss_bad, old_cve = [], []
     for i in items:
         if i.get("id") not in ids_of:
             kept.append(i); continue
@@ -451,6 +495,24 @@ def cmd_verify(a):
                 continue
         elif ids and all(res[c] == "ok" for c in ids):
             i["cveVerified"] = True
+        # cross-check the CVSS score the item states against the CVE record (flag only, never drop: the record may lag the vendor)
+        rec = sorted({x for c in ids for x in info[c]["scores"]})
+        claimed = cvss_claims(" ".join([i.get("title", ""), i.get("summary", "")]))
+        if claimed and rec:
+            miss = [x for x in claimed if not any(abs(x - r) <= 0.1 for r in rec)]
+            if miss:
+                i["cvssMismatch"] = {"claimed": miss, "record": rec}
+                cvss_bad.append(i["id"])
+        # an old CVE presented as news (no KEV listing) is only noted
+        pubs = [info[c]["published"] for c in ids if info[c]["published"]]
+        if pubs and not i.get("kev"):
+            try:
+                age = (dt.date.fromisoformat(str(i.get("date"))[:10]) - dt.date.fromisoformat(min(pubs))).days
+                if age > 180:
+                    i["cveAgeDays"] = age
+                    old_cve.append(i["id"])
+            except Exception:
+                pass
         lc = link.get(norm_url(i.get("sourceUrl")))
         if lc:
             st = str(lc.get("status", "")).lower()
@@ -475,7 +537,7 @@ def cmd_verify(a):
     st["missingCategories"] = [k for k in CATS if st["byCategory"][k] == 0]
     st["needMore"] = bool(len(kept) < MIN_TOTAL or st["gaps"])
     st["verify"] = {"checkedItems": len(ids_of), "cve": cnt, "cveIds": len(allids), "linkChecked": sum(1 for i in kept if i.get("linkChecked")),
-                    "dropped": len(dropped), "seconds": round(time.time() - t0, 1)}
+                    "dropped": len(dropped), "cvssMismatch": len(cvss_bad), "oldCve": len(old_cve), "seconds": round(time.time() - t0, 1)}
     st["verifyDropped"] = dropped
     dump(st, os.path.join(run, "stats.json"))
     print(json.dumps({"verify": st["verify"], "dropped": [d["reason"] for d in dropped], "total": st["total"], "needMore": st["needMore"], "gaps": st["gaps"]}, ensure_ascii=False))
@@ -587,17 +649,15 @@ def cmd_render(a):
 
 
 def cmd_hold(a):
-    """Wait until the send window opens (09:45 KST). Waits at most 540 s per call so it fits one Bash call;
-    prints READY when it is time to send, otherwise WAIT <minutes left> (call again)."""
+    """Wait until a clock point of the timeline: --until send (default, sendFrom 09:45) or --until publish (publishFrom 09:35).
+    Waits at most 540 s per call so it fits one Bash call; prints READY when it is time, otherwise WAIT <minutes left> (call again)."""
     import time
-    def left():
-        n = dt.datetime.now(KST)
-        start = n.replace(hour=SEND_FROM_HHMM[0], minute=SEND_FROM_HHMM[1], second=0, microsecond=0)
-        return (start - n).total_seconds()
+    hh, mm = PUBLISH_FROM_HHMM if a.until == "publish" else SEND_FROM_HHMM
+    def left(n=None):
+        n = n or dt.datetime.now(KST)
+        return (n.replace(hour=hh, minute=mm, second=0, microsecond=0) - n).total_seconds()
     if a.now:  # test hook: report only, no waiting
-        n = dt.datetime.fromisoformat(a.now).replace(tzinfo=KST)
-        start = n.replace(hour=SEND_FROM_HHMM[0], minute=SEND_FROM_HHMM[1], second=0, microsecond=0)
-        r = (start - n).total_seconds()
+        r = left(dt.datetime.fromisoformat(a.now).replace(tzinfo=KST))
         print("READY" if r <= 0 else f"WAIT {int(r // 60) + 1}")
         return
     t0 = time.time()
@@ -605,6 +665,62 @@ def cmd_hold(a):
         time.sleep(min(30, max(1, left())))
     r = left()
     print("READY" if r <= 0 else f"WAIT {int(r // 60) + 1}")
+
+
+def cmd_mark(a):
+    """Record the KST time of a run step in run/times.json (start, beacon, collected, published, pdfReady, sent, ...)."""
+    n = dt.datetime.fromisoformat(a.now).replace(tzinfo=KST) if a.now else dt.datetime.now(KST)
+    p = os.path.join(a.run, "times.json")
+    t = load(p, {}) or {}
+    t[a.step] = n.strftime("%H:%M:%S")
+    dump(t, p)
+    print(f"{a.step}={t[a.step]}")
+
+
+def cmd_stamp(a):
+    """Stamp the app update time (publishedAtKst) into run/brief.json and run/briefing.json right before the publish commit,
+    and mark the 'published' step. The app shows it under Settings > latest update."""
+    n = dt.datetime.fromisoformat(a.now).replace(tzinfo=KST) if a.now else dt.datetime.now(KST)
+    stamp = n.strftime("%Y-%m-%d %H:%M")
+    for name in ("brief.json", "briefing.json"):
+        p = os.path.join(a.run, name)
+        d = load(p, None)
+        if isinstance(d, dict):
+            d["publishedAtKst"] = stamp
+            dump(d, p, compact=(name == "briefing.json"))
+    a.step = "published"
+    cmd_mark(a)
+    print("publishedAtKst=" + stamp)
+
+
+def timeline_report(times, mode="PRODUCTION"):
+    """Compare the actual step times of a run with ops/timeline.json. Returns (actual, deviations)."""
+    def m(v):
+        try:
+            h, mi = str(v).split(":")[:2]
+            return int(h) * 60 + int(mi)
+        except Exception:
+            return None
+    plan = {k: m(TL.get(k)) for k in ("production", "preflightDeadline", "dataReady", "publishFrom", "sendFrom", "runlogBy", "delayAfter")}
+    dev = []
+    def hm(x):
+        return f"{x // 60:02d}:{x % 60:02d}"
+    for key, label, limit in (("beacon", "비콘 기록", plan["preflightDeadline"]), ("collected", "수집·요약 완료", plan["dataReady"])):
+        v = m(times.get(key))
+        if v is not None and limit is not None and v > limit:
+            dev.append(f"{label} {hm(v)} (기준 {hm(limit)} 초과)")
+    pub, send, pdf = m(times.get("published")), m(times.get("sent")), m(times.get("pdfReady"))
+    if mode == "PRODUCTION" and pub is not None and plan["publishFrom"] is not None and pub < plan["publishFrom"]:
+        dev.append(f"앱 반영 {times['published'][:5]} (기준 {hm(plan['publishFrom'])} 이전)")
+    if pub is not None and plan["sendFrom"] is not None and pub > plan["sendFrom"]:
+        dev.append(f"앱 반영 {times['published'][:5]} 이 발송 시작({hm(plan['sendFrom'])})보다 늦음")
+    if pdf is not None and plan["sendFrom"] is not None and pdf > plan["sendFrom"]:
+        dev.append(f"PDF 준비 {times['pdfReady'][:5]} 이 발송 시작보다 늦음")
+    if send is not None and pub is not None and send < pub:
+        dev.append("발송이 앱 반영보다 먼저 이루어짐")
+    if mode == "PRODUCTION" and send is not None and plan["sendFrom"] is not None and send < plan["sendFrom"]:
+        dev.append(f"발송 {times['sent'][:5]} (발송 시작 {hm(plan['sendFrom'])} 이전)")
+    return dev
 
 
 def cmd_runlog(a):
@@ -618,17 +734,25 @@ def cmd_runlog(a):
         errs.append(f"수집 기준 미달: total {st.get('total')} < {MIN_TOTAL} 또는 floor 미충족 {st.get('gaps')}")
     if dl.get("delayed"):
         errs.append(f"발송 지연: {dl.get('sentAtKst')} KST 발송 ({dl.get('rule')})")
-    log = {"date": a.date, "collectors": [x for x in a.collectors.split("|") if x],
+    times = load(os.path.join(a.run, "times.json"), {}) or {}
+    dl_sent = (dl.get("sentAtKst") or "")[-5:]
+    if dl_sent and "sent" not in times:
+        times["sent"] = dl_sent + ":00"
+    tdev = timeline_report(times, (a.mode or "PRODUCTION").upper())
+    log = {"date": a.date, "mode": (a.mode or "PRODUCTION").upper(),
+           "timeline": {"planned": {k: TL.get(k) for k in ("production", "earlyWatchdog", "publishFrom", "sendFrom", "target", "lateWatchdog", "delayAfter")},
+                        "actual": {k: v[:5] for k, v in times.items()}, "deviations": tdev},
+           "collectors": [x for x in a.collectors.split("|") if x],
            "stats": {k: st.get(k) for k in ("candidates", "afterDedupe", "added", "total", "threatIndex", "threatLevel", "floors", "kevEntries", "gaps", "missingCategories", "verify", "verifyDropped")},
            "held": len(held), "heldReasons": sorted({str(h.get("reason", ""))[:70] for h in held}),
            "delivery": {"sentAtKst": dl.get("sentAtKst"), "delayed": bool(dl.get("delayed")), "label": "발송 지연" if dl.get("delayed") else "정시", "lateMinutes": dl.get("lateMinutes"), "rule": dl.get("rule")},
-           "pdf": kv.get("pdf", ""), "push": kv.get("push", ""), "email": kv.get("email", ""), "slack": kv.get("slack", ""), "errors": errs + [x for x in kv.get("errors", "").split("|") if x]}
+           "pdf": kv.get("pdf", ""), "push": kv.get("push", ""), "email": kv.get("email", ""), "slack": kv.get("slack", ""), "errors": errs + [("타임라인 이탈: " + x) for x in tdev] + [x for x in kv.get("errors", "").split("|") if x]}
     print(json.dumps(log, ensure_ascii=False, indent=1))
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["seen", "select", "verify", "render", "runlog", "hold"])
+    ap.add_argument("cmd", choices=["seen", "select", "verify", "render", "runlog", "hold", "mark", "stamp", "timeline"])
     ap.add_argument("--repo", required=True)
     ap.add_argument("--date", required=True)
     ap.add_argument("--run")
@@ -639,6 +763,9 @@ def main():
     ap.add_argument("--now", default="", help="override KST send time for tests, e.g. 2026-11-09T11:05")
     ap.add_argument("--collectors", default="", help="runlog: one-line collector replies separated by |")
     ap.add_argument("--status", default="", help="runlog: push=..;email=..;slack=..;pdf=.. as k=v;k=v")
+    ap.add_argument("--until", default="send", choices=["send", "publish"], help="hold: wait for sendFrom (09:45) or publishFrom (09:35)")
+    ap.add_argument("--step", default="", help="mark: step name (start, beacon, collected, published, pdfReady, sent)")
+    ap.add_argument("--mode", default="PRODUCTION", help="runlog: PRODUCTION or RETRY")
     ap.add_argument("--kev", default="", help="path to CISA known_exploited_vulnerabilities.json (cisagov/kev-data)")
     ap.add_argument("--linkcheck", default="", help="verify: path to link-verifier output [{url,status,note}]")
     ap.add_argument("--cve-base", default="", help="verify: override base URL of the CVE List mirror (tests)")
@@ -652,6 +779,13 @@ def main():
         cmd_verify(a)
     elif a.cmd == "hold":
         cmd_hold(a)
+    elif a.cmd == "mark":
+        cmd_mark(a)
+    elif a.cmd == "stamp":
+        cmd_stamp(a)
+    elif a.cmd == "timeline":
+        for x in TL.get("steps", []):
+            print(f"{x['at']}  {x['key']:<18} {x['what']}")
     elif a.cmd == "runlog":
         cmd_runlog(a)
     else:

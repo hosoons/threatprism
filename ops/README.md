@@ -1,7 +1,7 @@
 # ThreatPrism operations: agents and pipeline
 
 ```
-[09:05 KST weekdays] Claude scheduled task = ORCHESTRATOR (sonnet)
+[09:05 KST weekdays] Claude scheduled task = ORCHESTRATOR (sonnet)   (clock: ops/timeline.json)
   0  clone repo read-only -> /tmp/tp ; pipeline.py seen        (recent 7 days, no tokens)
   1  3 collector agents in parallel (sonnet, isolated context)
        collector-kr · collector-threat-global · collector-telecom-industry
@@ -10,16 +10,18 @@
                               source filter (sources.yaml tiers, blacklist, KEV, trust>=60, category gates)
                               -> score -> severity, dedupe, floors, ids  (no tokens)
   3  summary-writer agent     -> brief.json (+ weekly-brief.json on Mondays)
-  4  push data to GitHub (one commit)  -> GitHub Actions builds PDFs, Pages, #daily-report
+  3b mark collected; 4  wait for 09:35 (hold --until publish), stamp publishedAtKst, push data to GitHub (one commit) -> GitHub Actions builds PDFs, Pages, #daily-report
   5  wait for reports/ready/daily-{date}.json (git pull loop, no tokens)
   6  pipeline.py render       -> push.txt, email.html, slack.json, delay.json  (no tokens)
-  6b delivery clock: notifications held until 09:45 KST (pipeline.py hold); render flags 발송 지연 when sent after 10:10 KST (target 09:45-10:00); runlog writes ops/runs/prod-<date>.json
+  6b delivery clock: notifications held until 09:45 KST (pipeline.py hold); render flags 발송 지연 when sent after 10:10 KST (target 09:45-10:00); runlog writes ops/runs/prod-<date>.json with actual step times and timeline deviations
+  watchdogs: early 09:20 (no beacon / failed => RETRY) and late 10:08 (not sent/done => RETRY); see ops/runbook/production.md
   7  send: Claude push · one Gmail with BCC to subscribers · Slack #briefing
 ```
 
 | file | role |
 |---|---|
-| `ops/runbook/production.md` | daily run procedure read by the 09:05 task and the 09:50 watchdog (single source) |
+| `ops/timeline.json` | single source of the daily clock (09:05 start, 09:20 early watchdog, 09:35 publish, 09:45 send, 10:08 late watchdog, 10:10 delay limit) |
+| `ops/runbook/production.md` | daily run procedure and clock table (reference; the executable steps live in the task prompts) |
 | `ops/sources.yaml` | T1/T2 domain whitelist, SAFE (look-alike exemptions), BLOCK list (quarterly review) |
 | `ops/rules/collection.md` | source tiers, verification, selection floors, candidate schema |
 | `ops/rules/scoring.md` | 5-factor score, severity grades, threat index |
@@ -28,7 +30,7 @@
 | `ops/rules/summary.md` | consulting-style daily/weekly executive summary |
 | `ops/agents/*.md` | agent specs read at run time (single source of truth) |
 | `.claude/agents/*.md` | same agents as Claude Code subagent definitions (for local runs) |
-| `ops/scripts/pipeline.py` | deterministic steps: seen / select / render / runlog |
+| `ops/scripts/pipeline.py` | deterministic steps: seen / select / verify / hold / mark / stamp / render / runlog / timeline |
 | `VERSION`, `CHANGELOG.md` | app version (shown in the app settings) and rollback reference commits |
 | `ops/runs/` | run logs and test-run reports |
 

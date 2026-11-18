@@ -1,0 +1,27 @@
+{
+  "_doc": "Single source of truth for the daily clock (KST, Mon-Fri). pipeline.py, ops/runbook/production.md, ops/README.md and the scheduled-task prompts follow this file. Change a time here first, then update the task schedules.",
+  "tz": "Asia/Seoul",
+  "days": "Mon-Fri",
+  "production": "09:05",
+  "preflightDeadline": "09:13",
+  "earlyWatchdog": "09:20",
+  "dataReady": "09:33",
+  "publishFrom": "09:35",
+  "sendFrom": "09:45",
+  "target": "10:00",
+  "runlogBy": "09:55",
+  "lateWatchdog": "10:08",
+  "delayAfter": "10:10",
+  "steps": [
+    {"at": "09:05", "key": "production", "what": "production task starts: clone, tool preflight (write path), beacon ops/runs/prod-<date>.json"},
+    {"at": "09:13", "key": "preflightDeadline", "what": "beacon must exist (tool preflight takes at most about 8 minutes); no beacon = the run failed to start"},
+    {"at": "09:20", "key": "earlyWatchdog", "what": "early rescue: no beacon or status failed => RETRY now (still in time for 09:45); beacon running/done => exit silently"},
+    {"at": "09:33", "key": "dataReady", "what": "collect, select, escalate, verify and summary finished (normally 10-15 minutes after start)"},
+    {"at": "09:35", "key": "publishFrom", "what": "app data, manifest, briefing and brief JSON are committed (one commit) => app update time; this triggers the PDF build"},
+    {"at": "09:45", "key": "sendFrom", "what": "PDF ready (normally 1-3 minutes after publish); push, e-mail and Slack are sent no earlier than this"},
+    {"at": "09:55", "key": "runlogBy", "what": "run log ops/runs/prod-<date>.json status done"},
+    {"at": "10:00", "key": "target", "what": "delivery target; 09:45-10:00 is the send window"},
+    {"at": "10:08", "key": "lateWatchdog", "what": "late safety net: manifest has today and prod status done => exit; otherwise RETRY (marked 발송 지연)"},
+    {"at": "10:10", "key": "delayAfter", "what": "sent after this => 발송 지연"}
+  ]
+}
