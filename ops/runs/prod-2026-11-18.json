@@ -1,0 +1,1 @@
+{"date": "2026-11-18", "mode": "RETRY", "status": "running", "startedKst": "2026-11-18 09:21", "lastStep": "preflight", "writePath": "A", "error": "", "stepTimes": {}, "preflight": ["2026-11-18 09:21 attempt1 push_files=found PushNotification=NOT_FOUND Gmail.send_message=found Drive.read_file_content=found servers=GitHub_MCP,Gmail,Google_Drive"]}
