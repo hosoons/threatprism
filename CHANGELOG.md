@@ -2,6 +2,10 @@
 
 되돌릴 때: `git checkout <커밋>` 또는 GitHub에서 해당 커밋을 열어 그 시점 코드로 복원. 현재 버전은 `VERSION` 파일(앱 설정 > 정보에 표시)에 기록.
 
+## v1.9.1 — URL 생존·평판 점검 (Actions)
+- `tools/linkcheck.py` + `.github/workflows/link-check.yml`: 게시 직후(manifest 변경 푸시) GitHub 러너가 sourceUrl·crossCheckUrls의 HTTP 상태, 도메인 이탈 리다이렉트, TLS 오류, 소프트404, 도메인 등록 나이(RDAP, 키 불필요)를 점검해 `data/linkcheck/<날짜>.json` 기록 (flag only, 게시·발송 비차단)
+- 선택: 저장소 secret `GSB_API_KEY` 등록 시 Google Safe Browsing 조회 활성화
+
 ## v1.9 (2026-11-18)
 - 일일 타임라인 단일화(`ops/timeline.json`): 운영 09:05 시작 · 09:13 비콘 기한 · 09:20 조기 와치독 · 09:35 앱 반영(데이터 커밋, publishedAtKst) · 09:45 발송(푸시·이메일·Slack) · 09:55 실행 로그 · 10:08 후기 와치독 · 10:10 발송 지연 기준(코드·문서·앱 문구 일치)
 - pipeline.py: `hold --until publish|send`, `mark`, `stamp`, `timeline` 추가, 실행 로그에 단계별 실제 시각과 타임라인 이탈(`timeline.deviations`) 기록
