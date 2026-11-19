@@ -3,7 +3,7 @@ name: Link Check
 on:
   push:
     branches: [main]
-    paths: ['data/daily/manifest.json']
+    paths: ['data/daily/20*.json']
   workflow_dispatch:
     inputs:
       date:

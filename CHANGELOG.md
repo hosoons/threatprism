@@ -2,6 +2,11 @@
 
 되돌릴 때: `git checkout <커밋>` 또는 GitHub에서 해당 커밋을 열어 그 시점 코드로 복원. 현재 버전은 `VERSION` 파일(앱 설정 > 정보에 표시)에 기록.
 
+## v1.9.2 — 게시 누락 방지 (11/19 점검 결과)
+- 11/19 09:35 게시 커밋에 data/daily/<D>.json 누락 → 09:35 2차 커밋으로 보완했으나 PDF 워크플로 재실행으로 PDF 준비 09:47(발송 09:45 이후 2분 지연)
+- `pipeline.py stamp`가 커밋 필수 파일 목록을 출력, 신규 `check-published`가 푸시 후 누락 파일을 MISSING으로 표시
+- link-check 워크플로 트리거를 data/daily/20*.json 푸시로 변경 (manifest만 먼저 올라가면 점검이 건너뛰어지는 문제)
+
 ## v1.9.1 — URL 생존·평판 점검 (Actions)
 - `tools/linkcheck.py` + `.github/workflows/link-check.yml`: 게시 직후(manifest 변경 푸시) GitHub 러너가 sourceUrl·crossCheckUrls의 HTTP 상태, 도메인 이탈 리다이렉트, TLS 오류, 소프트404, 도메인 등록 나이(RDAP, 키 불필요)를 점검해 `data/linkcheck/<날짜>.json` 기록 (flag only, 게시·발송 비차단)
 - 선택: 저장소 secret `GSB_API_KEY` 등록 시 Google Safe Browsing 조회 활성화

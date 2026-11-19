@@ -691,6 +691,28 @@ def cmd_stamp(a):
     a.step = "published"
     cmd_mark(a)
     print("publishedAtKst=" + stamp)
+    print("COMMIT FILES (all 5 are mandatory in ONE commit; the app and the PDF workflow break without data/daily/<D>.json):")
+    files = [f"data/daily/{a.date}.json", "data/daily/manifest.json", "data/briefing.json", f"data/briefs/{a.date}.json"]
+    for f in files:
+        print("  - " + f)
+    print("  (Mondays also data/briefs/weekly-<START>_<D>.json)")
+
+
+def cmd_check_published(a):
+    """After the publish push: git pull and verify that every required file is on the remote branch. Prints OK or MISSING <paths>."""
+    import subprocess
+    subprocess.run(["git", "-C", a.repo, "pull", "-q"], check=False)
+    miss = []
+    for f in (f"data/daily/{a.date}.json", f"data/briefs/{a.date}.json"):
+        if not os.path.exists(os.path.join(a.repo, f)):
+            miss.append(f)
+    man = load(os.path.join(a.repo, "data/daily/manifest.json"), {})
+    if a.date not in json.dumps(man):
+        miss.append("data/daily/manifest.json(no entry for date)")
+    br = load(os.path.join(a.repo, "data/briefing.json"), {})
+    if not (isinstance(br, dict) and str(br.get("date")) == a.date):
+        miss.append("data/briefing.json(date != today)")
+    print("OK" if not miss else "MISSING " + " ".join(miss))
 
 
 def timeline_report(times, mode="PRODUCTION"):
@@ -752,7 +774,7 @@ def cmd_runlog(a):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["seen", "select", "verify", "render", "runlog", "hold", "mark", "stamp", "timeline"])
+    ap.add_argument("cmd", choices=["seen", "select", "verify", "render", "runlog", "hold", "mark", "stamp", "check-published", "timeline"])
     ap.add_argument("--repo", required=True)
     ap.add_argument("--date", required=True)
     ap.add_argument("--run")
@@ -781,6 +803,8 @@ def main():
         cmd_hold(a)
     elif a.cmd == "mark":
         cmd_mark(a)
+    elif a.cmd == "check-published":
+        cmd_check_published(a)
     elif a.cmd == "stamp":
         cmd_stamp(a)
     elif a.cmd == "timeline":
