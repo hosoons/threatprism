@@ -1,0 +1,252 @@
+{
+ "date": "2026-11-19",
+ "checkedAt": "2026-11-19T00:57:00+00:00",
+ "summary": {
+  "checked": 24,
+  "flagged": 0,
+  "dead": 0,
+  "safeBrowsing": "off"
+ },
+ "results": [
+  {
+   "url": "https://www.lightreading.com/wireless/eurobites-ericsson-joins-dots-at-spanish-hq-to-showcase-indoor-coverage",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Eurobites: Ericsson joins Dots at Spanish HQ to showcase coverage",
+   "flags": [],
+   "ms": 143,
+   "id": "inc-2026-1119-013",
+   "domainAgeDays": 9863
+  },
+  {
+   "url": "https://www.lightreading.com/finance/cable-one-skips-10m-interest-payment-as-mega-broadband-deal-drags-on",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Cable One skips $10M payment as Mega Broadband deal drags",
+   "flags": [],
+   "ms": 144,
+   "id": "inc-2026-1119-012",
+   "domainAgeDays": 9863
+  },
+  {
+   "url": "https://www.lightreading.com/broadband/at-t-s-fiber-powered-crusade-expands-to-comcast",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "AT&T's 'fiber-powered' crusade expands to Comcast",
+   "flags": [],
+   "ms": 155,
+   "id": "inc-2026-1119-011",
+   "domainAgeDays": 9863
+  },
+  {
+   "url": "https://www.lightreading.com/5g/vodafone-is-sold-on-ai-ran-but-not-yet-on-need-for-gpus",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Vodafone is sold on AI-RAN but not yet on need for GPUs",
+   "flags": [],
+   "ms": 136,
+   "id": "inc-2026-1119-010",
+   "domainAgeDays": 9863
+  },
+  {
+   "url": "https://www.lightreading.com/optical-networking/ntt-ispace-forge-alliance-for-earth-to-moon-connectivity",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "NTT, ispace forge alliance for Earth-to-Moon connectivity",
+   "flags": [],
+   "ms": 136,
+   "id": "inc-2026-1119-009",
+   "domainAgeDays": 9863
+  },
+  {
+   "url": "https://www.lightreading.com/ai-machine-learning/at-t-ceo-calls-for-cross-sector-action-to-combat-ai-risks",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "AT&T CEO calls for cross-sector action to combat AI risks",
+   "flags": [],
+   "ms": 134,
+   "id": "inc-2026-1119-008",
+   "domainAgeDays": 9863
+  },
+  {
+   "url": "https://www.lightreading.com/5g/t-mobile-grabs-for-bluewater-s-600mhz-licenses-keeping-them-out-of-spacex-s-reach",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "T-Mobile deals for Bluewater's 600MHz licenses, blocking SpaceX",
+   "flags": [],
+   "ms": 143,
+   "id": "inc-2026-1119-007",
+   "domainAgeDays": 9863
+  },
+  {
+   "url": "https://www.newsway.co.kr/news/view?ud=2026111817195565924",
+   "status": 200,
+   "finalHost": "www.newsway.co.kr",
+   "title": "'진짜 5G' 시대 열리는데···통신 3사, 투자비 회수는 과제 - 뉴스웨이",
+   "flags": [],
+   "ms": 1326,
+   "id": "inc-2026-1119-006",
+   "domainAgeDays": 5029
+  },
+  {
+   "url": "https://www.mt.co.kr/tech/2026/11/12/2026111119573432993",
+   "status": 200,
+   "finalHost": "www.mt.co.kr",
+   "title": "&quot;내달부터 &#039;5G 단독모드&#039; 개시&quot; - 머니투데이",
+   "flags": [],
+   "ms": 623,
+   "id": "inc-2026-1119-006",
+   "domainAgeDays": 10604
+  },
+  {
+   "url": "https://therecord.media/norway-equinor-cyberattack-energy",
+   "status": 200,
+   "finalHost": "therecord.media",
+   "title": "Cyberattack hits Norwegian energy giant Equinor, disrupting internal services | The Record from Reco",
+   "flags": [],
+   "ms": 195,
+   "id": "inc-2026-1119-005",
+   "domainAgeDays": 2332
+  },
+  {
+   "url": "https://securityaffairs.com/203394/hacking/norwegian-gas-giant-equinor-says-its-under-cyberattack-production-keeps-running.html",
+   "status": 200,
+   "finalHost": "securityaffairs.com",
+   "title": "Norwegian Gas Giant Equinor Says It&#039;s Under Cyberattack. Production Keeps Running",
+   "flags": [],
+   "ms": 609,
+   "id": "inc-2026-1119-005",
+   "domainAgeDays": 10113
+  },
+  {
+   "url": "https://g-enews.com/article/Finance/2026/11/2026111816551926a6e8311f64_1",
+   "status": 200,
+   "finalHost": "g-enews.com",
+   "title": "미래에셋생명 해킹 유출 1만418명…추가 피해 확대 - 글로벌이코노믹",
+   "flags": [],
+   "ms": 1645,
+   "id": "inc-2026-1119-004",
+   "domainAgeDays": 4659
+  },
+  {
+   "url": "https://biz.sbs.co.kr/amp/article/20000342219",
+   "status": 200,
+   "finalHost": "biz.sbs.co.kr",
+   "title": "미래에셋생명도 해킹 피해…금감원 현장검사 착수",
+   "flags": [],
+   "ms": 1006,
+   "id": "inc-2026-1119-004",
+   "domainAgeDays": 10885
+  },
+  {
+   "url": "https://www.boannews.com/news/articleView.html?idxno=147356",
+   "status": 200,
+   "finalHost": "www.boannews.com",
+   "title": "미래에셋생명 개인정보 유출 규모 1만418명... 금융당국 신고 < 긴급경보 < 사건·사고 < 기사본문 - 보안뉴스",
+   "flags": [],
+   "ms": 1204,
+   "id": "inc-2026-1119-004",
+   "domainAgeDays": 7828
+  },
+  {
+   "url": "https://www.segye.com/newsView/20261118517056",
+   "status": 200,
+   "finalHost": "www.segye.com",
+   "title": "미래에셋생명 해킹 유출 1만 명 넘어 | 세계일보",
+   "flags": [],
+   "ms": 1097,
+   "id": "inc-2026-1119-004",
+   "domainAgeDays": 9836
+  },
+  {
+   "url": "https://www.bleepingcomputer.com/news/security/tor-releases-emergency-update-amid-ongoing-ddos-attack/",
+   "status": 200,
+   "finalHost": "www.bleepingcomputer.com",
+   "title": "Tor releases emergency update amid ongoing DDoS attack",
+   "flags": [],
+   "ms": 328,
+   "id": "inc-2026-1119-003",
+   "domainAgeDays": 8332
+  },
+  {
+   "url": "https://securityweek.com/tor-updates-dos-defenses-again-as-relay-attacks-continue",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "Tor Updates DoS Defenses Again as Relay Attacks Continue - SecurityWeek",
+   "flags": [],
+   "ms": 490,
+   "id": "inc-2026-1119-003",
+   "domainAgeDays": 9008
+  },
+  {
+   "url": "https://www.etnews.com/20261118000433",
+   "status": 200,
+   "finalHost": "www.etnews.com",
+   "title": "노란우산 개인정보 유출 고객 36만2000명…최초 신고보다 15만7000명 증가 - 전자신문",
+   "flags": [],
+   "ms": 933,
+   "id": "inc-2026-1119-002",
+   "domainAgeDays": 10111
+  },
+  {
+   "url": "https://www.mt.co.kr/living/2026/11/18/2026111817523557707",
+   "status": 200,
+   "finalHost": "www.mt.co.kr",
+   "title": "노란우산 개인정보 36만여건 유출…계좌번호·공제 납부정보 포함 - 머니투데이",
+   "flags": [],
+   "ms": 440,
+   "id": "inc-2026-1119-002",
+   "domainAgeDays": 10604
+  },
+  {
+   "url": "https://www.news1.kr/industry/sb-founded/6358518",
+   "status": 200,
+   "finalHost": "www.news1.kr",
+   "title": "노란우산, 개인정보 유출 규모 36만명…계좌번호·납부내역까지 털렸다(종합) - 뉴스1",
+   "flags": [],
+   "ms": 697,
+   "id": "inc-2026-1119-002",
+   "domainAgeDays": 5770
+  },
+  {
+   "url": "https://biz.heraldcorp.com/article/10940664",
+   "status": 200,
+   "finalHost": "biz.heraldcorp.com",
+   "title": "PHP 이어 자바 취약점 발견…국내 기업·공공기관 3만곳 보안 ‘비상’ - 헤럴드경제",
+   "flags": [],
+   "ms": 1529,
+   "id": "inc-2026-1119-001",
+   "domainAgeDays": 5280
+  },
+  {
+   "url": "https://www.boannews.com/news/articleView.html?idxno=147336",
+   "status": 200,
+   "finalHost": "www.boannews.com",
+   "title": "[자바 취약점 비상] 오라클, ‘자바4셸’ 등 RCE 취약점 11건 긴급 패치... “즉시 업데이트 필수” < 긴급경보 < 사건·사고 < 기사본문 - 보안뉴스",
+   "flags": [],
+   "ms": 1200,
+   "id": "inc-2026-1119-001",
+   "domainAgeDays": 7828
+  },
+  {
+   "url": "https://www.oracle.com/security-alerts/cspunov2026.html",
+   "status": 200,
+   "finalHost": "www.oracle.com",
+   "title": "Oracle Critical Security Patch Update Advisory - November 2026",
+   "flags": [],
+   "ms": 140,
+   "id": "inc-2026-1119-001",
+   "domainAgeDays": 13865
+  },
+  {
+   "url": "https://www.dailysecu.com/news/articleView.html?idxno=209588",
+   "status": 200,
+   "finalHost": "www.dailysecu.com",
+   "title": "정부, Java4Shell 긴급 대응…민·관·군 점검하고 기업에 보안 업데이트 권고 < 긴급속보 < 이슈 < 기사본문 - 데일리시큐",
+   "flags": [],
+   "ms": 1466,
+   "id": "inc-2026-1119-001",
+   "domainAgeDays": 5718
+  }
+ ]
+}
