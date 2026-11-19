@@ -1,0 +1,466 @@
+[
+ {
+  "id": "inc-2026-1119-013",
+  "title": "텔레노르 노르웨이 CEO 건강상 사임, CFO가 대행",
+  "category": "TEL",
+  "severity": "info",
+  "country": "NO",
+  "countryName": "노르웨이",
+  "region": "Europe",
+  "lat": 59.9,
+  "lng": 10.7,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/wireless/eurobites-ericsson-joins-dots-at-spanish-hq-to-showcase-indoor-coverage",
+  "date": "2026-11-18",
+  "summary": "텔레노르 노르웨이 CEO 엥에브레센이 건강 문제로 물러나 CFO 크누트 기스케가 후임 확정 전까지 대행한다. 같은 소식란에서 보다폰이 영국 레질리언스 아카데미와 사이버·공급망 위험 대응 협력을 발표했다.",
+  "tags": [
+   "telecom",
+   "management",
+   "resilience"
+  ],
+  "score": 16,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 0,
+   "scale": 3,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1119-012",
+  "title": "케이블원, 이자 1천만 달러 미납…메가브로드밴드 인수 법정 공방",
+  "category": "MKT",
+  "severity": "info",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 33.4,
+  "lng": -112.1,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/finance/cable-one-skips-10m-interest-payment-as-mega-broadband-deal-drags-on",
+  "date": "2026-11-17",
+  "summary": "케이블원이 5.03억 달러 대출의 이자 1,000만 달러를 내지 못했고 30일 유예기간이 있다. CoBank의 가처분으로 인수가 막혀 심리가 12월 4일로 미뤄졌으며 약 13억 달러 조달 실패 시 챕터11 가능성을 경고했다.",
+  "tags": [
+   "telecom",
+   "m&a",
+   "broadband",
+   "financing"
+  ],
+  "score": 16,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 0,
+   "scale": 3,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "followUpOf": "inc-2026-1116-013",
+  "crossCheckUrls": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1119-011",
+  "title": "AT&T, 컴캐스트 '광케이블 기반' 광고 상대 소송",
+  "category": "MKT",
+  "severity": "info",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 37.8,
+  "lng": -122.4,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/broadband/at-t-s-fiber-powered-crusade-expands-to-comcast",
+  "date": "2026-11-17",
+  "summary": "AT&T가 11월 13일 캘리포니아 북부 연방법원에 컴캐스트의 'fiber-powered' 광고가 허위라며 소송을 냈다. 동축 구간이 있는 HFC망을 전부 광으로 오인하게 한다는 주장이며 8월 차터 상대 유사 소송도 진행 중이다.",
+  "tags": [
+   "telecom",
+   "broadband",
+   "litigation",
+   "fiber"
+  ],
+  "score": 16,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 0,
+   "scale": 3,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1119-010",
+  "title": "보다폰, AI-RAN 지지하나 GPU 도입은 유보",
+  "category": "TCH",
+  "severity": "info",
+  "country": "ES",
+  "countryName": "스페인",
+  "region": "Europe",
+  "lat": 36.7,
+  "lng": -4.4,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/5g/vodafone-is-sold-on-ai-ran-but-not-yet-on-need-for-gpus",
+  "date": "2026-11-17",
+  "summary": "보다폰은 말라가 혁신센터에서 RAN 알고리즘을 적응형 AI로 교체해 시험 중이나 GPU 배치에 대한 승인은 하지 않았다고 밝혔다. 전력 소모와 비용 우려가 이유이며, 에릭슨은 자체 ASIC, 노키아는 엔비디아 GPU 기반을 택하고 있다.",
+  "tags": [
+   "ai-ran",
+   "5g",
+   "telecom",
+   "ran"
+  ],
+  "score": 16,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 0,
+   "scale": 3,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1119-009",
+  "title": "NTT·ispace, 지구-달 광통신·무선전력 협력 합의",
+  "category": "TEL",
+  "severity": "low",
+  "country": "JP",
+  "countryName": "일본",
+  "region": "Asia",
+  "lat": 35.7,
+  "lng": 139.7,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/optical-networking/ntt-ispace-forge-alliance-for-earth-to-moon-connectivity",
+  "date": "2026-11-17",
+  "summary": "NTT와 ispace가 IOWN 기반 초장거리 우주 광통신과 레이저 무선전력 전송을 달·지구 사이 인프라에 적용하는 공동 연구에 합의했다. ispace는 2028년 미션3 착륙을 목표로 하며 KDDI도 11월 12일 유사 협약을 맺었다.",
+  "tags": [
+   "telecom",
+   "space",
+   "iown",
+   "japan"
+  ],
+  "score": 21,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 0,
+   "scale": 3,
+   "domestic": 8
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1119-008",
+  "title": "AT&T CEO, AI 위협 대응 위한 산업 간 정보공유 촉구",
+  "category": "TCH",
+  "severity": "low",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 32.8,
+  "lng": -96.8,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/ai-machine-learning/at-t-ceo-calls-for-cross-sector-action-to-combat-ai-risks",
+  "date": "2026-11-17",
+  "summary": "AT&T CEO 스탠키는 AI가 기업을 더 취약하게 만들지만 장기적으로 핵심 인프라를 더 안전하게 할 수 있다며 규제보다 산업 간 정보공유를 강조했다. 50여 개 회원의 핵심인프라 동맹을 언급했고 전환에 최대 24개월이 걸릴 수 있다고 봤다.",
+  "tags": [
+   "ai-security",
+   "telecom",
+   "critical-infrastructure",
+   "information-sharing"
+  ],
+  "score": 21,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 0,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1119-007",
+  "title": "T-모바일, 블루워터 600MHz 면허 인수…SpaceX 접근 차단",
+  "category": "MKT",
+  "severity": "low",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 38.9,
+  "lng": -77.0,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/5g/t-mobile-grabs-for-bluewater-s-600mhz-licenses-keeping-them-out-of-spacex-s-reach",
+  "date": "2026-11-18",
+  "summary": "T-모바일이 블루워터 와이어리스의 600MHz 면허(27개 주 435개 카운티)를 인수하기로 FCC에 신고했다. 대부분 지역에서 약 10MHz 저대역 용량이 늘며, FCC 심사 중 1년 임시 임대로 사용한다. 스페이스X의 저대역 확보 시도를 견제하는 성격이다.",
+  "tags": [
+   "spectrum",
+   "telecom",
+   "m&a",
+   "satellite"
+  ],
+  "score": 21,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 0,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1119-006",
+  "title": "통신3사 12월 5G SA 전환, 투자비 회수 과제",
+  "category": "TEL",
+  "severity": "medium",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "뉴스웨이",
+  "sourceUrl": "https://www.newsway.co.kr/news/view?ud=2026111817195565924",
+  "date": "2026-11-19",
+  "summary": "SK텔레콤과 LG유플러스가 12월 5G SA를 상용화해 연말 3사 모두 SA를 제공한다. 정부가 재할당 조건으로 연내 전환을 요구했으며 코어망 교체 비용 회수와 요금 인상 논란이 과제로 꼽힌다.",
+  "tags": [
+   "telecom",
+   "5g-sa",
+   "korea"
+  ],
+  "score": 38,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 15
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [
+   "https://www.mt.co.kr/tech/2026/11/12/2026111119573432993"
+  ],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourcePending": true,
+  "sourceGrade": "E"
+ },
+ {
+  "id": "inc-2026-1119-005",
+  "title": "노르웨이 에퀴노르 IT 시스템 사이버공격, 내부 메일 마비",
+  "category": "INC",
+  "severity": "medium",
+  "country": "NO",
+  "countryName": "노르웨이",
+  "region": "Europe",
+  "lat": 59.91,
+  "lng": 10.75,
+  "source": "The Record",
+  "sourceUrl": "https://therecord.media/norway-equinor-cyberattack-energy",
+  "date": "2026-11-18",
+  "summary": "유럽 최대 가스 공급사 에퀴노르가 11월 17일 IT 시스템 공격을 탐지해 대응 중이며, 내부 애플리케이션과 메일이 장애를 겪고 있다. 석유·가스 생산은 영향이 없고 데이터 유출 징후도 없으며 공격 주체는 미확인이다. 노르웨이 NSM이 지원 중이다.",
+  "tags": [
+   "critical-infrastructure",
+   "energy",
+   "cyberattack"
+  ],
+  "score": 51,
+  "scoreFactors": {
+   "target": 30,
+   "exploit": 0,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 3
+  },
+  "crossCheckUrls": [
+   "https://securityaffairs.com/203394/hacking/norwegian-gas-giant-equinor-says-its-under-cyberattack-production-keeps-running.html"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1119-004",
+  "title": "미래에셋생명 해킹 유출 1만418명으로 확대",
+  "category": "INC",
+  "severity": "high",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "글로벌이코노믹",
+  "sourceUrl": "https://g-enews.com/article/Finance/2026/11/2026111816551926a6e8311f64_1",
+  "date": "2026-11-18",
+  "summary": "금감원 자료에 따르면 10월 24일 해킹으로 미래에셋생명 고객 1만418명의 정보가 유출됐다. 최초 파악된 약 6,800명보다 3,618명 늘었으며 주민등록번호, 연락처, 금융거래·퇴직연금 정보가 포함됐다.",
+  "tags": [
+   "data-breach",
+   "finance",
+   "korea"
+  ],
+  "score": 58,
+  "scoreFactors": {
+   "target": 20,
+   "exploit": 5,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 15
+  },
+  "crossCheckUrls": [
+   "https://biz.sbs.co.kr/amp/article/20000342219",
+   "https://www.boannews.com/news/articleView.html?idxno=147356",
+   "https://www.segye.com/newsView/20261118517056"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourcePending": true,
+  "sourceGrade": "E"
+ },
+ {
+  "id": "inc-2026-1119-003",
+  "title": "토르 네트워크 릴레이 대규모 DDoS, 긴급 업데이트 0.4.9.17",
+  "category": "TCH",
+  "severity": "high",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 42.36,
+  "lng": -71.06,
+  "source": "BleepingComputer",
+  "sourceUrl": "https://www.bleepingcomputer.com/news/security/tor-releases-emergency-update-amid-ongoing-ddos-attack/",
+  "date": "2026-11-17",
+  "summary": "토르 프로젝트가 대부분의 릴레이를 마비시킨 가짜 회로 폭주 DDoS에 대응해 0.4.9.17을 긴급 배포했다. IPv6 DoS 방어 결함 등을 수정했으며 운영자에게 즉시 업데이트를 권고했다. 공격 주체는 미확인이다.",
+  "tags": [
+   "ddos",
+   "tor",
+   "privacy"
+  ],
+  "score": 58,
+  "scoreFactors": {
+   "target": 5,
+   "exploit": 25,
+   "technical": 10,
+   "scale": 15,
+   "domestic": 3
+  },
+  "crossCheckUrls": [
+   "https://securityweek.com/tor-updates-dos-defenses-again-as-relay-attacks-continue"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1119-002",
+  "title": "노란우산 개인정보 유출 36만2천 명으로 확대, 계좌번호 포함",
+  "category": "INC",
+  "severity": "high",
+  "country": "KR",
+  "countryName": "한국",
+  "region": "Asia",
+  "lat": 37.5665,
+  "lng": 126.978,
+  "source": "전자신문",
+  "sourceUrl": "https://www.etnews.com/20261118000433",
+  "date": "2026-11-18",
+  "summary": "중소기업중앙회 노란우산 가입자 약 36만2천 명의 이름, 연락처, 사업자등록번호, 계좌번호, 납부내역이 외부인의 비정상 조회로 유출됐다. 최초 신고(20만5천 명)보다 15만7천 명 늘었으며 개인정보위와 KISA에 신고됐다. 주민번호 뒷자리는 암호화돼 유출되지 않았다.",
+  "tags": [
+   "data-breach",
+   "korea",
+   "financial",
+   "personal-data"
+  ],
+  "score": 67,
+  "scoreFactors": {
+   "target": 20,
+   "exploit": 5,
+   "technical": 12,
+   "scale": 15,
+   "domestic": 15
+  },
+  "crossCheckUrls": [
+   "https://www.mt.co.kr/living/2026/11/18/2026111817523557707",
+   "https://www.news1.kr/industry/sb-founded/6358518"
+  ],
+  "cves": [],
+  "trust": 90,
+  "sourceTier": "T2",
+  "sourcePending": true,
+  "sourceGrade": "D"
+ },
+ {
+  "id": "inc-2026-1119-001",
+  "title": "자바4셸 국내 3만 곳 영향, 과기정통부·KISA 점검 권고",
+  "category": "VUL",
+  "severity": "high",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "헤럴드경제",
+  "sourceUrl": "https://biz.heraldcorp.com/article/10940664",
+  "date": "2026-11-18",
+  "summary": "오라클이 11월 17일 Java SE 취약점 11건을 패치했고 자바4셸(CVE-2026-114938, 9.2)은 인증 없는 원격 코드 실행이 가능하다. 국내 기업·공공기관 약 3만 곳이 영향권으로 정부는 자바 사용처 전수 파악과 신속 패치를 권고했다.",
+  "tags": [
+   "java",
+   "rce",
+   "vulnerability",
+   "korea"
+  ],
+  "score": 70,
+  "scoreFactors": {
+   "target": 20,
+   "exploit": 5,
+   "technical": 15,
+   "scale": 15,
+   "domestic": 15
+  },
+  "followUpOf": "inc-2026-1118-001",
+  "crossCheckUrls": [
+   "https://www.boannews.com/news/articleView.html?idxno=147336",
+   "https://www.oracle.com/security-alerts/cspunov2026.html",
+   "https://www.dailysecu.com/news/articleView.html?idxno=209588"
+  ],
+  "cves": [
+   "CVE-2026-114938"
+  ],
+  "trust": 100,
+  "sourceTier": "T1",
+  "sourcePending": true,
+  "sourceGrade": "D",
+  "cveVerified": true
+ }
+]
