@@ -736,8 +736,12 @@ def timeline_report(times, mode="PRODUCTION"):
         dev.append(f"앱 반영 {times['published'][:5]} (기준 {hm(plan['publishFrom'])} 이전)")
     if pub is not None and plan["sendFrom"] is not None and pub > plan["sendFrom"]:
         dev.append(f"앱 반영 {times['published'][:5]} 이 발송 시작({hm(plan['sendFrom'])})보다 늦음")
-    if pdf is not None and plan["sendFrom"] is not None and pdf > plan["sendFrom"]:
-        dev.append(f"PDF 준비 {times['pdfReady'][:5]} 이 발송 시작보다 늦음")
+    # The send waits for the PDF workflow: a PDF that finishes after sendFrom only delays the send (no deviation);
+    # sending BEFORE the PDF is ready, or after the delay limit, is a deviation.
+    if send is not None and pdf is not None and send < pdf:
+        dev.append(f"발송 {times['sent'][:5]} 이 PDF 준비 {times['pdfReady'][:5]} 보다 먼저")
+    if send is not None and plan["delayAfter"] is not None and send > plan["delayAfter"]:
+        dev.append(f"발송 {times['sent'][:5]} (지연 기준 {hm(plan['delayAfter'])} 초과)")
     if send is not None and pub is not None and send < pub:
         dev.append("발송이 앱 반영보다 먼저 이루어짐")
     if mode == "PRODUCTION" and send is not None and plan["sendFrom"] is not None and send < plan["sendFrom"]:

@@ -184,6 +184,10 @@ class TimelineTest(unittest.TestCase):
         txt = " | ".join(bad["timeline"]["deviations"])
         for needle in ("비콘", "앱 반영 09:50", "PDF 준비", "발송이 앱 반영보다 먼저", "발송 09:44"):
             self.assertIn(needle, txt)
+        late_pdf = self.run_log([("published", "09:35"), ("pdfReady", "09:47"), ("sent", "09:47")], "PRODUCTION")   # PDF later than 09:45, send waited for it
+        self.assertEqual(late_pdf["timeline"]["deviations"], [])
+        over = self.run_log([("published", "09:35"), ("pdfReady", "10:12"), ("sent", "10:12")], "PRODUCTION")
+        self.assertIn("지연 기준", " | ".join(over["timeline"]["deviations"]))
         retry = self.run_log([("published", "09:31"), ("pdfReady", "09:33"), ("sent", "09:45")], "RETRY")   # a rescue may publish before 09:35
         self.assertEqual(retry["timeline"]["deviations"], [])
 
