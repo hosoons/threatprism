@@ -1,0 +1,304 @@
+{
+ "date": "2026-11-20",
+ "checkedAt": "2026-11-20T00:36:31+00:00",
+ "summary": {
+  "checked": 29,
+  "flagged": 1,
+  "dead": 1,
+  "safeBrowsing": "off"
+ },
+ "results": [
+  {
+   "url": "https://www.lightreading.com/5g/amd-telco-chief-says-gpu-backlash-is-coming-in-ai-ran",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "AMD telco chief says GPU 'backlash' is coming in AI-RAN",
+   "flags": [],
+   "ms": 125,
+   "id": "inc-2026-1120-013",
+   "domainAgeDays": 9864
+  },
+  {
+   "url": "https://www.lightreading.com/broadband/tucows-offloads-ting-owned-fiber-assets-to-clearwave-weighs-fate-of-partner-markets",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Tucows sells Ting-owned fiber, weighs fate of 'partner' markets",
+   "flags": [],
+   "ms": 119,
+   "id": "inc-2026-1120-012",
+   "domainAgeDays": 9864
+  },
+  {
+   "url": "https://www.lightreading.com/ai-machine-learning/vodafonethree-to-test-nokia-s-ai-ran-with-nvidia-gpus",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "VodafoneThree to test Nokia's AI-RAN with Nvidia GPUs",
+   "flags": [],
+   "ms": 118,
+   "id": "inc-2026-1120-011",
+   "domainAgeDays": 9864
+  },
+  {
+   "url": "https://docs.fcc.gov/public/attachments/DOC-426314A1.pdf",
+   "status": 200,
+   "finalHost": "docs.fcc.gov",
+   "title": "",
+   "flags": [],
+   "ms": 892,
+   "id": "inc-2026-1120-010",
+   "domainAgeDays": 10640
+  },
+  {
+   "url": "https://www.lightreading.com/regulatory-politics/fcc-votes-for-final-rules-to-improve-drone-connectivity-and-in-flight-broadband",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "FCC votes to improve drone connectivity, in-flight broadband",
+   "flags": [],
+   "ms": 124,
+   "id": "inc-2026-1120-010",
+   "domainAgeDays": 9864
+  },
+  {
+   "url": "https://www.thedroneu.com/blog/fcc-800-mhz-drone-vote-450-mhz-24-ghz-november/",
+   "status": 200,
+   "finalHost": "www.thedroneu.com",
+   "title": "FCC Drone Spectrum: 800 MHz Adopted, 450 MHz and 24 GHz Next",
+   "flags": [],
+   "ms": 355,
+   "id": "inc-2026-1120-010",
+   "domainAgeDays": 4460
+  },
+  {
+   "url": "https://www.boho.or.kr/kr/bbs/view.do?bbsId=B0000133&pageIndex=1&nttId=72314&menuNo=205020",
+   "status": 200,
+   "finalHost": "www.boho.or.kr",
+   "title": "보안공지 > 알림마당 : KISA 보호나라&KrCERT/CC",
+   "flags": [],
+   "ms": 1487,
+   "id": "inc-2026-1120-009",
+   "domainAgeDays": 8654
+  },
+  {
+   "url": "https://www.euronews.com/2026/11/19/eu-commission-hit-by-large-scale-cyberattack-with-data-leakage-unknown",
+   "status": 200,
+   "finalHost": "www.euronews.com",
+   "title": "EU Commission hit by large-scale cyberattack with data leakage unknown | Euronews",
+   "flags": [],
+   "ms": 159,
+   "id": "inc-2026-1120-008",
+   "domainAgeDays": 10801
+  },
+  {
+   "url": "https://therecord.media/european-commission-confirms-cyberattack-using-ai",
+   "status": 200,
+   "finalHost": "therecord.media",
+   "title": "European Commission confirms cyberattack, says hackers used AI tool | The Record from Recorded Futur",
+   "flags": [],
+   "ms": 197,
+   "id": "inc-2026-1120-008",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://theportugalnews.com/news/2026-11-19/european-commission-hit-by-major-cyberattack/1119013",
+   "status": 200,
+   "finalHost": "www.theportugalnews.com",
+   "title": "European Commission hit by major cyberattack - The Portugal News",
+   "flags": [],
+   "ms": 343,
+   "id": "inc-2026-1120-008",
+   "domainAgeDays": 9219
+  },
+  {
+   "url": "https://rapid7.com/blog/post/etr-rapid7-detected-exploitation-of-cve-2026-90436-against-atlassian-confluence-data-center-n-able-n-central-also-exploited",
+   "status": 200,
+   "finalHost": "www.rapid7.com",
+   "title": "Rapid7 Detected Exploitation of CVE-2026-90436 against Atlassian Confluence Data Center, N-able N-ce",
+   "flags": [],
+   "ms": 683,
+   "id": "inc-2026-1120-007",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://dailysecurityreview.com/?p=45870",
+   "status": 200,
+   "finalHost": "dailysecurityreview.com",
+   "title": "Apache Axis Flaw CVE-2026-90436 Exploited in Confluence, N-central - Resources",
+   "flags": [],
+   "ms": 2007,
+   "id": "inc-2026-1120-007",
+   "domainAgeDays": 1521
+  },
+  {
+   "url": "https://feedly.com/cve/CVE-2026-90436",
+   "status": 403,
+   "finalHost": "feedly.com",
+   "title": "",
+   "flags": [
+    "http-403"
+   ],
+   "ms": 177,
+   "id": "inc-2026-1120-007",
+   "domainAgeDays": 6752
+  },
+  {
+   "url": "https://www.bleepingcomputer.com/news/security/hackers-exploit-barracuda-email-security-gateway-flaws-to-get-root-access/amp/",
+   "status": 200,
+   "finalHost": "www.bleepingcomputer.com",
+   "title": "Hackers now exploit critical Barracuda ESG flaws to gain root access",
+   "flags": [],
+   "ms": 362,
+   "id": "inc-2026-1120-006",
+   "domainAgeDays": 8333
+  },
+  {
+   "url": "https://www.csa.gov.sg/alerts-and-advisories/alerts/al-2026-162/",
+   "status": 200,
+   "finalHost": "www.csa.gov.sg",
+   "title": "Active Exploitation of Vulnerabilities in Barracuda Networks Products | Cyber Security Agency of Sin",
+   "flags": [],
+   "ms": 824,
+   "id": "inc-2026-1120-006",
+   "domainAgeDays": 994
+  },
+  {
+   "url": "https://securityweek.com/recently-patched-barracuda-vulnerabilities-exploited-in-attacks/",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "Recently Patched Barracuda Vulnerabilities Exploited in Attacks - SecurityWeek",
+   "flags": [],
+   "ms": 521,
+   "id": "inc-2026-1120-006",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.synology.com/security/advisory/Synology_SA_24_23",
+   "status": 200,
+   "finalHost": "www.synology.com",
+   "title": "Synology_SA_24_23 | Synology Inc.",
+   "flags": [],
+   "ms": 865,
+   "id": "inc-2026-1120-005",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://nvd.nist.gov/vuln/detail/cve-2024-10441",
+   "status": 200,
+   "finalHost": "nvd.nist.gov",
+   "title": "NVD - Home",
+   "flags": [],
+   "ms": 124,
+   "id": "inc-2026-1120-005",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.incibe.es/en/incibe-cert/early-warning/vulnerabilities/cve-2024-10441",
+   "status": 200,
+   "finalHost": "www.incibe.es",
+   "title": "CVE-2024-10441 | INCIBE-CERT | INCIBE",
+   "flags": [],
+   "ms": 7880,
+   "id": "inc-2026-1120-005",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://bleepingcomputer.com/news/security/cisa-flags-cisco-broadworks-flaw-as-actively-exploited-in-attacks",
+   "status": 200,
+   "finalHost": "www.bleepingcomputer.com",
+   "title": "CISA flags Cisco BroadWorks flaw as actively exploited in attacks",
+   "flags": [],
+   "ms": 577,
+   "id": "inc-2026-1120-004",
+   "domainAgeDays": 8333
+  },
+  {
+   "url": "https://www.cisco.com/c/en/us/support/docs/csa/cisco-sa-notice-LDquvx5d.html",
+   "status": 200,
+   "finalHost": "www.cisco.com",
+   "title": "Cisco Advance Notification for Publication of August 19, 2026, Security Advisories - Cisco",
+   "flags": [],
+   "ms": 379,
+   "id": "inc-2026-1120-004",
+   "domainAgeDays": 14434
+  },
+  {
+   "url": "https://securityweek.com/threat-actors-exploit-openwave-cisco-broadworks-vulnerabilities",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "Threat Actors Exploit Openwave, Cisco BroadWorks Vulnerabilities - SecurityWeek",
+   "flags": [],
+   "ms": 440,
+   "id": "inc-2026-1120-004",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.ddaily.co.kr/page/view/2026111913591881206",
+   "status": 200,
+   "finalHost": "www.ddaily.co.kr",
+   "title": "다우오피스 또 보안사고&hellip;PC메신저 업데이트로 악성파일 배포 - 디지털데일리",
+   "flags": [],
+   "ms": 1743,
+   "id": "inc-2026-1120-003",
+   "domainAgeDays": 7921
+  },
+  {
+   "url": "https://zdnet.co.kr/view/?no=20261119164513",
+   "status": 200,
+   "finalHost": "zdnet.co.kr",
+   "title": "다우오피스HR, 윈도우 메신저 보안 사고…자동 업데이트로 악성 파일 설치 - ZDNet korea",
+   "flags": [],
+   "ms": 2634,
+   "id": "inc-2026-1120-003",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.dailysecu.com/news/articleView.html?idxno=209628",
+   "status": 200,
+   "finalHost": "www.dailysecu.com",
+   "title": "다우오피스 PC메신저 업데이트 경로 해킹…기업 이용자 PC에 악성코드 설치 < 긴급속보 < 이슈 < 기사본문 - 데일리시큐",
+   "flags": [],
+   "ms": 1186,
+   "id": "inc-2026-1120-003",
+   "domainAgeDays": 5719
+  },
+  {
+   "url": "https://securityaffairs.com/203099/apt/silentair-and-liminal-panda-target-telecom-networks-to-spy-on-subscribers.html",
+   "status": 200,
+   "finalHost": "securityaffairs.com",
+   "title": "SilentAir and LIMINAL PANDA Target Telecom Networks to Spy on Subscribers",
+   "flags": [],
+   "ms": 422,
+   "id": "inc-2026-1120-002",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.enea.com/insights/the-enemy-within-tracking-liminal-panda-and-silentair-through-mobile-networks/",
+   "status": 200,
+   "finalHost": "www.enea.com",
+   "title": "The Enemy Within. Tracking LIMINAL PANDA and SilentAir through Mobile Networks | Enea",
+   "flags": [],
+   "ms": 351,
+   "id": "inc-2026-1120-002",
+   "domainAgeDays": 11318
+  },
+  {
+   "url": "https://www.securityweek.com/silentair-hackers-intercept-calls-sms-from-inside-mobile-networks/",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "SilentAir Hackers Intercept Calls, SMS From Inside Mobile Networks - SecurityWeek",
+   "flags": [],
+   "ms": 161,
+   "id": "inc-2026-1120-002",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/silentair-hijacks-asian-telecom.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "SilentAir Hijacks Asian Telecom Networks to Intercept SMS 2FA Codes and Spy on Taiwanese Users",
+   "flags": [],
+   "ms": 224,
+   "id": "inc-2026-1120-001",
+   "domainAgeDays": null
+  }
+ ]
+}
