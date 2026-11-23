@@ -1,0 +1,242 @@
+{
+ "date": "2026-11-23",
+ "checkedAt": "2026-11-23T01:18:49+00:00",
+ "summary": {
+  "checked": 23,
+  "flagged": 0,
+  "dead": 0,
+  "safeBrowsing": "off"
+ },
+ "results": [
+  {
+   "url": "https://thenextweb.com/news/orange-wolof-ai-models-qwen3-hugging-face",
+   "status": 200,
+   "finalHost": "thenextweb.com",
+   "title": "Orange releases five Wolof AI models built on Alibaba’s Qwen3",
+   "flags": [],
+   "ms": 254,
+   "id": "inc-2026-1123-009",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.lightreading.com/ai-machine-learning/eurobites-orange-promotes-digital-inclusion-with-llms-for-wolof",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Eurobites: Orange promotes digital inclusion with LLMs for Wolof",
+   "flags": [],
+   "ms": 127,
+   "id": "inc-2026-1123-009",
+   "domainAgeDays": 9867
+  },
+  {
+   "url": "https://m.korea.kr/briefing/policyBriefingView.do?newsId=156789415",
+   "status": 200,
+   "finalHost": "m.korea.kr",
+   "title": "과기정통부 정례브리핑 - 부처 브리핑 | 브리핑 자료 | 브리핑룸 | 대한민국 정책브리핑",
+   "flags": [],
+   "ms": 2201,
+   "id": "inc-2026-1123-008",
+   "domainAgeDays": 7371
+  },
+  {
+   "url": "https://www.koreancenter.or.kr/news/articleView.html?idxno=1442019",
+   "status": 200,
+   "finalHost": "www.koreancenter.or.kr",
+   "title": "연합뉴스 한민족센터",
+   "flags": [],
+   "ms": 2329,
+   "id": "inc-2026-1123-008",
+   "domainAgeDays": 7055
+  },
+  {
+   "url": "https://inews24.com/view/2028003",
+   "status": 200,
+   "finalHost": "inews24.com",
+   "title": "싱크홀 탐지&middot;스포츠 센서 규제 푼다⋯과기정통부, 전파규제 3건 개선",
+   "flags": [],
+   "ms": 411,
+   "id": "inc-2026-1123-008",
+   "domainAgeDays": 9939
+  },
+  {
+   "url": "https://m.korea.kr/briefing/pressReleaseView.do?newsId=156789798",
+   "status": 200,
+   "finalHost": "m.korea.kr",
+   "title": "개인정보위, Java 보안 취약점 관련 개인정보 대량 유출 예방조치 당부 - 보도자료 | 브리핑룸 | 대한민국 정책브리핑",
+   "flags": [],
+   "ms": 1840,
+   "id": "inc-2026-1123-007",
+   "domainAgeDays": 7371
+  },
+  {
+   "url": "https://zdnet.co.kr/view?no=20261118233610",
+   "status": 200,
+   "finalHost": "zdnet.co.kr",
+   "title": "개보위, 자바 보안 취약점 관련개인정보 대량 유출 예방조치 당부 - ZDNet korea",
+   "flags": [],
+   "ms": 4359,
+   "id": "inc-2026-1123-007",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://news.mtn.co.kr/article/2026111817573861499",
+   "status": 200,
+   "finalHost": "news.mtn.co.kr",
+   "title": "자바 보안 취약점에 개인정보 유출 우려...개인정보위, 긴급 점검 당부 | MTN 머니투데이방송",
+   "flags": [],
+   "ms": 1276,
+   "id": "inc-2026-1123-007",
+   "domainAgeDays": 8651
+  },
+  {
+   "url": "https://www.etnews.com/20261120000316",
+   "status": 200,
+   "finalHost": "www.etnews.com",
+   "title": "컬리, 큐레이터 1만699명 개인정보 유출 - 전자신문",
+   "flags": [],
+   "ms": 1061,
+   "id": "inc-2026-1123-006",
+   "domainAgeDays": 10115
+  },
+  {
+   "url": "https://www.boannews.com/news/articleView.html?idxno=147426",
+   "status": 200,
+   "finalHost": "www.boannews.com",
+   "title": "컬리 개인정보 유출 사고, 큐레이터 1만699명·일반 고객 2명 피해 < 긴급경보 < 사건·사고 < 기사본문 - 보안뉴스",
+   "flags": [],
+   "ms": 1509,
+   "id": "inc-2026-1123-006",
+   "domainAgeDays": 7832
+  },
+  {
+   "url": "https://news.mtn.co.kr/article/2026112019243662712",
+   "status": 200,
+   "finalHost": "news.mtn.co.kr",
+   "title": "컬리, 큐레이터 1만699명 개인정보 유출 | MTN 머니투데이방송",
+   "flags": [],
+   "ms": 1228,
+   "id": "inc-2026-1123-006",
+   "domainAgeDays": 8651
+  },
+  {
+   "url": "https://securityaffairs.com/203639/security/u-s-cisa-adds-cisco-expressway-sap-netweaver-broadcom-vmware-vcenter-and-apache-roller-flaws-to-its-known-exploited-vulnerabilities-catalog.html",
+   "status": 200,
+   "finalHost": "securityaffairs.com",
+   "title": "U.S. CISA adds Cisco Expressway, SAP NetWeaver, Broadcom VMware vCenter, and Apache Roller flaws to ",
+   "flags": [],
+   "ms": 315,
+   "id": "inc-2026-1123-005",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/hackers-exploit-critical-cisco.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "Hackers Exploit Critical Cisco Expressway Flaw, Breach Four Devices and Reach Internal Network",
+   "flags": [],
+   "ms": 56,
+   "id": "inc-2026-1123-004",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://securityweek.com/hackers-exploit-cisco-expressway-vulnerability-soon-after-poc-release",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "Cisco Expressway CVE-2026-76466 Exploitation Uncovered - SecurityWeek",
+   "flags": [],
+   "ms": 370,
+   "id": "inc-2026-1123-004",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://bleepingcomputer.com/news/security/apache-warns-of-roller-rce-vulnerability-exploited-in-attacks",
+   "status": 200,
+   "finalHost": "www.bleepingcomputer.com",
+   "title": "Apache warns of Roller RCE vulnerability exploited in attacks",
+   "flags": [],
+   "ms": 366,
+   "id": "inc-2026-1123-003",
+   "domainAgeDays": 8336
+  },
+  {
+   "url": "https://www.news1.kr/economy/trend/6362156",
+   "status": 200,
+   "finalHost": "www.news1.kr",
+   "title": "한전, 152만 명분 개인정보 유출…주민·계좌·카드번호까지(종합) - 뉴스1",
+   "flags": [],
+   "ms": 564,
+   "id": "inc-2026-1123-002",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.hankyung.com/article/2026112225577",
+   "status": 200,
+   "finalHost": "www.hankyung.com",
+   "title": "한전 150만명 개인정보 털렸다…계좌번호 금융정보까지 | 한국경제",
+   "flags": [],
+   "ms": 668,
+   "id": "inc-2026-1123-002",
+   "domainAgeDays": 9897
+  },
+  {
+   "url": "https://www.newspim.com/news/view/20261122000118",
+   "status": 200,
+   "finalHost": "www.newspim.com",
+   "title": "한전, 고객 등 152만명 개인정보 유출…계좌·카드번호까지 털렸다",
+   "flags": [],
+   "ms": 1624,
+   "id": "inc-2026-1123-002",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/critical-vmware-vcenter-flaw-cvss-98.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "Critical VMware vCenter Zero-Day Flaw Lets Network Attackers Bypass Authentication",
+   "flags": [],
+   "ms": 40,
+   "id": "inc-2026-1123-001",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://cloud.google.com/blog/topics/threat-intelligence/armory-castle-exploits-vsphere",
+   "status": 200,
+   "finalHost": "cloud.google.com",
+   "title": "",
+   "flags": [],
+   "ms": 156,
+   "id": "inc-2026-1123-001",
+   "domainAgeDays": 10660
+  },
+  {
+   "url": "https://www.rapid7.com/blog/post/etr-cve-2026-123890-critical-authentication-bypass-vmware-vcenter",
+   "status": 200,
+   "finalHost": "www.rapid7.com",
+   "title": "CVE-2026-123890: Critical Authentication Bypass in VMware vCenter",
+   "flags": [],
+   "ms": 368,
+   "id": "inc-2026-1123-001",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://securityweek.com/newly-patched-vmware-vcenter-flaw-exploited-as-zero-day-by-chinese-apt",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "VMware vCenter CVE-2026-123890 Zero-Day Exploited - SecurityWeek",
+   "flags": [],
+   "ms": 182,
+   "id": "inc-2026-1123-001",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/china-linked-hackers-exploit-critical.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "China-Linked Hackers Exploit Critical VMware vCenter Zero-Day to Gain Admin Access and Steal Data",
+   "flags": [],
+   "ms": 32,
+   "id": "inc-2026-1123-001",
+   "domainAgeDays": null
+  }
+ ]
+}
