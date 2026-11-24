@@ -1,0 +1,274 @@
+{
+ "date": "2026-11-24",
+ "checkedAt": "2026-11-24T00:36:31+00:00",
+ "summary": {
+  "checked": 26,
+  "flagged": 1,
+  "dead": 1,
+  "safeBrowsing": "off"
+ },
+ "results": [
+  {
+   "url": "https://www.bleepingcomputer.com/news/security/fbi-reportedly-hacked-again-this-time-targeting-nationwide-police-database/",
+   "status": 200,
+   "finalHost": "www.bleepingcomputer.com",
+   "title": "FBI reportedly hacked again, this time targeting nationwide police database",
+   "flags": [],
+   "ms": 396,
+   "id": "inc-2026-1124-015",
+   "domainAgeDays": 8337
+  },
+  {
+   "url": "https://www.securityweek.com/fbi-investigating-apparent-hack-of-its-key-national-criminal-justice-database-ap-source-says/",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "FBI Investigating Apparent Hack of Its Key National Criminal Justice Database, AP Source Says - Secu",
+   "flags": [],
+   "ms": 240,
+   "id": "inc-2026-1124-015",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.lightreading.com/5g/nokia-tie-up-with-nvidia-on-ai-ran-gets-warning-from-orange-cto",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Nokia tie-up with Nvidia on AI-RAN gets warning from Orange CTO",
+   "flags": [],
+   "ms": 162,
+   "id": "inc-2026-1124-014",
+   "domainAgeDays": 9868
+  },
+  {
+   "url": "https://www.lightreading.com/satellite/eurobites-vodafone-ast-spacemobile-plan-joint-d2d-research-in-spain",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Eurobites: Vodafone, AST SpaceMobile plan joint D2D research",
+   "flags": [],
+   "ms": 161,
+   "id": "inc-2026-1124-013",
+   "domainAgeDays": 9868
+  },
+  {
+   "url": "https://securityaffairs.com/203851/data-breach/cleverbridge-confirms-attackers-copied-payment-card-data-from-its-platform.html",
+   "status": 200,
+   "finalHost": "securityaffairs.com",
+   "title": "Cleverbridge Confirms Attackers Copied Payment Card Data From Its Platform",
+   "flags": [],
+   "ms": 906,
+   "id": "inc-2026-1124-012",
+   "domainAgeDays": 10118
+  },
+  {
+   "url": "https://www.theregister.com/cyber-crime/2026/11/23/cleverbridge-admits-attackers-stole-customers-credit-card-and-cvv-numbers-yep-you-read-that-right/5311573",
+   "status": 200,
+   "finalHost": "www.theregister.com",
+   "title": "Cleverbridge admits attackers stole customers' credit card and CVV numbers. Yep, you read that right",
+   "flags": [],
+   "ms": 657,
+   "id": "inc-2026-1124-012",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.lightreading.com/satellite/kyivstar-open-to-more-d2d-partners-but-currently-sees-no-starlink-alternative",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Kyivstar open to more D2D partners but sees no alternatives",
+   "flags": [],
+   "ms": 160,
+   "id": "inc-2026-1124-011",
+   "domainAgeDays": 9868
+  },
+  {
+   "url": "https://www.itdaily.kr/news/articleView.html?idxno=243119",
+   "status": 200,
+   "finalHost": "www.itdaily.kr",
+   "title": "협력사 보안 빗장 채운다…LGU+, 160곳 공급망 취약점 점검 완료 < 모바일/네트워크 < 통신 < 기사본문 - 아이티데일리",
+   "flags": [],
+   "ms": 1504,
+   "id": "inc-2026-1124-010",
+   "domainAgeDays": 7141
+  },
+  {
+   "url": "https://newsworks.co.kr/news/articleView.html?idxno=904106",
+   "status": 200,
+   "finalHost": "www.newsworks.co.kr",
+   "title": "[통신 풍향계] KT-행안부와 AX 협약, K-water와 피지컬 AI 구축 협력·LG U+ 협력사 보안 점검 완료, '원더조이' 출시·SKB 'B tv AI-Studio'로 지역",
+   "flags": [],
+   "ms": 2155,
+   "id": "inc-2026-1124-010",
+   "domainAgeDays": 4085
+  },
+  {
+   "url": "https://www.newspim.com/news/view/20261123000484",
+   "status": 200,
+   "finalHost": "www.newspim.com",
+   "title": "청와대 &quot;보이스피싱 피해액 58% 감소…흉악범, '가석방 없는 무기형' 검토&quot;",
+   "flags": [],
+   "ms": 1197,
+   "id": "inc-2026-1124-009",
+   "domainAgeDays": 8623
+  },
+  {
+   "url": "https://newsworks.co.kr/news/articleView.html?idxno=903995",
+   "status": 200,
+   "finalHost": "www.newsworks.co.kr",
+   "title": "靑 &quot;보이스피싱 발생 49%·피해액 58% 감소&quot;…스토킹 접근금지 연장 검토 < 청와대 < 정치 < 기사본문 - 뉴스웍스",
+   "flags": [],
+   "ms": 2382,
+   "id": "inc-2026-1124-009",
+   "domainAgeDays": 4085
+  },
+  {
+   "url": "https://www.lightreading.com/business-transformation/lg-uplus-seeks-to-monetize-ai-with-2027-organizational-reshuffle",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "LG Uplus seeks to monetize AI with 2027 organizational reshuffle",
+   "flags": [],
+   "ms": 81,
+   "id": "inc-2026-1124-008",
+   "domainAgeDays": 9868
+  },
+  {
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-133968",
+   "status": 200,
+   "finalHost": "nvd.nist.gov",
+   "title": "NVD - Home",
+   "flags": [],
+   "ms": 382,
+   "id": "inc-2026-1124-007",
+   "domainAgeDays": 10644
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/hackers-exploited-glinet-cloud-flaw-to.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "Hackers Exploited GL.iNet Cloud Flaw to Install Malware on Routers and KVM Devices",
+   "flags": [],
+   "ms": 124,
+   "id": "inc-2026-1124-006",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://forum.gl-inet.com/t/2026-11-20-gl-inet-security-notice-goodcloud-kvm-routers/73056",
+   "status": 200,
+   "finalHost": "forum.gl-inet.com",
+   "title": "2026-11-20: GL.iNet Security Notice - GoodCloud / KVM / Routers - Announcement - GL.iNet Official Fo",
+   "flags": [],
+   "ms": 566,
+   "id": "inc-2026-1124-006",
+   "domainAgeDays": 4960
+  },
+  {
+   "url": "https://www.securityweek.com/gl-inet-routers-kvms-compromised-via-remote-management-service-flaw/",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "GL.iNet GoodCloud Vulnerability Exploited for Malware Delivery - SecurityWeek",
+   "flags": [],
+   "ms": 139,
+   "id": "inc-2026-1124-006",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-134624",
+   "status": 200,
+   "finalHost": "nvd.nist.gov",
+   "title": "NVD - Home",
+   "flags": [],
+   "ms": 277,
+   "id": "inc-2026-1124-005",
+   "domainAgeDays": 10644
+  },
+  {
+   "url": "https://www.cisco.com/c/en/us/support/docs/csa/cisco-sa-nginx-nov-2026-e8jska2s.html",
+   "status": 200,
+   "finalHost": "www.cisco.com",
+   "title": "Vulnerabilities in nginx Affecting Cisco Products: November 2026 - Cisco",
+   "flags": [],
+   "ms": 322,
+   "id": "inc-2026-1124-004",
+   "domainAgeDays": 14438
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/weekly-recap-vmware-0-day-java4shell.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "&#9889; Weekly Recap: VMware 0-Day, Java4Shell, NGINX2Root, Ruby2Shell, and a Whole Lot of Shell Tro",
+   "flags": [],
+   "ms": 116,
+   "id": "inc-2026-1124-004",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.theregister.com/security/2026/11/23/bulgaria-evicts-cyber-snoops-who-lurked-inside-government-networks-for-5-years/5311629",
+   "status": 200,
+   "finalHost": "www.theregister.com",
+   "title": "Bulgaria evicts cyber snoops who lurked inside government networks for 5 years",
+   "flags": [],
+   "ms": 237,
+   "id": "inc-2026-1124-003",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://securityaffairs.com/203794/intelligence/bulgaria-discovers-massive-government-breach-after-five-years-of-undetected-spying.html",
+   "status": 200,
+   "finalHost": "securityaffairs.com",
+   "title": "Bulgaria Discovers Massive Government Breach After Five Years of Undetected Spying",
+   "flags": [],
+   "ms": 829,
+   "id": "inc-2026-1124-003",
+   "domainAgeDays": 10118
+  },
+  {
+   "url": "https://www.bta.bg/en/news/bulgaria/1249365-bulgaria-disrupts-five-year-cyberespionage-operation-that-affected-state-adminis",
+   "status": 200,
+   "finalHost": "www.bta.bg",
+   "title": "BTA :: Bulgaria Disrupts Five-Year Cyberespionage Operation That Affected State Administration Netwo",
+   "flags": [],
+   "ms": 1184,
+   "id": "inc-2026-1124-003",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.etnews.com/20261123000481",
+   "status": 0,
+   "finalHost": "www.etnews.com",
+   "title": "",
+   "flags": [
+    "net-error"
+   ],
+   "ms": 15239,
+   "id": "inc-2026-1124-002",
+   "domainAgeDays": 10116
+  },
+  {
+   "url": "https://www.dt.co.kr/article/12096782",
+   "status": 200,
+   "finalHost": "www.dt.co.kr",
+   "title": "[사설] 한전·삼성증권도 해킹… 개인정보 유출 왜 아무도 책임 안지나 | 디지털타임스",
+   "flags": [],
+   "ms": 1222,
+   "id": "inc-2026-1124-002",
+   "domainAgeDays": 9792
+  },
+  {
+   "url": "https://bleepingcomputer.com/news/security/microsoft-azure-flaw-exploited-to-steal-customers-api-credentials",
+   "status": 200,
+   "finalHost": "www.bleepingcomputer.com",
+   "title": "Microsoft Azure flaw exploited to steal customers' API credentials",
+   "flags": [],
+   "ms": 1136,
+   "id": "inc-2026-1124-001",
+   "domainAgeDays": 8337
+  },
+  {
+   "url": "https://www.securityweek.com/azure-flaw-exploited-to-target-secrets-at-norwegian-energy-firms/",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "Azure Flaw Exploited to Target Secrets at Norwegian Energy Firms - SecurityWeek",
+   "flags": [],
+   "ms": 151,
+   "id": "inc-2026-1124-001",
+   "domainAgeDays": null
+  }
+ ]
+}
