@@ -1,0 +1,564 @@
+[
+ {
+  "id": "inc-2026-1124-015",
+  "title": "FBI 전국범죄정보센터(NCIC) 해킹 보도, 두 달 새 두 번째 침해",
+  "category": "INC",
+  "severity": "low",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 38.9,
+  "lng": -77.04,
+  "source": "BleepingComputer",
+  "sourceUrl": "https://www.bleepingcomputer.com/news/security/fbi-reportedly-hacked-again-this-time-targeting-nationwide-police-database/",
+  "date": "2026-11-21",
+  "summary": "CNN은 FBI의 NCIC 데이터베이스가 침해됐다고 보도했다. 발생 시점·침투 경로·유출 여부는 불명이고 FBI는 확인하지 않았다. 앞선 FBIJobs 관련 ShinyHunters 침해와의 연관성도 확인되지 않았다.",
+  "tags": [
+   "government",
+   "data-breach",
+   "law-enforcement"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "crossCheckUrls": [
+   "https://www.securityweek.com/fbi-investigating-apparent-hack-of-its-key-national-criminal-justice-database-ap-source-says/"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1124-014",
+  "title": "오렌지 CTO, 노키아-엔비디아 AI-RAN에 '위험한 구조 변경' 경고",
+  "category": "MKT",
+  "severity": "low",
+  "country": "FR",
+  "countryName": "프랑스",
+  "region": "Europe",
+  "lat": 48.86,
+  "lng": 2.35,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/5g/nokia-tie-up-with-nvidia-on-ai-ran-gets-warning-from-orange-cto",
+  "date": "2026-11-23",
+  "summary": "오렌지 CTO 브뤼노 제르비브는 통신사 몫의 효율 이득이 제한적이면 노키아의 엔비디아 기반 AI-RAN이 이득 없는 위험한 구조 변경이 될 수 있다고 경고했다. 엔비디아의 노키아 10억 달러 지분과 영향력 확대도 우려했으며 노키아·에릭슨 중 어느 쪽도 택하지 않았다.",
+  "tags": [
+   "telecom",
+   "ai-ran",
+   "nokia",
+   "nvidia"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [
+   "https://www.lightreading.com/5g/nokia-tie-up-with-nvidia-on-ai-ran-gets-warning-from-orange-cto"
+  ],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1124-013",
+  "title": "보다폰·AST스페이스모바일, 스페인 말라가에 D2D 위성 시험센터 개설",
+  "category": "TEL",
+  "severity": "low",
+  "country": "ES",
+  "countryName": "스페인",
+  "region": "Europe",
+  "lat": 36.72,
+  "lng": -4.42,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/satellite/eurobites-vodafone-ast-spacemobile-plan-joint-d2d-research-in-spain",
+  "date": "2026-11-23",
+  "summary": "보다폰과 AST스페이스모바일이 스페인 말라가 위성센터에 유럽 최초의 '지구-우주 스테이션'을 열고, 지상망이 약하거나 없는 지역을 위한 스마트폰 직접 광대역(D2D) 시험을 진행한다.",
+  "tags": [
+   "telecom",
+   "satellite",
+   "d2d",
+   "vodafone"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [
+   "https://www.lightreading.com/satellite/eurobites-vodafone-ast-spacemobile-plan-joint-d2d-research-in-spain"
+  ],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1124-012",
+  "title": "클레버브리지 결제 플랫폼 침해, 카드번호·CVV 유출 가능",
+  "category": "INC",
+  "severity": "low",
+  "country": "DE",
+  "countryName": "독일",
+  "region": "Europe",
+  "lat": 50.94,
+  "lng": 6.96,
+  "source": "Security Affairs",
+  "sourceUrl": "https://securityaffairs.com/203851/data-breach/cleverbridge-confirms-attackers-copied-payment-card-data-from-its-platform.html",
+  "date": "2026-11-23",
+  "summary": "결제·구독 대행업체 클레버브리지가 11월 4일 침해를 탐지하고 20일부터 통지를 시작했다. 카드번호·만료일·보안코드가 복제됐을 수 있으며 랜섬웨어는 아니고 피해 규모는 공개되지 않았다.",
+  "tags": [
+   "data-breach",
+   "payment",
+   "supply-chain"
+  ],
+  "score": 31,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 3
+  },
+  "crossCheckUrls": [
+   "https://www.theregister.com/cyber-crime/2026/11/23/cleverbridge-admits-attackers-stole-customers-credit-card-and-cvv-numbers-yep-you-read-that-right/5311573"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1124-011",
+  "title": "키이우스타르, 스타링크 외 D2D 위성 파트너 확대 의향",
+  "category": "TEL",
+  "severity": "low",
+  "country": "UA",
+  "countryName": "우크라이나",
+  "region": "Europe",
+  "lat": 50.45,
+  "lng": 30.52,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/satellite/kyivstar-open-to-more-d2d-partners-but-currently-sees-no-starlink-alternative",
+  "date": "2026-11-23",
+  "summary": "키이우스타르는 2025년 11월 유럽 최초로 스타링크 D2D 서비스를 시작해 이용자가 약 800만 명에 이른다. COO는 추가 파트너를 환영하지만 비슷한 서비스를 내놓을 곳은 아직 없다고 밝혔고, 인프라 공습과 정전에 배터리·발전기·태양광으로 대응 중이다.",
+  "tags": [
+   "telecom",
+   "satellite",
+   "d2d",
+   "critical-infrastructure"
+  ],
+  "score": 33,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 15,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [
+   "https://www.lightreading.com/satellite/kyivstar-open-to-more-d2d-partners-but-currently-sees-no-starlink-alternative"
+  ],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1124-010",
+  "title": "LG유플러스, 협력사 160곳 보안 취약점 점검 완료",
+  "category": "TEL",
+  "severity": "low",
+  "country": "KR",
+  "countryName": "한국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "아이티데일리",
+  "sourceUrl": "https://www.itdaily.kr/news/articleView.html?idxno=243119",
+  "date": "2026-11-23",
+  "summary": "LG유플러스가 SI·SM·개인정보 위탁처리 등 협력사 160곳에 대한 취약점 점검을 마쳤다. 9월부터 SSC 보안평가 플랫폼으로 점검하고 맞춤형 개선 보고서를 제공했으며 대상의 70% 이상이 참여 의사를 밝혔다. 향후 소프트웨어 개발사로 확대할 계획이다.",
+  "tags": [
+   "telecom",
+   "supply-chain",
+   "korea",
+   "lg-uplus"
+  ],
+  "score": 33,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 3,
+   "domestic": 15
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [
+   "https://newsworks.co.kr/news/articleView.html?idxno=904106"
+  ],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourcePending": true,
+  "sourceGrade": "D"
+ },
+ {
+  "id": "inc-2026-1124-009",
+  "title": "정부, 보이스피싱 발생 49%·피해액 58% 감소 발표",
+  "category": "MKT",
+  "severity": "low",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.5665,
+  "lng": 126.978,
+  "source": "뉴스핌",
+  "sourceUrl": "https://www.newspim.com/news/view/20261123000484",
+  "date": "2026-11-23",
+  "summary": "청와대 대변인은 11월 23일 브리핑에서 10월 기준 보이스피싱 발생 건수가 전년 대비 49%, 피해액이 58% 감소했다고 밝혔다. 정부는 보이스피싱 TF와 초국가범죄 TF를 운영하며 아세안과 경찰 협력 사업을 추진한다고 설명했다.",
+  "tags": [
+   "voice-phishing",
+   "policy",
+   "fraud"
+  ],
+  "score": 33,
+  "scoreFactors": {
+   "target": 5,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 15
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [
+   "https://newsworks.co.kr/news/articleView.html?idxno=903995"
+  ],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourcePending": true,
+  "sourceGrade": "D"
+ },
+ {
+  "id": "inc-2026-1124-008",
+  "title": "LG유플러스, AI 수익화 위한 2027년 조직개편…사업부장 4명 전원 교체",
+  "category": "MKT",
+  "severity": "medium",
+  "country": "KR",
+  "countryName": "한국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/business-transformation/lg-uplus-seeks-to-monetize-ai-with-2027-organizational-reshuffle",
+  "date": "2026-11-23",
+  "summary": "LG유플러스가 4개 부문장을 모두 교체하고 분산된 기술 기능을 통합한다. 기업 부문은 AI 인프라·AI 플랫폼 조직으로, AI사업그룹은 AI소프트웨어사업부로 개편되며 KT·SK텔레콤의 AI 전략에 대응하는 것으로 풀이된다.",
+  "tags": [
+   "telecom",
+   "ai",
+   "lg-uplus",
+   "restructuring"
+  ],
+  "score": 38,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 15
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [
+   "https://www.lightreading.com/business-transformation/lg-uplus-seeks-to-monetize-ai-with-2027-organizational-reshuffle"
+  ],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1124-007",
+  "title": "MONAI Label 경로 조작 RCE(CVE-2026-133968) KEV 등재",
+  "category": "VUL",
+  "severity": "medium",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 38.9,
+  "lng": -77.04,
+  "source": "NIST NVD",
+  "sourceUrl": "https://nvd.nist.gov/vuln/detail/CVE-2026-133968",
+  "date": "2026-11-23",
+  "summary": "CISA는 11월 23일 Project MONAI MONAI Label의 경로 조작 취약점을 KEV에 추가했다. 인증 없는 원격 공격자가 데이터스토어 밖에 임의 파일을 써서 원격 코드 실행에 이를 수 있으며 연방기관 조치 기한은 11월 26일이다.",
+  "tags": [
+   "kev",
+   "path-traversal",
+   "rce",
+   "healthcare-ai"
+  ],
+  "score": 51,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 10,
+   "scale": 3,
+   "domestic": 3
+  },
+  "crossCheckUrls": [],
+  "cves": [
+   "CVE-2026-133968"
+  ],
+  "trust": 90,
+  "sourceTier": "T1",
+  "kev": true,
+  "sourceGrade": "A",
+  "cveVerified": true
+ },
+ {
+  "id": "inc-2026-1124-006",
+  "title": "GL.iNet 클라우드 결함 악용, 라우터·KVM에 악성코드 설치",
+  "category": "INC",
+  "severity": "high",
+  "country": "HK",
+  "countryName": "홍콩",
+  "region": "Asia",
+  "lat": 22.32,
+  "lng": 114.17,
+  "source": "The Hacker News",
+  "sourceUrl": "https://thehackernews.com/2026/11/hackers-exploited-glinet-cloud-flaw-to.html",
+  "date": "2026-11-23",
+  "summary": "공격자가 GL.iNet GoodCloud 원격관리 서비스 결함을 악용해 일부 라우터와 KVM 장비에 루트 리버스 셸과 악성 스크립트를 설치했다. 클라우드 측 패치로 접근은 차단됐으나 기존 감염 장비는 별도 보안 펌웨어로 정리해야 하며, 감염 규모는 공개되지 않았다.",
+  "tags": [
+   "router",
+   "iot",
+   "supply-chain",
+   "network-equipment"
+  ],
+  "score": 56,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 10,
+   "scale": 3,
+   "domestic": 8
+  },
+  "crossCheckUrls": [
+   "https://forum.gl-inet.com/t/2026-11-20-gl-inet-security-notice-goodcloud-kvm-routers/73056",
+   "https://www.securityweek.com/gl-inet-routers-kvms-compromised-via-remote-management-service-flaw/"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1124-005",
+  "title": "N-able MailAssure SSRF(CVE-2026-134624) KEV 등재",
+  "category": "VUL",
+  "severity": "high",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 38.9,
+  "lng": -77.04,
+  "source": "NIST NVD",
+  "sourceUrl": "https://nvd.nist.gov/vuln/detail/CVE-2026-134624",
+  "date": "2026-11-23",
+  "summary": "CISA는 11월 23일 N-able MailAssure(SpamExperts)의 SSRF 취약점을 KEV에 추가했다. 인증된 API 사용자가 내부 호스트·포트에 연결해 도달 여부를 확인하고 조작된 데이터를 보낼 수 있으며 조치 기한은 11월 26일이다.",
+  "tags": [
+   "kev",
+   "ssrf",
+   "msp",
+   "email-security"
+  ],
+  "score": 56,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 3
+  },
+  "crossCheckUrls": [],
+  "cves": [
+   "CVE-2026-134624"
+  ],
+  "trust": 90,
+  "sourceTier": "T1",
+  "kev": true,
+  "sourceGrade": "A",
+  "cveVerified": true
+ },
+ {
+  "id": "inc-2026-1124-004",
+  "title": "시스코, nginx 취약점 5건 제품 영향 공지, 공개 PoC 존재",
+  "category": "VUL",
+  "severity": "high",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 37.41,
+  "lng": -121.95,
+  "source": "Cisco Security Advisory",
+  "sourceUrl": "https://www.cisco.com/c/en/us/support/docs/csa/cisco-sa-nginx-nov-2026-e8jska2s.html",
+  "date": "2026-11-20",
+  "summary": "시스코는 nginx 취약점 5건이 ISE 3.5, Nexus 3000/9000 NX-OS, Intersight 등에 영향을 준다고 공지했고 11월 23일 심각도를 Critical에서 High(CVSS 8.1)로 낮췄다. PoC 코드가 존재하나 악용은 확인되지 않았고 우회책이 없으며 IOS XE·IOS XR은 조사 중이다.",
+  "tags": [
+   "cisco",
+   "nginx",
+   "poc",
+   "network-equipment"
+  ],
+  "score": 58,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 15,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 15
+  },
+  "followUpOf": "inc-2026-1120-009",
+  "crossCheckUrls": [
+   "https://thehackernews.com/2026/11/weekly-recap-vmware-0-day-java4shell.html"
+  ],
+  "cves": [
+   "CVE-2026-113425",
+   "CVE-2026-121810",
+   "CVE-2026-123007",
+   "CVE-2026-123633",
+   "CVE-2026-123634"
+  ],
+  "trust": 85,
+  "sourceTier": "T1",
+  "sourceGrade": "B",
+  "cveVerified": true
+ },
+ {
+  "id": "inc-2026-1124-003",
+  "title": "불가리아 정부망 5년간 침투, 6,200만 쪽 문서 유출 공개",
+  "category": "INC",
+  "severity": "high",
+  "country": "BG",
+  "countryName": "불가리아",
+  "region": "Europe",
+  "lat": 42.7,
+  "lng": 23.32,
+  "source": "The Register",
+  "sourceUrl": "https://www.theregister.com/security/2026/11/23/bulgaria-evicts-cyber-snoops-who-lurked-inside-government-networks-for-5-years/5311629",
+  "date": "2026-11-23",
+  "summary": "불가리아 혁신디지털전환부는 2021년부터 여러 해커 집단이 정부 정보교환 인프라에 접근했으며 신규 국가 사이버보안 시스템이 이를 탐지해 차단했다고 밝혔다. 장관은 130GB, 약 6,200만 쪽이 내려받아졌다고 주장했으나 규모는 정부 확인을 받지 못했고 배후 국가는 공개되지 않았다. 시민 개인정보 유출 증거는 아직 없다.",
+  "tags": [
+   "espionage",
+   "government",
+   "data-breach",
+   "europe"
+  ],
+  "score": 61,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 15,
+   "scale": 8,
+   "domestic": 3
+  },
+  "crossCheckUrls": [
+   "https://securityaffairs.com/203794/intelligence/bulgaria-discovers-massive-government-breach-after-five-years-of-undetected-spying.html",
+   "https://www.bta.bg/en/news/bulgaria/1249365-bulgaria-disrupts-five-year-cyberespionage-operation-that-affected-state-adminis"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1124-002",
+  "title": "개인정보위, 한전 152만 명 유출 조사 착수",
+  "category": "INC",
+  "severity": "critical",
+  "country": "KR",
+  "countryName": "한국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "전자신문",
+  "sourceUrl": "https://www.etnews.com/20261123000481",
+  "date": "2026-11-23",
+  "summary": "개인정보위가 한전의 유출 신고를 접수해 대응팀을 꾸리고 현장 조사에 나선다. 해커는 11월 19일 한전에 메일로 탈취를 주장했고 다크웹 게시를 확인해 22일 신고했으며, 한전ON 약 65만 명과 SRM 약 87만 명 정보가 포함됐다. 한전은 외부 접근 차단과 일부 서비스 중단, 비상대응실을 가동했고 지난달에도 3만5천여 명 유출이 있었다.",
+  "tags": [
+   "data-breach",
+   "critical-infrastructure",
+   "korea",
+   "pipc"
+  ],
+  "score": 75,
+  "scoreFactors": {
+   "target": 30,
+   "exploit": 0,
+   "technical": 15,
+   "scale": 15,
+   "domestic": 15
+  },
+  "followUpOf": "inc-2026-1123-002",
+  "crossCheckUrls": [
+   "https://www.dt.co.kr/article/12096782"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourcePending": true,
+  "sourceGrade": "D"
+ },
+ {
+  "id": "inc-2026-1124-001",
+  "title": "MS 애저 APIM 클래식 결함 악용, 노르웨이 에너지 업계 비밀키 노출",
+  "category": "INC",
+  "severity": "critical",
+  "country": "NO",
+  "countryName": "노르웨이",
+  "region": "Europe",
+  "lat": 60.47,
+  "lng": 8.47,
+  "source": "BleepingComputer",
+  "sourceUrl": "https://bleepingcomputer.com/news/security/microsoft-azure-flaw-exploited-to-steal-customers-api-credentials",
+  "date": "2026-11-23",
+  "summary": "애저 API Management 클래식 계층의 결함으로 미인가 접근이 가능해 저장된 시크릿과 구독 키가 노출됐을 수 있다. 노르웨이 NSM은 에퀴노르·스카게락에너지 등 에너지 기업과 타국·타업종도 영향을 받았다고 밝혔고, MS는 11월 19일 완화 조치를 배포했으나 이미 유출된 자격증명은 교체해야 한다.",
+  "tags": [
+   "azure",
+   "cloud",
+   "critical-infrastructure",
+   "credential-theft"
+  ],
+  "score": 76,
+  "scoreFactors": {
+   "target": 30,
+   "exploit": 25,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 3
+  },
+  "followUpOf": "inc-2026-1119-005",
+  "crossCheckUrls": [
+   "https://www.securityweek.com/azure-flaw-exploited-to-target-secrets-at-norwegian-energy-firms/"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ }
+]
