@@ -1,0 +1,344 @@
+{
+ "date": "2026-11-25",
+ "checkedAt": "2026-11-25T00:36:14+00:00",
+ "summary": {
+  "checked": 33,
+  "flagged": 1,
+  "dead": 1,
+  "safeBrowsing": "off"
+ },
+ "results": [
+  {
+   "url": "https://www.lightreading.com/operations/eurobites-bics-airtel-africa-upgrade-roaming-partnership",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Eurobites: BICS, Airtel Africa upgrade roaming partnership",
+   "flags": [],
+   "ms": 99,
+   "id": "inc-2026-1125-014",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.fcc.gov/December2026",
+   "status": 403,
+   "finalHost": "www.fcc.gov",
+   "title": "",
+   "flags": [
+    "http-403"
+   ],
+   "ms": 170,
+   "id": "inc-2026-1125-013",
+   "domainAgeDays": 10645
+  },
+  {
+   "url": "https://www.theregister.com/networks/2026/11/24/fcc-proposes-tit-for-tat-restrictions-on-foreign-satellite-operators/5311889",
+   "status": 200,
+   "finalHost": "www.theregister.com",
+   "title": "FCC proposes 'tit-for-tat' restrictions on foreign satellite operators",
+   "flags": [],
+   "ms": 296,
+   "id": "inc-2026-1125-013",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.benton.org/headlines/fcc-announces-tentative-agenda-december-2026-open-meeting",
+   "status": 200,
+   "finalHost": "www.benton.org",
+   "title": "FCC Announces Tentative Agenda for December 2026 Open Meeting | Benton Institute for Broadband & Soc",
+   "flags": [],
+   "ms": 106,
+   "id": "inc-2026-1125-013",
+   "domainAgeDays": 11943
+  },
+  {
+   "url": "https://www.telecomtv.com/content/access-evolution/singapore-s-starhub-snaps-up-m1-for-s-1-36bn-56744/",
+   "status": 200,
+   "finalHost": "www.telecomtv.com",
+   "title": "Singapore’s StarHub snaps up M1 for S$1.36bn, Access Evolution | TelecomTV",
+   "flags": [],
+   "ms": 336,
+   "id": "inc-2026-1125-012",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.lightreading.com/finance/starhub-and-m1-to-merge-reshaping-singapore-s-telecom-landscape",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "StarHub and M1 to merge, reshaping Singapore's telecom landscape",
+   "flags": [],
+   "ms": 93,
+   "id": "inc-2026-1125-012",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://zdnet.co.kr/view/?no=20261120125928",
+   "status": 200,
+   "finalHost": "zdnet.co.kr",
+   "title": "통화 중에도 5G·앱별 망 분리...KT, 5G SA로 기업·공공 공략 - ZDNet korea",
+   "flags": [],
+   "ms": 1091,
+   "id": "inc-2026-1125-011",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.hankyung.com/article/2026112223851",
+   "status": 200,
+   "finalHost": "www.hankyung.com",
+   "title": "KT, 5G 앱 슬라이싱 기술로 기업 맞춤용 통신 시장 공략 | 한국경제",
+   "flags": [],
+   "ms": 558,
+   "id": "inc-2026-1125-011",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://theregister.com/security/2026/11/24/we-are-not-shinyhunters-says-criminal-hacking-crew-that-looks-and-acts-just-like-shinyhunters/5311978",
+   "status": 200,
+   "finalHost": "www.theregister.com",
+   "title": "'We are not ShinyHunters,' says criminal hacking crew that looks and acts just like ShinyHunters",
+   "flags": [],
+   "ms": 1059,
+   "id": "inc-2026-1125-010",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/okta-links-shinyhunters-associated.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "Okta Links ShinyHunters-Associated Vishing Group to New INCEPTION Data Leak Site",
+   "flags": [],
+   "ms": 121,
+   "id": "inc-2026-1125-010",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.newstomato.com/ReadNews.aspx?no=1321743",
+   "status": 200,
+   "finalHost": "www.newstomato.com",
+   "title": "하나저축은행·PG사도 개인정보 유출",
+   "flags": [],
+   "ms": 976,
+   "id": "inc-2026-1125-009",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.dailysecu.com/news/articleView.html?idxno=209707",
+   "status": 200,
+   "finalHost": "www.dailysecu.com",
+   "title": "하나저축은행 해킹…고객 552명 주민등록번호 등 개인신용정보 유출 확인 < 긴급속보 < 이슈 < 기사본문 - 데일리시큐",
+   "flags": [],
+   "ms": 1176,
+   "id": "inc-2026-1125-009",
+   "domainAgeDays": 5724
+  },
+  {
+   "url": "https://weekly.hankooki.com/news/articleView.html?idxno=7195550",
+   "status": 200,
+   "finalHost": "weekly.hankooki.com",
+   "title": "하나저축銀서도 552명 개인정보 유출…두 달 간 저축은행 5곳서 털려 < 금융 < 경제 < 기사본문 - 주간한국",
+   "flags": [],
+   "ms": 1342,
+   "id": "inc-2026-1125-009",
+   "domainAgeDays": 9738
+  },
+  {
+   "url": "https://hankyung.com/article/2026112476381",
+   "status": 200,
+   "finalHost": "www.hankyung.com",
+   "title": "OK·웰컴 이어 하나도 해킹 피해…두 달 새 저축은행 5곳 5만건 유출 | 한국경제",
+   "flags": [],
+   "ms": 948,
+   "id": "inc-2026-1125-009",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://securityaffairs.com/203900/data-breach/eu-academy-users-names-and-emails-exposed-in-eu-commission-hack.html",
+   "status": 200,
+   "finalHost": "securityaffairs.com",
+   "title": "EU Academy Users&#039; Names and Emails Exposed in EU Commission Hack",
+   "flags": [],
+   "ms": 431,
+   "id": "inc-2026-1125-008",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.securityweek.com/european-commission-uncovers-data-breach-in-cyberattack-investigation/",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "European Commission Data Breach - SecurityWeek",
+   "flags": [],
+   "ms": 155,
+   "id": "inc-2026-1125-008",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.etnews.com/20261124000100",
+   "status": 200,
+   "finalHost": "www.etnews.com",
+   "title": "[단독]NHN KCP·KIS정보통신·웰컴페이먼츠도 뚫렸다…금융위, PG사 긴급 소집 - 전자신문",
+   "flags": [],
+   "ms": 748,
+   "id": "inc-2026-1125-007",
+   "domainAgeDays": 10117
+  },
+  {
+   "url": "https://www.boannews.com/news/articleView.html?idxno=147490",
+   "status": 200,
+   "finalHost": "www.boannews.com",
+   "title": "웰컴페이먼츠·KIS정보통신서도 개인정보 유출 < 긴급경보 < 사건·사고 < 기사본문 - 보안뉴스",
+   "flags": [],
+   "ms": 941,
+   "id": "inc-2026-1125-007",
+   "domainAgeDays": 7834
+  },
+  {
+   "url": "https://www.digitaltoday.co.kr/news/articleView.html?idxno=717809",
+   "status": 200,
+   "finalHost": "www.digitaltoday.co.kr",
+   "title": "NHN KCP·웰컴페이먼츠 등 PG사 3곳 정보 유출…금융당국 긴급 점검 - 디지털투데이 (DigitalToday)",
+   "flags": [],
+   "ms": 1404,
+   "id": "inc-2026-1125-007",
+   "domainAgeDays": 4811
+  },
+  {
+   "url": "https://www.dailysecu.com/news/articleView.html?idxno=209682",
+   "status": 200,
+   "finalHost": "www.dailysecu.com",
+   "title": "국내 PG사 잇단 해킹 사고…웰컴페이먼츠와 NHN KCP·KIS정보통신 등 개인정보 유출 < 긴급속보 < 이슈 < 기사본문 - 데일리시큐",
+   "flags": [],
+   "ms": 1182,
+   "id": "inc-2026-1125-007",
+   "domainAgeDays": 5724
+  },
+  {
+   "url": "https://securityaffairs.com/203820/data-breach/microsoft-entra-connect-health-breach-exposes-tenant-metadata-and-admin-details.html",
+   "status": 200,
+   "finalHost": "securityaffairs.com",
+   "title": "Microsoft Entra Connect Health Breach Exposes Tenant Metadata and Admin Details",
+   "flags": [],
+   "ms": 417,
+   "id": "inc-2026-1125-006",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.bleepingcomputer.com/news/security/microsoft-entra-connect-health-flaw-exploited-to-steal-tenant-data/",
+   "status": 200,
+   "finalHost": "www.bleepingcomputer.com",
+   "title": "Microsoft Entra Connect Health flaw exploited to steal tenant data",
+   "flags": [],
+   "ms": 566,
+   "id": "inc-2026-1125-006",
+   "domainAgeDays": 8338
+  },
+  {
+   "url": "https://www.bleepingcomputer.com/news/security/badbox-30-botnet-returns-with-record-breaking-40-billion-daily-ad-requests/",
+   "status": 200,
+   "finalHost": "www.bleepingcomputer.com",
+   "title": "BADBOX botnet returns with record-breaking 40 billion daily ad requests",
+   "flags": [],
+   "ms": 452,
+   "id": "inc-2026-1125-005",
+   "domainAgeDays": 8338
+  },
+  {
+   "url": "https://securityaffairs.com/203767/malware/badbox-3-0-exposed-massive-botnet-hides-ad-fraud-inside-android-tv-boxes.html",
+   "status": 200,
+   "finalHost": "securityaffairs.com",
+   "title": "BADBOX 3.0 Exposed: Massive Botnet Hides Ad Fraud Inside Android TV Boxes",
+   "flags": [],
+   "ms": 816,
+   "id": "inc-2026-1125-005",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/hackers-exploit-critical-aspnet-anti.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "Hackers Exploit Critical ASP.NET Anti-CSRF Library Flaw Allowing Unauthenticated RCE",
+   "flags": [],
+   "ms": 41,
+   "id": "inc-2026-1125-004",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/drupal-patches-critical-installer-flaw.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "Drupal Patches Critical Installer Flaw That Could Give Unauthenticated Attackers Control of Sites",
+   "flags": [],
+   "ms": 66,
+   "id": "inc-2026-1125-003",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://bleepingcomputer.com/news/security/drupal-patches-critical-rce-flaw-warns-exploits-may-surface-quickly",
+   "status": 200,
+   "finalHost": "www.bleepingcomputer.com",
+   "title": "Drupal patches critical RCE flaw, warns exploits may surface quickly",
+   "flags": [],
+   "ms": 1401,
+   "id": "inc-2026-1125-003",
+   "domainAgeDays": 8338
+  },
+  {
+   "url": "https://www.rescana.com/post/drupal-core-installer-flaw-cve-2026-132165-exploited-and-in-cisa-kev-update-now",
+   "status": 200,
+   "finalHost": "www.rescana.com",
+   "title": "Drupal Core Installer Flaw CVE-2026-132165 Exploited and in CISA KEV: Update Now | Rescana",
+   "flags": [],
+   "ms": 168,
+   "id": "inc-2026-1125-003",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://github.com/dgwhited/kev/releases/tag/kev-update-2026-11-24-212227",
+   "status": 200,
+   "finalHost": "github.com",
+   "title": "Release KEV Catalog Update 2026.11.24 · dgwhited/kev · GitHub",
+   "flags": [],
+   "ms": 517,
+   "id": "inc-2026-1125-003",
+   "domainAgeDays": 6986
+  },
+  {
+   "url": "https://www.jpcert.or.jp/at/2026/at260033.html",
+   "status": 200,
+   "finalHost": "www.jpcert.or.jp",
+   "title": "PHPにおける複数の脆弱性（CVE-2026-109618、CVE-2026-109619）に関する注意喚起",
+   "flags": [],
+   "ms": 617,
+   "id": "inc-2026-1125-002",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.vulncheck.com/blog/php2shell-vulnerabilities",
+   "status": 200,
+   "finalHost": "www.vulncheck.com",
+   "title": "PHP2Shell Vulnerabilities: CVE-2026-109618 and CVE-2026-109619 | Blog | VulnCheck",
+   "flags": [],
+   "ms": 179,
+   "id": "inc-2026-1125-002",
+   "domainAgeDays": null
+  },
+  {
+   "url": "https://www.csa.gov.sg/alerts-and-advisories/alerts/al-2026-157/",
+   "status": 200,
+   "finalHost": "www.csa.gov.sg",
+   "title": "Active Exploitation of PHP2Shell Vulnerabilities Affecting Network and Security Products | Cyber Sec",
+   "flags": [],
+   "ms": 866,
+   "id": "inc-2026-1125-002",
+   "domainAgeDays": 999
+  },
+  {
+   "url": "https://www.jpcert.or.jp/newsflash/2026111901.html",
+   "status": 200,
+   "finalHost": "www.jpcert.or.jp",
+   "title": "認証を有効にしていないNode-REDに悪意ある制御フローが登録される問題（CVE-2026-58115）について",
+   "flags": [],
+   "ms": 405,
+   "id": "inc-2026-1125-001",
+   "domainAgeDays": null
+  }
+ ]
+}
