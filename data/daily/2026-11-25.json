@@ -1,0 +1,540 @@
+[
+ {
+  "id": "inc-2026-1125-014",
+  "title": "BICS·에어텔 아프리카, 14개국 로밍 시그널링 방화벽 도입",
+  "category": "TCH",
+  "severity": "low",
+  "country": "BE",
+  "countryName": "벨기에",
+  "region": "Europe",
+  "lat": 50.85,
+  "lng": 4.35,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/operations/eurobites-bics-airtel-africa-upgrade-roaming-partnership",
+  "date": "2026-11-24",
+  "summary": "프록시무스 계열 BICS가 에어텔 아프리카 14개 시장에 호스팅형 시그널링 방화벽을 제공해 위협 탐지와 로밍 보안을 강화한다. 모바일 머니 확산이 보안 강화의 배경으로 언급됐다.",
+  "tags": [
+   "telecom",
+   "signaling-security",
+   "roaming",
+   "africa"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1125-013",
+  "title": "FCC, 12월 회의에 외국 위성사업자 상호주의 규칙안 상정",
+  "category": "REG",
+  "severity": "low",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 38.9,
+  "lng": -77.03,
+  "source": "FCC",
+  "sourceUrl": "https://www.fcc.gov/December2026",
+  "date": "2026-11-24",
+  "summary": "FCC 위원장 카는 11월 24일 12월 17일 회의 잠정 안건으로 위성 시장접근 상호주의 규칙제정안(GN 26-48)을 공개했다. 외국이 미국 위성사업자를 차별하면 해당국 사업자에게 유사한 제한을 두는 방안이며, EU 디지털네트워크법과 2GHz 이동위성 재허가안이 거론됐다. 위성 D2D 사업자의 시장 접근에 영향을 줄 수 있다.",
+  "tags": [
+   "fcc",
+   "satellite",
+   "regulation",
+   "spectrum"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [
+   "https://www.theregister.com/networks/2026/11/24/fcc-proposes-tit-for-tat-restrictions-on-foreign-satellite-operators/5311889",
+   "https://www.benton.org/headlines/fcc-announces-tentative-agenda-december-2026-open-meeting"
+  ],
+  "cves": [],
+  "trust": 85,
+  "sourceTier": "T1",
+  "sourceGrade": "A"
+ },
+ {
+  "id": "inc-2026-1125-012",
+  "title": "스타허브, 키펠 M1 전액 주식 인수 합의…싱가포르 이통 3사 체제로",
+  "category": "MKT",
+  "severity": "low",
+  "country": "SG",
+  "countryName": "싱가포르",
+  "region": "Asia",
+  "lat": 1.3521,
+  "lng": 103.8198,
+  "source": "TelecomTV",
+  "sourceUrl": "https://www.telecomtv.com/content/access-evolution/singapore-s-starhub-snaps-up-m1-for-s-1-36bn-56744/",
+  "date": "2026-11-24",
+  "summary": "스타허브가 M1을 약 6억5,170만 신주 발행 방식으로 인수하기로 합의했으며 합병 법인 가입자는 약 410만 명이다. IMDA와 주주 승인이 필요하고 완료는 2027년 상반기로 예상된다. 서킷스 라이프 싱가포르 사업도 함께 인수한다.",
+  "tags": [
+   "telecom",
+   "m-and-a",
+   "singapore",
+   "consolidation"
+  ],
+  "score": 31,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 8
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [
+   "https://www.lightreading.com/finance/starhub-and-m1-to-merge-reshaping-singapore-s-telecom-landscape"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1125-011",
+  "title": "KT, 5G SA 기반 네트워크·앱 슬라이싱으로 기업·공공 공략",
+  "category": "TEL",
+  "severity": "medium",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "ZDNet Korea",
+  "sourceUrl": "https://zdnet.co.kr/view/?no=20261120125928",
+  "date": "2026-11-22",
+  "summary": "KT는 5G SA 전용 기술 47종을 적용해 기업·공공 시장을 공략한다고 밝혔다. 9월 기준 SA 이용자는 약 827만 명(5G 단말 이용자의 75%)이며, 업무·개인 앱을 분리하는 앱 슬라이싱을 올해 안에 기업 전용 5G에 적용하고 12월 B2B 시범을 계획한다.",
+  "tags": [
+   "telecom",
+   "5g-sa",
+   "network-slicing",
+   "kt"
+  ],
+  "score": 38,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 15
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [
+   "https://www.hankyung.com/article/2026112223851"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourcePending": true,
+  "sourceGrade": "D"
+ },
+ {
+  "id": "inc-2026-1125-010",
+  "title": "신생 갈취조직 '인셉션', 셰니헌터스 재편 의혹",
+  "category": "INC",
+  "severity": "medium",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 37.77,
+  "lng": -122.42,
+  "source": "The Register",
+  "sourceUrl": "https://theregister.com/security/2026/11/24/we-are-not-shinyhunters-says-criminal-hacking-crew-that-looks-and-acts-just-like-shinyhunters/5311978",
+  "date": "2026-11-24",
+  "summary": "Okta 위협 인텔리전스는 신생 데이터 갈취 조직 인셉션이 셰이니헌터스와 인프라와 수법(음성 피싱, MFA 승인 유도)이 거의 같다고 지목했다. 조직은 이를 부인했다. 기사에는 구체적 피해 기관이 명시되지 않았다.",
+  "tags": [
+   "data-extortion",
+   "vishing",
+   "phishing",
+   "threat-actor"
+  ],
+  "score": 41,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 15,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "crossCheckUrls": [
+   "https://thehackernews.com/2026/11/okta-links-shinyhunters-associated.html"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1125-009",
+  "title": "하나저축은행 고객 552명 개인정보 유출, 본인확인 시스템 침입",
+  "category": "INC",
+  "severity": "medium",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "뉴스토마토",
+  "sourceUrl": "https://www.newstomato.com/ReadNews.aspx?no=1321743",
+  "date": "2026-11-24",
+  "summary": "하나저축은행 모바일웹 고객 본인 재확인 시스템에 비정상 접근이 있어 552명의 주민등록번호·주소·연락처 등이 유출된 것으로 확인됐다. 추가 피해 여부를 조사 중이며 외부 IP를 차단하고 모니터링을 강화했다.",
+  "tags": [
+   "data-breach",
+   "finance",
+   "korea",
+   "identity-theft"
+  ],
+  "score": 43,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 5,
+   "technical": 10,
+   "scale": 3,
+   "domestic": 15
+  },
+  "crossCheckUrls": [
+   "https://www.dailysecu.com/news/articleView.html?idxno=209707",
+   "https://weekly.hankooki.com/news/articleView.html?idxno=7195550",
+   "https://hankyung.com/article/2026112476381"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourcePending": true,
+  "sourceGrade": "E"
+ },
+ {
+  "id": "inc-2026-1125-008",
+  "title": "EU 집행위 EU아카데미 이용자 정보 유출 확인",
+  "category": "INC",
+  "severity": "medium",
+  "country": "BE",
+  "countryName": "벨기에",
+  "region": "Europe",
+  "lat": 50.84,
+  "lng": 4.38,
+  "source": "Security Affairs",
+  "sourceUrl": "https://securityaffairs.com/203900/data-breach/eu-academy-users-names-and-emails-exposed-in-eu-commission-hack.html",
+  "date": "2026-11-24",
+  "summary": "유럽연합 집행위원회는 10월 22일 탐지된 AI 보조 공격으로 EU아카데미 이용자의 이름과 이메일이 노출됐다고 확인했다. 플랫폼은 중단됐고 유럽데이터보호감독기구에 통지됐으며 중국 연계 조직 의혹은 공식 확인되지 않았다.",
+  "tags": [
+   "data-breach",
+   "ai-attack",
+   "state-sponsored",
+   "phishing"
+  ],
+  "score": 46,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 15,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 3
+  },
+  "followUpOf": "inc-2026-1120-008",
+  "crossCheckUrls": [
+   "https://www.securityweek.com/european-commission-uncovers-data-breach-in-cyberattack-investigation/"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1125-007",
+  "title": "웰컴페이먼츠·KCP·KIS정보통신 등 PG사 3곳 정보 유출",
+  "category": "INC",
+  "severity": "high",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "전자신문",
+  "sourceUrl": "https://www.etnews.com/20261124000100",
+  "date": "2026-11-24",
+  "summary": "웰컴페이먼츠는 가맹점 관리자 페이지 비정상 접근으로 1,326명, KIS정보통신은 VAN 지원 웹서버에서 최대 862명, NHN KCP는 매출전표 160건이 노출됐다. 금융위는 KG이니시스 등 PG 6곳을 소집해 가맹점 접근 인증과 레거시 시스템 점검을 지시했다.",
+  "tags": [
+   "data-breach",
+   "payment",
+   "finance",
+   "korea"
+  ],
+  "score": 58,
+  "scoreFactors": {
+   "target": 20,
+   "exploit": 5,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 15
+  },
+  "crossCheckUrls": [
+   "https://www.boannews.com/news/articleView.html?idxno=147490",
+   "https://www.digitaltoday.co.kr/news/articleView.html?idxno=717809",
+   "https://www.dailysecu.com/news/articleView.html?idxno=209682"
+  ],
+  "cves": [],
+  "trust": 90,
+  "sourceTier": "T2",
+  "sourcePending": true,
+  "sourceGrade": "D"
+ },
+ {
+  "id": "inc-2026-1125-006",
+  "title": "MS 엔트라 커넥트 헬스 API 침해, 테넌트 메타데이터 노출",
+  "category": "INC",
+  "severity": "high",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 47.64,
+  "lng": -122.13,
+  "source": "Security Affairs",
+  "sourceUrl": "https://securityaffairs.com/203820/data-breach/microsoft-entra-connect-health-breach-exposes-tenant-metadata-and-admin-details.html",
+  "date": "2026-11-23",
+  "summary": "비인가 주체가 엔트라 커넥트 헬스 API 결함으로 관리자 이메일, 테넌트 ID, 도메인명 등 읽기 전용 메타데이터에 접근했다. 마이크로소프트는 11월 19일 서버 측 수정을 마쳤고 자격증명 유출은 없다고 밝혔다. 영향 테넌트 수는 공개되지 않았다.",
+  "tags": [
+   "data-breach",
+   "cloud",
+   "identity",
+   "microsoft"
+  ],
+  "score": 61,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 8
+  },
+  "crossCheckUrls": [
+   "https://www.bleepingcomputer.com/news/security/microsoft-entra-connect-health-flaw-exploited-to-steal-tenant-data/"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1125-005",
+  "title": "BADBOX 3.0 봇넷, 안드로이드 TV박스로 하루 400억 광고요청",
+  "category": "TCH",
+  "severity": "high",
+  "country": "CN",
+  "countryName": "중국",
+  "region": "Asia",
+  "lat": 22.5,
+  "lng": 114.1,
+  "source": "BleepingComputer",
+  "sourceUrl": "https://www.bleepingcomputer.com/news/security/badbox-30-botnet-returns-with-record-breaking-40-billion-daily-ad-requests/",
+  "date": "2026-11-21",
+  "summary": "HUMAN Satori는 저가 안드로이드 TV박스·태블릿을 감염시키는 BADBOX 3.0이 정점에 하루 약 400억 건의 입찰 요청(CTV 트래픽 4% 이상)을 만들었다고 밝혔다. 감염 기기는 은닉 광고 재생과 11개 주거용 프록시망 편입에 쓰였고, 구글 주도로 일부 C2가 차단됐다. 운영자의 재적응이 예상된다.",
+  "tags": [
+   "botnet",
+   "android",
+   "ad-fraud",
+   "proxy"
+  ],
+  "score": 63,
+  "scoreFactors": {
+   "target": 5,
+   "exploit": 25,
+   "technical": 10,
+   "scale": 15,
+   "domestic": 8
+  },
+  "crossCheckUrls": [
+   "https://securityaffairs.com/203767/malware/badbox-3-0-exposed-massive-botnet-hides-ad-fraud-inside-android-tv-boxes.html"
+  ],
+  "cves": [],
+  "trust": 75,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1125-004",
+  "title": "ASP.NET Idunno.AntiCsrf RCE(CVSS 9.3) 실제 악용",
+  "category": "VUL",
+  "severity": "high",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 37.42,
+  "lng": -122.08,
+  "source": "The Hacker News",
+  "sourceUrl": "https://thehackernews.com/2026/11/hackers-exploit-critical-aspnet-anti.html",
+  "date": "2026-11-23",
+  "summary": "ASP.NET WebForms용 Idunno.AntiCsrf 모듈의 안전하지 않은 역직렬화 결함(CVE-2026-131914, CVSS 9.3)이 실제 악용 중이라고 Mandiant가 밝혔다. 인증 없이 POST 한 번으로 원격 코드 실행이 가능하며 프로젝트가 방치되어 공식 패치가 없다.",
+  "tags": [
+   "rce",
+   "exploited",
+   "asp-net",
+   "deserialization"
+  ],
+  "score": 66,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 15,
+   "scale": 8,
+   "domestic": 8
+  },
+  "crossCheckUrls": [],
+  "cves": [
+   "CVE-2026-131914"
+  ],
+  "trust": 80,
+  "sourceTier": "T2",
+  "kev": true,
+  "sourceGrade": "C",
+  "cveVerified": true
+ },
+ {
+  "id": "inc-2026-1125-003",
+  "title": "Drupal 코어 설치기 RCE(CVE-2026-132165) 실공격, CISA KEV 등재",
+  "category": "VUL",
+  "severity": "high",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 38.9,
+  "lng": -77.0,
+  "source": "The Hacker News",
+  "sourceUrl": "https://thehackernews.com/2026/11/drupal-patches-critical-installer-flaw.html",
+  "date": "2026-11-24",
+  "summary": "Drupal 코어의 /core/install.php 설치기를 악용해 인증 없이 사이트 재설치, 장악 또는 원격 코드 실행이 가능한 취약점이다. 11월 19일부터 실공격이 보고됐고 CISA가 11월 24일 KEV에 등재했다. 10.6.22, 11.3.22, 11.4.13 이상으로 업데이트하고 설치기 접근을 차단해야 한다.",
+  "tags": [
+   "drupal",
+   "rce",
+   "kev",
+   "web-cms"
+  ],
+  "score": 66,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 15,
+   "scale": 8,
+   "domestic": 8
+  },
+  "crossCheckUrls": [
+   "https://bleepingcomputer.com/news/security/drupal-patches-critical-rce-flaw-warns-exploits-may-surface-quickly",
+   "https://www.rescana.com/post/drupal-core-installer-flaw-cve-2026-132165-exploited-and-in-cisa-kev-update-now",
+   "https://github.com/dgwhited/kev/releases/tag/kev-update-2026-11-24-212227"
+  ],
+  "cves": [
+   "CVE-2026-132165",
+   "CVE-2026-132166"
+  ],
+  "trust": 95,
+  "sourceTier": "T2",
+  "kev": true,
+  "sourceGrade": "C",
+  "cveUnverified": [
+   "CVE-2026-132165",
+   "CVE-2026-132166"
+  ]
+ },
+ {
+  "id": "inc-2026-1125-002",
+  "title": "PHP2Shell 후속, JPCERT 갱신: 신규 치명 취약점 포함 PHP 8.5.13 등 배포",
+  "category": "VUL",
+  "severity": "critical",
+  "country": "JP",
+  "countryName": "일본",
+  "region": "Asia",
+  "lat": 35.7,
+  "lng": 139.7,
+  "source": "JPCERT/CC",
+  "sourceUrl": "https://www.jpcert.or.jp/at/2026/at260033.html",
+  "date": "2026-11-20",
+  "summary": "JPCERT/CC는 PHP2Shell(CVE-2026-109618/109619)에 공개 PoC와 공격 시도가 있고 25대 서버 침해 사례도 보고됐다고 갱신했다. 11월 19일 PHP 8.5.13·8.4.28·8.3.37·8.2.36이 신규 치명 결함을 수정했으며 신규 결함의 실공격은 미확인이다. 방화벽 제품 침해 정황도 언급됐다.",
+  "tags": [
+   "php",
+   "rce",
+   "exploited",
+   "web"
+  ],
+  "score": 80,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 15,
+   "scale": 15,
+   "domestic": 15
+  },
+  "crossCheckUrls": [
+   "https://www.vulncheck.com/blog/php2shell-vulnerabilities",
+   "https://www.csa.gov.sg/alerts-and-advisories/alerts/al-2026-157/"
+  ],
+  "cves": [
+   "CVE-2026-109618",
+   "CVE-2026-109619",
+   "CVE-2026-115560",
+   "CVE-2026-126714"
+  ],
+  "trust": 120,
+  "sourceTier": "T1",
+  "kev": true,
+  "sourceGrade": "A",
+  "cveVerified": true
+ },
+ {
+  "id": "inc-2026-1125-001",
+  "title": "Node-RED 인증 미설정 악용(CVE-2026-58115), 지멘스 IoT2050 영향",
+  "category": "VUL",
+  "severity": "critical",
+  "country": "JP",
+  "countryName": "일본",
+  "region": "Asia",
+  "lat": 35.7,
+  "lng": 139.7,
+  "source": "JPCERT/CC",
+  "sourceUrl": "https://www.jpcert.or.jp/newsflash/2026111901.html",
+  "date": "2026-11-19",
+  "summary": "JPCERT/CC는 인증이 꺼진 Node-RED 편집기에 악성 제어 흐름이 등록되는 CVE-2026-58115의 실제 악용을 경고했다. VulnCheck가 11월 2일 공격을 관측했고 지멘스 SIMATIC IoT2050 내장 Node-RED도 대상이며, 일본 내 호스트 공격 보고도 접수됐다. 공격은 OS 명령 실행과 악성코드 설치로 이어진다.",
+  "tags": [
+   "ics",
+   "zero-day",
+   "botnet",
+   "siemens"
+  ],
+  "score": 86,
+  "scoreFactors": {
+   "target": 30,
+   "exploit": 25,
+   "technical": 15,
+   "scale": 8,
+   "domestic": 8
+  },
+  "crossCheckUrls": [
+   "https://www.jpcert.or.jp/newsflash/2026111901.html"
+  ],
+  "cves": [
+   "CVE-2026-58115"
+  ],
+  "trust": 70,
+  "sourceTier": "T1",
+  "sourceGrade": "A",
+  "cveVerified": true
+ }
+]
