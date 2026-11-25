@@ -1,0 +1,1 @@
+{"date": "2026-11-25", "mode": "PRODUCTION", "status": "running", "startedKst": "09:06", "lastStep": "beacon", "writePath": "A", "error": "", "stepTimes": {"start": "09:06"}, "preflight": ["09:06:25 attempt1 push_files=Y PushNotification=Y Gmail.send_message=Y Drive.read_file_content=Y servers=GitHub_MCP,Gmail,Google_Drive"]}
