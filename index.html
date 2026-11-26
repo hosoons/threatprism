@@ -456,12 +456,14 @@ body::before {
   font-family: var(--font-display);
   letter-spacing: 0;
   flex-shrink: 0;
-  width: 66px;
+  min-width: 66px;
+  width: auto;
+  max-width: 100%;
   box-sizing: border-box;
   text-align: center;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 /* --- Map View --- */
@@ -692,7 +694,9 @@ body::before {
   font-family: var(--font-display);
   letter-spacing: 0;
   display: inline-block;
-  width: 66px;
+  min-width: 66px;
+  width: auto;
+  flex-shrink: 0;
   box-sizing: border-box;
   text-align: center;
   white-space: nowrap;
@@ -729,14 +733,19 @@ body::before {
 }
 .feed-card-footer {
   display: flex;
+  flex-wrap: wrap;
+  row-gap: 4px;
   align-items: center;
   gap: 10px;
   margin-top: 10px;
   font-size: calc(11px * var(--fs, 1));
   color: var(--text-muted);
 }
+.feed-card-footer > * { white-space: nowrap; min-width: 0; }
+.feed-card-footer .feed-card-tags { white-space: normal; flex: 1 1 100%; }
 .feed-card-source { font-family: var(--font-mono); }
 .feed-card-tags {
+  min-width: 0;
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
@@ -748,6 +757,8 @@ body::before {
   background: var(--accent-glow);
   color: var(--accent);
   font-family: var(--font-mono);
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 .feed-empty {
   text-align: center;
@@ -1168,7 +1179,7 @@ select, input[type="time"] {
     <div class="settings-section">
       <h3>ℹ️ 정보</h3>
       <div class="setting-row">
-        <div class="setting-label">ThreatPrism v1.9.6</div>
+        <div class="setting-label">ThreatPrism v1.9.7</div>
         <div class="setting-value">Claude Scheduled Task 기반</div>
       </div>
       <div class="setting-row">
