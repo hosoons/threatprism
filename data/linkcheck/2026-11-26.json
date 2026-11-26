@@ -1,0 +1,162 @@
+{
+ "date": "2026-11-26",
+ "checkedAt": "2026-11-26T00:48:09+00:00",
+ "summary": {
+  "checked": 15,
+  "flagged": 0,
+  "dead": 0,
+  "safeBrowsing": "off"
+ },
+ "results": [
+  {
+   "url": "https://www.lightreading.com/security/ericsson-provides-5g-for-spanish-military-exercise",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Ericsson provides 5G for Spanish military exercise",
+   "flags": [],
+   "ms": 113,
+   "id": "inc-2026-1126-007",
+   "domainAgeDays": 9870
+  },
+  {
+   "url": "https://www.lightreading.com/regulatory-politics/eurobites-openreach-sounds-isdn-warning-as-migration-deadline-nears",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Eurobites: Openreach sounds ISDN warning as deadline nears",
+   "flags": [],
+   "ms": 86,
+   "id": "inc-2026-1126-006",
+   "domainAgeDays": 9870
+  },
+  {
+   "url": "https://www.boannews.com/news/articleView.html?idxno=147537",
+   "status": 200,
+   "finalHost": "www.boannews.com",
+   "title": "한국생산성본부, 개인정보 유출 가능성... 자체 교육 사이트 ‘에듀테크센터’ 해킹 탓 < 긴급경보 < 사건·사고 < 기사본문 - 보안뉴스",
+   "flags": [],
+   "ms": 1338,
+   "id": "inc-2026-1126-005",
+   "domainAgeDays": 7835
+  },
+  {
+   "url": "https://www.dailysecu.com/news/articleView.html?idxno=209732",
+   "status": 200,
+   "finalHost": "www.dailysecu.com",
+   "title": "한국생산성본부 온라인 교육사이트 해킹…파일 업로드 취약점 악용, 개인정보 유출 가능성 < 긴급속보 < 이슈 < 기사본문 - 데일리시큐",
+   "flags": [],
+   "ms": 1625,
+   "id": "inc-2026-1126-005",
+   "domainAgeDays": 5725
+  },
+  {
+   "url": "https://cloud.google.com/blog/topics/threat-intelligence/armory-castle-exploits-vsphere",
+   "status": 200,
+   "finalHost": "cloud.google.com",
+   "title": "",
+   "flags": [],
+   "ms": 185,
+   "id": "inc-2026-1126-004",
+   "domainAgeDays": 10663
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/china-linked-hackers-exploit-critical.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "China-Linked Hackers Exploit Critical VMware vCenter Zero-Day to Gain Admin Access and Steal Data",
+   "flags": [],
+   "ms": 106,
+   "id": "inc-2026-1126-004",
+   "domainAgeDays": 5873
+  },
+  {
+   "url": "https://securityweek.com/newly-patched-vmware-vcenter-flaw-exploited-as-zero-day-by-chinese-apt",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "VMware vCenter CVE-2026-123890 Zero-Day Exploited - SecurityWeek",
+   "flags": [],
+   "ms": 383,
+   "id": "inc-2026-1126-004",
+   "domainAgeDays": 9015
+  },
+  {
+   "url": "https://www.helpnetsecurity.com/2026/11/23/cisco-expressway-vulnerability-exploited-cve-2026-76466/",
+   "status": 200,
+   "finalHost": "www.helpnetsecurity.com",
+   "title": "Cisco Expressway vulnerability exploited to breach internal networks (CVE-2026-76466) - Help Net Sec",
+   "flags": [],
+   "ms": 487,
+   "id": "inc-2026-1126-003",
+   "domainAgeDays": 8315
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/hackers-exploit-critical-cisco.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "Hackers Exploit Critical Cisco Expressway Flaw, Breach Four Devices and Reach Internal Network",
+   "flags": [],
+   "ms": 77,
+   "id": "inc-2026-1126-003",
+   "domainAgeDays": 5873
+  },
+  {
+   "url": "https://securityweek.com/hackers-exploit-cisco-expressway-vulnerability-soon-after-poc-release",
+   "status": 200,
+   "finalHost": "www.securityweek.com",
+   "title": "Cisco Expressway CVE-2026-76466 Exploitation Uncovered - SecurityWeek",
+   "flags": [],
+   "ms": 381,
+   "id": "inc-2026-1126-003",
+   "domainAgeDays": 9015
+  },
+  {
+   "url": "https://www.newspim.com/news/view/20261125001302",
+   "status": 200,
+   "finalHost": "www.newspim.com",
+   "title": "빗썸, 개인정보 추가 유출 확인…주민등록번호·거래내역 등 포함",
+   "flags": [],
+   "ms": 1779,
+   "id": "inc-2026-1126-002",
+   "domainAgeDays": 8625
+  },
+  {
+   "url": "https://www.g-enews.com/article/ICT/2026/11/202611252104481274056c162803_1",
+   "status": 200,
+   "finalHost": "www.g-enews.com",
+   "title": "빗썸, 해킹 피해 추가 확인 - 글로벌이코노믹",
+   "flags": [],
+   "ms": 2915,
+   "id": "inc-2026-1126-002",
+   "domainAgeDays": 4666
+  },
+  {
+   "url": "https://biz.heraldcorp.com/article/10949454",
+   "status": 200,
+   "finalHost": "biz.heraldcorp.com",
+   "title": "빗썸 해킹 피해 눈덩이…보름 넘게 뚫린 줄 몰랐고 유출 인원도 늘었다 - 헤럴드경제",
+   "flags": [],
+   "ms": 1517,
+   "id": "inc-2026-1126-002",
+   "domainAgeDays": 5287
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/hackers-compromise-24-check-point.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "Hackers Compromise 24 Check Point Management Servers in Suspected AI-Driven Attack Campaign",
+   "flags": [],
+   "ms": 56,
+   "id": "inc-2026-1126-001",
+   "domainAgeDays": 5873
+  },
+  {
+   "url": "https://securityaffairs.com/203946/hacking/gt13-ai-assisted-hackers-target-22-organizations-through-check-point-servers.html",
+   "status": 200,
+   "finalHost": "securityaffairs.com",
+   "title": "GT13: AI-Assisted Hackers Target 22 Organizations Through Check Point Servers",
+   "flags": [],
+   "ms": 303,
+   "id": "inc-2026-1126-001",
+   "domainAgeDays": 10120
+  }
+ ]
+}
