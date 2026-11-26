@@ -1168,7 +1168,7 @@ select, input[type="time"] {
     <div class="settings-section">
       <h3>ℹ️ 정보</h3>
       <div class="setting-row">
-        <div class="setting-label">ThreatPrism v1.9.5</div>
+        <div class="setting-label">ThreatPrism v1.9.6</div>
         <div class="setting-value">Claude Scheduled Task 기반</div>
       </div>
       <div class="setting-row">
@@ -2396,7 +2396,7 @@ function renderGraph() {
     .attr('stroke-opacity', 0.9);
 
   const shortLabel = d => { const m = isTag ? 24 : (d.r > 10 ? 20 : 14); return d.label.length > m ? d.label.slice(0, m) + '…' : d.label; };
-  const labelSize = d => isTag ? (d.r > 12 ? 11 : 9) : (d.r > 10 ? 10 : d.r > 7 ? 9 : 8);
+  const labelSize = d => fsz(isTag ? (d.r > 12 ? 11 : 9) : (d.r > 10 ? 10 : d.r > 7 ? 9 : 8));
   const label = nodeG.selectAll('text.node-label').data(nodes).join('text')
     .classed('node-label', true)
     .text(shortLabel)
@@ -2434,7 +2434,7 @@ function renderGraph() {
       .attr('stroke-opacity', n => (n.id === d.id || nb.has(n.id)) ? 1 : 0.15);
     if (d.category) node.filter(n => n.id === d.id).select('circle').attr('filter', `url(#glow-${d.category})`);
     label.attr('opacity', n => (n.id === d.id || nb.has(n.id)) ? 1 : 0.1);
-    label.filter(n => n.id === d.id).text(d.kind === 'tag' ? `${d.label} (${d.count}건)` : d.label).attr('font-size', 11).attr('fill', hiText);
+    label.filter(n => n.id === d.id).text(d.kind === 'tag' ? `${d.label} (${d.count}건)` : d.label).attr('font-size', fsz(11)).attr('fill', hiText);
   })
   .on('mouseleave', () => {
     link.attr('stroke-opacity', 0.35).attr('stroke', lineColor).attr('stroke-width', d => 0.3 + d.value * (isTag ? 0.35 : 0.15));
@@ -2522,6 +2522,7 @@ function renderSettings() {
     settings.fontScale = Number(b.dataset.fs); applyFontScale(); saveSettings();
     try { renderTrendChart(); } catch(e) {}
     try { if (typeof redrawMaps === 'function') redrawMaps(); } catch(e) {}
+    try { if (document.getElementById('graphContainer')?.offsetParent && typeof renderGraph === 'function') renderGraph(); } catch(e) {}
   });
   // Day selector
   const dayEl = document.getElementById('daySelector');
