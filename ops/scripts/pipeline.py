@@ -696,6 +696,7 @@ def cmd_stamp(a):
     for f in files:
         print("  - " + f)
     print("  (Mondays also data/briefs/weekly-<START>_<D>.json)")
+    print("  If you ever must push in more than one commit: data/daily/<D>.json FIRST, data/briefing.json LAST (it triggers the PDF workflow).")
 
 
 def cmd_check_published(a):

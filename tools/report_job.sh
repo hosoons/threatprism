@@ -9,6 +9,18 @@ MODE="$1"
 D="${REPORT_DATE:-}"
 if [ -z "$D" ]; then D=$(TZ=Asia/Seoul date +%F); fi
 
+# Guard 1: never build or mark "ready" without the day's data file (the first publish push may arrive before it).
+# The daily-report workflow also triggers on data/daily/*.json, so the later push builds the report.
+INPUT_HASH=$( (cat data/briefing.json "data/daily/$D.json" 2>/dev/null || true) | sha256sum | cut -c1-16)
+if [ "$MODE" = "daily" ] && [ ! -s "data/daily/$D.json" ]; then
+  echo "data/daily/$D.json missing - skip (the push that adds it will rebuild)"; exit 0
+fi
+# Guard 2: same inputs already built and marked ready -> skip (avoids duplicate PDF/Slack posts on push triggers; manual runs always build)
+if [ "${GITHUB_EVENT_NAME:-}" = "push" ] && [ -f "reports/ready/$MODE-$D.json" ] \
+   && grep -q "\"inputHash\": \"$INPUT_HASH\"" "reports/ready/$MODE-$D.json" && grep -q "_url" "reports/ready/$MODE-$D.json"; then
+  echo "report for $D already built from identical inputs - skip"; exit 0
+fi
+
 MODES="$MODE"
 if [ "$MODE" = "daily" ] && [ "$(date -d "$D" +%u)" = "1" ]; then MODES="daily weekly"; fi
 
@@ -57,17 +69,21 @@ done
 
 # ready marker: the Claude briefing task waits for this file before it sends push/email
 mkdir -p reports/ready
-READY="$READY" MODES="$MODES" MODE="$MODE" D="$D" python3 - <<'PY'
+INPUT_HASH="$INPUT_HASH" READY="$READY" MODES="$MODES" MODE="$MODE" D="$D" python3 - <<'PY'
 import json, os, datetime
 pages = "https://hosoons.github.io/threatprism/"
 blob = "https://github.com/hosoons/threatprism/blob/main/"
 ready = os.environ["READY"] == "true"
-out = {"date": os.environ["D"], "ready": ready,
+out = {"date": os.environ["D"], "ready": ready, "inputHash": os.environ.get("INPUT_HASH", ""),
        "generatedAt": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
 for m in os.environ["MODES"].split():
     r = json.load(open(f"report-{m}.json", encoding="utf-8"))
     if r.get("ok"):
         out[m + "_url"] = (pages if ready else blob) + r["path"]
+# Guard 3: a marker without any report URL means nothing was built - do not write it
+if not any(k.endswith("_url") for k in out):
+    print("no report built - ready marker not written")
+    raise SystemExit(0)
 with open(f"reports/ready/{os.environ['MODE']}-{os.environ['D']}.json", "w", encoding="utf-8") as f:
     json.dump(out, f, ensure_ascii=False, indent=1)
 PY
