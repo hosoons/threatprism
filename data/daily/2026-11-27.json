@@ -1,0 +1,259 @@
+[
+ {
+  "id": "inc-2026-1127-007",
+  "title": "BT, 앤트로픽·MS 등과 중소기업 사이버 교육 프로그램 출범",
+  "category": "TCH",
+  "severity": "info",
+  "country": "GB",
+  "countryName": "영국",
+  "region": "Europe",
+  "lat": 51.5,
+  "lng": -0.12,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/security/eurobites-bt-taps-anthropic-and-friends-to-offer-cyber-training-to-smes",
+  "date": "2026-11-26",
+  "summary": "BT가 마이크로소프트, 앤트로픽, 삼성, 구글 등 10개 파트너와 중소기업 대상 '사이버 프리페어드 UK' 교육을 시작했다. 2028년 말까지 10만 시간 교육을 목표로 한다.",
+  "tags": [
+   "telecom",
+   "cybersecurity",
+   "training"
+  ],
+  "score": 16,
+  "scoreFactors": {
+   "target": 5,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 3,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1127-006",
+  "title": "T-모바일, 6G 대비 AI-RAN 도입 경제성 검증",
+  "category": "TEL",
+  "severity": "low",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 38.9,
+  "lng": -77.0,
+  "source": "Telecoms Tech News",
+  "sourceUrl": "https://www.telecomstechnews.com/news/t-mobile-ai-ran-deployment-economics-6g/",
+  "date": "2026-11-26",
+  "summary": "T-모바일이 노키아·엔비디아 GPU 기반 AI-RAN과 에릭슨 기존 장비의 AI 소프트웨어를 시험하며 경제성을 평가 중이다. 약 8만5천 기지국 규모에서 GPU 비용은 아직 불확실하며 에릭슨은 주파수 효율 약 10% 개선을 제시했다.",
+  "tags": [
+   "telecom",
+   "ai-ran",
+   "6g"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [
+   "https://www.lightreading.com/ai-machine-learning/t-mobile-pushes-ahead-with-ai-ran-toward-6g"
+  ],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "E"
+ },
+ {
+  "id": "inc-2026-1127-005",
+  "title": "오렌지, 노키아·엔비디아 AI-RAN을 RAN 입찰에서 진지하게 검토",
+  "category": "MKT",
+  "severity": "low",
+  "country": "FR",
+  "countryName": "프랑스",
+  "region": "Europe",
+  "lat": 48.86,
+  "lng": 2.35,
+  "source": "Light Reading",
+  "sourceUrl": "https://www.lightreading.com/5g/orange-taking-nokia-plus-nvidia-very-seriously-for-ran-tender",
+  "date": "2026-11-25",
+  "summary": "오렌지 CTO는 GPU가 아직 맞춤형 실리콘의 주파수 효율을 넘지 못했으나 2027~2030 RAN 입찰에서 노키아 방식을 진지하게 보고 있다고 밝혔다. 에릭슨은 맞춤형 칩 전략을 유지한다.",
+  "tags": [
+   "telecom",
+   "ran",
+   "market"
+  ],
+  "score": 26,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 0,
+   "technical": 5,
+   "scale": 8,
+   "domestic": 3
+  },
+  "nonThreat": true,
+  "crossCheckUrls": [],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1127-004",
+  "title": "드루팔 코어 신규 접근우회(CVE-2026-136716) 실공격 확인",
+  "category": "VUL",
+  "severity": "high",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 37.77,
+  "lng": -122.42,
+  "source": "The Hacker News",
+  "sourceUrl": "https://thehackernews.com/2026/11/drupal-warns-of-new-highly-critical.html",
+  "date": "2026-11-26",
+  "summary": "드루팔이 CVE-2026-132165 패치 이후 설치 페이지가 불완전한 상태로 남은 사이트를 노린 신규 결함 CVE-2026-136716이 실제 공격에 악용되고 있다고 밝혔다. 10.6.23, 11.3.23, 11.4.14로 업데이트해야 하며 지원 종료 브랜치는 패치가 없다.",
+  "tags": [
+   "drupal",
+   "exploited",
+   "web-cms",
+   "rce"
+  ],
+  "score": 56,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 3
+  },
+  "followUpOf": "Drupal CVE-2026-132165",
+  "crossCheckUrls": [],
+  "cves": [
+   "CVE-2026-136716"
+  ],
+  "trust": 80,
+  "sourceTier": "T2",
+  "kev": true,
+  "sourceGrade": "C",
+  "cveVerified": true
+ },
+ {
+  "id": "inc-2026-1127-003",
+  "title": "다나와 외부 침해 추정, 13시간 넘게 서비스 중단",
+  "category": "INC",
+  "severity": "high",
+  "country": "KR",
+  "countryName": "대한민국",
+  "region": "Asia",
+  "lat": 37.57,
+  "lng": 126.98,
+  "source": "데일리시큐",
+  "sourceUrl": "https://www.dailysecu.com/news/articleView.html?idxno=209761",
+  "date": "2026-11-26",
+  "summary": "가격비교 플랫폼 다나와(커넥트웨이브)가 26일 오전 2시경 외부 침해로 추정되는 보안 사고로 서비스를 중단했다. 회사는 외부 보안업체와 원인·개인정보 유출 여부를 조사 중이며 당국에 신고했다. 랜섬웨어 여부와 침입 경로는 확인되지 않았다.",
+  "tags": [
+   "data-breach",
+   "service-outage",
+   "e-commerce"
+  ],
+  "score": 65,
+  "scoreFactors": {
+   "target": 20,
+   "exploit": 5,
+   "technical": 10,
+   "scale": 15,
+   "domestic": 15
+  },
+  "crossCheckUrls": [
+   "https://www.etnews.com/20261126000392",
+   "https://www.boannews.com/news/articleView.html?idxno=147585"
+  ],
+  "cves": [],
+  "trust": 90,
+  "sourceTier": "T2",
+  "sourcePending": true,
+  "sourceGrade": "D"
+ },
+ {
+  "id": "inc-2026-1127-002",
+  "title": "MS, 중국·북한 연계 해커의 AI 침투도구 ARTEX 악용 경고",
+  "category": "TCH",
+  "severity": "high",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 47.64,
+  "lng": -122.13,
+  "source": "The Register",
+  "sourceUrl": "https://www.theregister.com/security/2026/11/26/microsoft-hackers-in-china-n-korea-using-artex-ai-tool-to-break-into-global-tech-systems/5312433",
+  "date": "2026-11-26",
+  "summary": "마이크로소프트는 오픈소스 AI 침투 프레임워크 ARTEX를 솔트 타이푼 등 중국 연계, 오닉스 슬릿 등 북한 연계, 금전 목적 조직이 정찰부터 권한 상승까지 자동화하는 데 쓴다고 25일 밝혔다. 한국과 인도 금융기관 피해 사례도 보고됐고 변종은 130개 이상이다.",
+  "tags": [
+   "ai",
+   "apt",
+   "china",
+   "north-korea",
+   "threat-intel"
+  ],
+  "score": 72,
+  "scoreFactors": {
+   "target": 10,
+   "exploit": 25,
+   "technical": 10,
+   "scale": 12,
+   "domestic": 15
+  },
+  "crossCheckUrls": [],
+  "cves": [],
+  "trust": 60,
+  "sourceTier": "T2",
+  "sourceGrade": "C"
+ },
+ {
+  "id": "inc-2026-1127-001",
+  "title": "PAN-OS 방화벽 Fragnesia(CVE-2026-46300) 실공격, 루트 권한 탈취",
+  "category": "VUL",
+  "severity": "critical",
+  "country": "US",
+  "countryName": "미국",
+  "region": "North America",
+  "lat": 37.39,
+  "lng": -121.96,
+  "source": "Cybersecurity News",
+  "sourceUrl": "https://cybersecuritynews.com/palo-alto-confirms-fragnesia-exploitation/",
+  "date": "2026-11-25",
+  "summary": "팔로알토는 인터넷에 노출된 관리 인터페이스를 가진 PAN-OS 장비에서 PHP2Shell로 실행한 코드가 리눅스 커널 결함 Fragnesia로 루트 권한을 얻는 공격이 실제 확인됐다고 25일 밝혔다. 5개 브랜치에 수정 빌드가 나왔으며 12.2.4-h1은 PHP2Shell만 고친다. 피해 장비 수는 공개되지 않았다.",
+  "tags": [
+   "zero-day",
+   "firewall",
+   "pan-os",
+   "privilege-escalation"
+  ],
+  "score": 78,
+  "scoreFactors": {
+   "target": 20,
+   "exploit": 25,
+   "technical": 10,
+   "scale": 8,
+   "domestic": 15
+  },
+  "crossCheckUrls": [
+   "https://bleepingcomputer.com/news/security/cisa-warns-of-fragnesia-linux-flaw-chained-in-php2shell-attacks"
+  ],
+  "cves": [
+   "CVE-2026-46300",
+   "CVE-2026-109618",
+   "CVE-2026-109619"
+  ],
+  "trust": 80,
+  "sourceTier": "T2",
+  "kev": true,
+  "sourceGrade": "E",
+  "cveVerified": true
+ }
+]
