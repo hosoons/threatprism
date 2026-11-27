@@ -1,11 +1,1 @@
-{
- "date": "2026-11-27",
- "mode": "RETRY",
- "status": "running",
- "startedKst": "09:42",
- "lastStep": "start",
- "writePath": "A (mcp__github__ tools)",
- "error": null,
- "stepTimes": {"start": "09:42:31"},
- "preflight": ["09:42:31 attempt1 tools found; mcp__github__ write path available"]
-}
+{"date": "2026-11-27", "mode": "RETRY", "status": "done", "startedKst": "09:42", "lastStep": "sent", "writePath": "A (mcp__github__ tools)", "error": null, "stepTimes": {"start": "09:42:31", "beacon": "09:42:40", "collected": "09:48:02", "published": "09:48:50", "pdfReady": "09:50:29", "sent": "09:50:56"}, "preflight": ["09:42:31 attempt1 found PushNotification, Gmail send_message, Drive read; mcp__GitHub_MCP__* missing but mcp__github__ write tools present"], "collectors": ["kr=9+4 cands", "threat=2+6", "industry=3+2", "upgrade=1"], "stats": {"total": 7, "threatIndex": 65, "threatLevel": "HIGH", "gaps": [{"floor": "korea>=4", "have": 1, "need": 4}, {"floor": "non-anglo>=3", "have": 2, "need": 3}], "missingCategories": ["REG"], "held": 12}, "delivery": {"sentAtKst": "2026-11-27 09:50", "delayed": false, "label": "정시"}, "pdf": "ready", "push": "sent", "email": "sent to 4", "slack": "ok", "errors": ["수집 기준 미달: total 7 < 14, korea 1/4, non-anglo 2/3 (round B 후 중단)", "retry by mid watchdog"]}
