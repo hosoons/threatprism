@@ -1,0 +1,122 @@
+{
+ "date": "2026-11-27",
+ "checkedAt": "2026-11-27T00:48:56+00:00",
+ "summary": {
+  "checked": 11,
+  "flagged": 0,
+  "dead": 0,
+  "safeBrowsing": "off"
+ },
+ "results": [
+  {
+   "url": "https://www.lightreading.com/security/eurobites-bt-taps-anthropic-and-friends-to-offer-cyber-training-to-smes",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Eurobites: BT taps Anthropic and friends to offer cyber training",
+   "flags": [],
+   "ms": 86,
+   "id": "inc-2026-1127-007",
+   "domainAgeDays": 9871
+  },
+  {
+   "url": "https://www.telecomstechnews.com/news/t-mobile-ai-ran-deployment-economics-6g/",
+   "status": 202,
+   "finalHost": "www.telecomstechnews.com",
+   "title": "",
+   "flags": [],
+   "ms": 138,
+   "id": "inc-2026-1127-006",
+   "domainAgeDays": 5743
+  },
+  {
+   "url": "https://www.lightreading.com/ai-machine-learning/t-mobile-pushes-ahead-with-ai-ran-toward-6g",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "T-Mobile pushes ahead with AI-RAN toward 6G",
+   "flags": [],
+   "ms": 110,
+   "id": "inc-2026-1127-006",
+   "domainAgeDays": 9871
+  },
+  {
+   "url": "https://www.lightreading.com/5g/orange-taking-nokia-plus-nvidia-very-seriously-for-ran-tender",
+   "status": 200,
+   "finalHost": "www.lightreading.com",
+   "title": "Orange taking Nokia plus Nvidia 'very seriously' for RAN tender",
+   "flags": [],
+   "ms": 92,
+   "id": "inc-2026-1127-005",
+   "domainAgeDays": 9871
+  },
+  {
+   "url": "https://thehackernews.com/2026/11/drupal-warns-of-new-highly-critical.html",
+   "status": 200,
+   "finalHost": "thehackernews.com",
+   "title": "Drupal Warns of New Highly Critical Site Takeover Vulnerability Under Active Exploitation",
+   "flags": [],
+   "ms": 91,
+   "id": "inc-2026-1127-004",
+   "domainAgeDays": 5874
+  },
+  {
+   "url": "https://www.dailysecu.com/news/articleView.html?idxno=209761",
+   "status": 200,
+   "finalHost": "www.dailysecu.com",
+   "title": "다나와, 해킹 사고로 서비스 중단…회원 개인정보 유출 여부 촉각 < 긴급속보 < 이슈 < 기사본문 - 데일리시큐",
+   "flags": [],
+   "ms": 1547,
+   "id": "inc-2026-1127-003",
+   "domainAgeDays": 5726
+  },
+  {
+   "url": "https://www.etnews.com/20261126000392",
+   "status": 200,
+   "finalHost": "www.etnews.com",
+   "title": "[단독] 다나와, 보안 사고로 서비스 이용 중단…“개인정보 유출 여부 확인 중” - 전자신문",
+   "flags": [],
+   "ms": 1033,
+   "id": "inc-2026-1127-003",
+   "domainAgeDays": 10119
+  },
+  {
+   "url": "https://www.boannews.com/news/articleView.html?idxno=147585",
+   "status": 200,
+   "finalHost": "www.boannews.com",
+   "title": "가격 비교 플랫폼 ‘다나와’ 해킹 추정 사고... 서비스 일시 중단 < 긴급경보 < 사건·사고 < 기사본문 - 보안뉴스",
+   "flags": [],
+   "ms": 1838,
+   "id": "inc-2026-1127-003",
+   "domainAgeDays": 7836
+  },
+  {
+   "url": "https://www.theregister.com/security/2026/11/26/microsoft-hackers-in-china-n-korea-using-artex-ai-tool-to-break-into-global-tech-systems/5312433",
+   "status": 200,
+   "finalHost": "www.theregister.com",
+   "title": "Microsoft: Hackers in China, N Korea using ARTEX AI tool to break into global tech systems",
+   "flags": [],
+   "ms": 245,
+   "id": "inc-2026-1127-002",
+   "domainAgeDays": 11105
+  },
+  {
+   "url": "https://cybersecuritynews.com/palo-alto-confirms-fragnesia-exploitation/",
+   "status": 202,
+   "finalHost": "cybersecuritynews.com",
+   "title": "",
+   "flags": [],
+   "ms": 56,
+   "id": "inc-2026-1127-001",
+   "domainAgeDays": 7069
+  },
+  {
+   "url": "https://bleepingcomputer.com/news/security/cisa-warns-of-fragnesia-linux-flaw-chained-in-php2shell-attacks",
+   "status": 200,
+   "finalHost": "www.bleepingcomputer.com",
+   "title": "CISA warns of Fragnesia Linux flaw chained in PHP2Shell attacks",
+   "flags": [],
+   "ms": 316,
+   "id": "inc-2026-1127-001",
+   "domainAgeDays": 8340
+  }
+ ]
+}
